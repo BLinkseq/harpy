@@ -36,7 +36,9 @@ To that end, for `harpy preprocess`, `harpy qc`, and `harpy align`, the
 most common FASTQ naming styles are supported:
 - **sample names**: <Badge text="a-z" variant="success"/>  <Badge text="0-9" variant="success"/>  <Badge text="." variant="success"/> <Badge text="_" variant="success"/> <Badge text="-" variant="success"/> <Badge text="case insensitive" variant="tip"/>
     - you can mix and match special characters, but that's bad practice and not recommended
-    - examples: `Sample.001`, `Sample_001_year4`, `Sample-001_population1.year2` \<- not recommended
+    - works: `Sample.001`, `Sample_001_year4`
+    - works but not recommended: `Sample-001_population1.year2`
+    - does not work: `Sample^001@population1.year2`
 - **forward/reverse delimeter**: <Badge text="_" variant="success"/> <Badge text="." variant="success"/>
 - **forward**: <Badge text="F" variant="success"/> <Badge text="1" variant="success"/> <Badge text="R1_001" variant="success"/> <Badge text="R1" variant="success"/>
 - **reverse**: <Badge text="R" variant="success"/> <Badge text="2" variant="success"/> <Badge text="R2_001" variant="success"/> <Badge text="R2" variant="success"/> 
