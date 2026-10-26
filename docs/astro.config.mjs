@@ -3,8 +3,10 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightUiTweaks from 'starlight-ui-tweaks'
 import starlightScrollToTop from 'starlight-scroll-to-top'
+import starlightSidebarTopics from 'starlight-sidebar-topics'
 import codeblocks from 'starlight-codeblocks';
 import mermaid from 'astro-mermaid';
+
 
 export default defineConfig({
   site: 'https://blinkseq.github.io/harpy',
@@ -37,6 +39,51 @@ export default defineConfig({
           progressRingColor: '#83b4eb',
           borderRadius: '50',
         }),
+        starlightSidebarTopics([
+          {
+            label: 'Getting Started',
+            link: '/getting-started/install',
+            icon: 'open-book',
+            items: [
+              {
+                label: 'Getting Started',
+                items: [
+                  { autogenerate: { directory: '/getting-started/' } }
+                ]
+              },
+            ],
+          },
+          {
+            label: 'Commands',
+            link: '/commands/',
+            icon: 'information',
+            items: [
+              {
+                label: 'Commands',
+                items: [
+                  { autogenerate: { directory: '/commands/' } }
+                ]
+              },
+            ],
+          },
+          {
+            label: 'Guides & Troubleshooting',
+            icon: 'open-book',
+            // The page to link to when the topic is clicked.
+            link: '/guides/',
+            // The sidebar configuration for the topic.
+            items: [
+              {
+                label: 'Guides',
+                items: [{ autogenerate: { directory: 'guides/' } }],
+              },
+              {
+                label: 'Troubleshooting',
+                items: [{ autogenerate: { directory: 'troubleshooting/' } }],
+              },
+            ],
+          },
+        ]),
       ],
 		}),
 	],
