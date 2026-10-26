@@ -42,7 +42,7 @@ with `||`/`|` (OR) and `&&`/`&` (AND).
 ### mini-language rules
 1. Use single-quotes to wrap the expression (e.g., `'EXPRESSION'`)
 
-{.compact .clean}
+
 | expression | example   |
 | :--------- | :-------- |
 | good       | `'AC==0'` |
@@ -50,7 +50,7 @@ with `||`/`|` (OR) and `&&`/`&` (AND).
 
 2. Individual expressions should not contain spaces across their boolean operators
 
-{.compact .clean}
+
 | expression | example       |
 | :--------- | :------------ |
 | good       | `'MAF>0.5'`   |

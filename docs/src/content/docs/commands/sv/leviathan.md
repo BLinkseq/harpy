@@ -60,8 +60,8 @@ harpy sv leviathan --threads 20 -s 90,95,95 genome.fasta Align/bwa
 ## :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="sv leviathan"] module is configured using these command-line arguments:
 
-{.compact .clean}
-| argument        {.whitespace-nowrap} | default  {.whitespace-nowrap} | description                                                                                                                                    |
+
+| argument         | default   | description                                                                                                                                    |
 | :----------------------------------- | :---------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------- |
 | `INPUTS`                             |                               | [!badge variant="info" text="required"] Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments)  |
 | `REFERENCE`                          |                               | [!badge variant="info" text="required"] Reference genome that was used to create alignments                                                    |
@@ -145,8 +145,8 @@ SV/leviathan
     ├── sample1.bcf
     └── sample2.bcf
 ```
-{.compact .clean}
-| item      {.whitespace-nowrap} | description                                                                              |
+
+| item       | description                                                                              |
 | :----------------------------- | :--------------------------------------------------------------------------------------- |
 | `breakends.bedpe`              | an aggregation of all the breakends identified by LEVIATHAN                              |
 | `deletions.bedpe`              | an aggregation of all the deletions identified by LEVIATHAN                              |

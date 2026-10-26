@@ -35,8 +35,8 @@ harpy align bwa genome.fasta Sequences/
 ## :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="align bwa"]/[!badge corners="pill" text="align strobe"] modules are configured using these command-line arguments:
 
-{.compact .clean}
-| argument    {.whitespace-nowrap} | default {.whitespace-nowrap} | description                                                                                                                                     |
+
+| argument     | default  | description                                                                                                                                     |
 | :------------------------------- | :--------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REFERENCE`                      |                              | [!badge variant="info" text="required"] Reference assembly for read mapping                                                                     |
 | `INPUTS`                         |                              | [!badge variant="info" text="required"] Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
@@ -51,7 +51,7 @@ In addition to the [!badge variant="info" corners="pill" text="common runtime op
 This option is specific to [!badge corners="pill" text="align minimap"] and ignored otherwise. It configures the aligner for
 specific data types, where:
 
-{.compact .clean}
+
 | technology | description                                            |
 | :--------- | :----------------------------------------------------- |
 | `sr`       | short-read, typically Illumina, data (<600bp, default) |
@@ -158,7 +158,7 @@ The default output directory is `Align/{aligner}` with the folder structure belo
 
 ```
 {.compact}
-| item    {.whitespace-nowrap}        | description                                                                            |
+| item            | description                                                                            |
 | :---------------------------------- | :------------------------------------------------------------------------------------- |
 | `aligned/*.bam`                     | sequence alignments for each sample                                                    |
 | `aligned/*.bai`                     | sequence alignment indexes for each sample                                             |
@@ -188,8 +188,8 @@ minibwa map -y -x sr -R "@RG\tID:samplename\tSM:samplename"
 
 Below is a list of all `minibwa map` command line arguments, excluding those Harpy already uses or those made redundant by Harpy's implementation of BWA.
 
-{.compact .clean}
-| argument {.whitespace-nowrap} | category   {.whitespace-nowrap} | description                                                            |
+
+| argument  | category    | description                                                            |
 | :---------------------------- | :-----------------------------: | :--------------------------------------------------------------------- |
 | `-l`                          |             common              | treat reads <NUM as short reads in the default adaptive mode [325]     |
 | `-b`                          |             common              | output a base alignment tag: cs, ds or MD []                           |
@@ -240,8 +240,8 @@ strobealign [--use-index -r ...] -t THREADS -U -C --rg-id={sample} --rg=SM:{samp
 
 Below is a list of all `strobealign` command line arguments, excluding those Harpy already uses or those made redundant by Harpy's implementation of it.
 
-{.compact .clean}
-| argument {.whitespace-nowrap} | type   {.whitespace-nowrap} | description                                                                                                                                                                                                                                                                                                                             |
+
+| argument  | type    | description                                                                                                                                                                                                                                                                                                                             |
 | :---------------------------- | :-------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-v`                          |           toggle            | Verbose output                                                                                                                                                                                                                                                                                                                          |
 | `--aemb`                      |           toggle            | Output the estimated abundance value of contigs, the format of output file is: contig_id abundance_value                                                                                                                                                                                                                                |
@@ -290,8 +290,8 @@ minimap2 -t {threads} -a --MD -y -x map-{technology} -R "@RG\tID:samplename\tSM:
 Below is a list of all `minimap2` command line arguments, excluding those Harpy already uses or those made redundant by Harpy's implementation of it.
 Values in `[brackets]` are the software's default.
 
-{.compact .clean}
-| argument {.whitespace-nowrap} | category   {.whitespace-nowrap} | description                                                                     |
+
+| argument  | category    | description                                                                     |
 | :---------------------------- | :-----------------------------: | :------------------------------------------------------------------------------ |
 | `-H`                          |            indexing             | use homopolymer-compressed k-mer (preferrable for PacBio)                       |
 | `-k`                          |            indexing             | k-mer size (no larger than 28) [15]                                             |

@@ -1,9 +1,8 @@
 ---
 title: Install / Conda
-icon: package
 ---
+import Accordion from '@/components/Accordion.astro';
 
-# :icon-package: Install / Conda
 
 ## Installation issues
 Conda is an awesome package manager, but _was_ slow and used a ton of memory
@@ -24,7 +23,7 @@ conda config --set channel_priority false
 ```
 
 ## Conda issues
-Unless using `--container`, Harpy leans on Snakemake to install small conda environments necessary to accomplish the tasks in workflows.
+Unless using `--container`, Harpy relies on Snakemake to install small conda environments necessary to accomplish the tasks in workflows.
 The most common issue we tend to see is errors during this process.
 
 ### installation into base
@@ -39,28 +38,31 @@ conda install --rev 0 --name base
 ## Install dependencies manually
 ### conda is forbidden
 Some HPC configurations prohibit the use of `conda`. If that's preventing you from installing Harpy, then you can try to 
-[install it as a python package](/Getting_Started/install.md#pip) using pip. You will still need to manually install the
+[install it as a python package](../../getting-started/install#pip) using pip. You will still need to manually install the
 package dependencies provided below. Since `conda` is disabled, you will need to use the `--container` option for most of
 the commands.
 
-==- additional harpy dependencies
-{.compact .clean}
-| program {.whitespace-nowrap} | minimum version | notes                     |
-| :--------------------------- | :-------------: | :------------------------ |
-| `bcftools`                   |      1.22       | usually already installed |
-| `htslib`                     |      1.22       | usually already installed |
-| `pysam`                      |      0.23       |                           |
-| `rich-click`                 |       1.8       |                           |
-| `snakemake-minimal`          |       9.0       | `snakemake` works too     |
-| `samtools`                   |      1.22       | usually already installed |
-| `seqtk`                      |                 |                           |
-===
+<Accordion title="additional harpy dependencies">
+
+| program             | minimum version | notes                     |
+| :------------------ | :-------------: | :------------------------ |
+| `bcftools`          |      1.22       | usually already installed |
+| `htslib`            |      1.22       | usually already installed |
+| `pysam`             |      0.23       |                           |
+| `rich-click`        |       1.8       |                           |
+| `snakemake-minimal` |       9.0       | `snakemake` works too     |
+| `samtools`          |      1.22       | usually already installed |
+| `seqtk`             |                 |                           |
+| `djinn`             |                 |                           |
+| `demuxolotl`        |                 | needs manual compilation  |
+
+</Accordion>
 
 ### nodes do not have internet access
 A not-uncommon HPC setup is to have the login node connected to the internet, but the worker nodes have no
 internet access. This obviously creates a problem if Snakemake needs to download software dependencies (conda or container). To
-facilitate this kind of setup, Harpy has the [!badge corners="pill" text="deps"]() command, which runs a fake workflow to download and
-install workflow dependencies. The [!badge corners="pill" text="deps conda"]() and [!badge corners="pill" text="deps container"]() commands 
+facilitate this kind of setup, Harpy has the `deps` command, which runs a fake workflow to download and
+install workflow dependencies. The `deps conda` and `deps container` commands 
 are meant to be used on the internet-connected login node in circumstances like this.
 
 #### deps conda
@@ -68,16 +70,18 @@ Create the conda environments required by Harpy's workflows (e.g. `phase`).
 Only useful for specific HPC configurations where worker nodes
 do not have internet access to let snakemake install conda packages itself. 
 
-```bash usage
+Usage
+```bash
 harpy deps conda workflows...
 ```
 
-```bash example | install all possible harpy workflow dependencies
+Example
+```bash title="install all possible harpy workflow dependencies"
 harpy deps conda all
 ```
 
 You can provide any combination of workflow names to selectively install only the necessary environments, or `all`
-to install (you guessed it!) all of them: 
+to install all of them: 
 - `all`
 - `align`
 - `assembly`
@@ -86,16 +90,16 @@ to install (you guessed it!) all of them:
 - `qc`
 - `r`
 - `simulations`
-- `stitch`
+- `impute`
 - `variants`
 
 #### deps container
-Manually pull the Harpy dependency container from dockerhub and convert it
+Manually pull the Harpy dependency container from GHCR and convert it
 into an Apptainer `.sif` file. Only useful for specific HPC configurations where worker nodes
 do not have internet access to let snakemake download the container itself. 
 Run this command again without arguments to use it.
 
-
-```bash usage
+Usage
+```bash
 harpy deps container
 ```

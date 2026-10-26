@@ -9,8 +9,8 @@ polymorphisms (SNP) and small indels, but you may want to (and should!) leverage
 data to identify larger structural variants (SV) like large deletions, duplications, and
 inversions. Harpy provides two linked-read structural variant callers to do exactly that:
 
-{.compact .clean}
-| Caller        {.whitespace-nowrap} | variants it detects                        | caveats       {.whitespace-nowrap} | link                                                                                                                                                               |
+
+| Caller         | variants it detects                        | caveats        | link                                                                                                                                                               |
 | :--------------------------------- | :----------------------------------------- | :--------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [LEVIATHAN](leviathan.md)          | inversion, duplication, deletion, breakend | requires supplementary alignments  | [repo](https://github.com/morispi/LEVIATHAN), [paper](https://doi.org/10.1101/2021.03.25.437002)                                                                   |
 | [NAIBR](naibr.md)                  | inversion, duplication, deletion           | requires phased alignments         | [original repo](https://github.com/raphael-group/NAIBR), [fork repo](https://github.com/pontushojer/NAIBR), [paper](https://doi.org/10.1093/bioinformatics/btx712) |

@@ -67,19 +67,28 @@ export default defineConfig({
             ],
           },
           {
-            label: 'Guides & Troubleshooting',
-            icon: 'open-book',
-            // The page to link to when the topic is clicked.
+            label: 'Guides',
             link: '/guides/',
-            // The sidebar configuration for the topic.
+            icon: 'information',
             items: [
               {
                 label: 'Guides',
-                items: [{ autogenerate: { directory: 'guides/' } }],
+                items: [
+                  { autogenerate: { directory: '/guides/' } }
+                ]
               },
+            ],
+          },
+          {
+            label: 'Troubleshoot',
+            link: '/troubleshoot/',
+            icon: 'information',
+            items: [
               {
-                label: 'Troubleshooting',
-                items: [{ autogenerate: { directory: 'troubleshooting/' } }],
+                label: 'Troubleshoot',
+                items: [
+                  { autogenerate: { directory: '/troubleshoot/' } }
+                ]
               },
             ],
           },

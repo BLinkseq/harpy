@@ -34,8 +34,8 @@ harpy qc --threads 20 -a auto Sequences_Raw/
 ## :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="qc"] module is configured using these command-line arguments:
 
-{.compact .clean}
-| argument      {.whitespace-nowrap} | default   {.whitespace-nowrap} | description                                                                                                                                     |
+
+| argument       | default    | description                                                                                                                                     |
 | :--------------------------------- | :----------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `INPUTS`                           |                                | [!badge variant="info" text="required"] Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
 | `--deduplicate` `-d`               |                                | Identify and remove PCR duplicates                                                                                                              |
@@ -120,8 +120,8 @@ The resulting folder also includes a `workflow` directory (not shown) with workf
       - :icon-file: Sample1.json
 
 
-{.compact .clean}
-| item       {.whitespace-nowrap} | description                                                                        |
+
+| item        | description                                                                        |
 | :------------------------------ | :--------------------------------------------------------------------------------- |
 | `processed/*.R1.fq.gz`          | quality trimmed forward reads of the samples                                       |
 | `processed/*.R1.fq.gz`          | quality trimmed reverse reads of the samples                                       |

@@ -32,8 +32,8 @@ In addition to the [!badge variant="info" corners="pill" text="common runtime op
 module is configured using the command-line arguments below. Since the assembly process consists of several distinct phases,
 the descriptions are provided with an extra badge to reflect which part of the assembly process they correspond to.
 
-{.compact .clean}
-| argument {.whitespace-nowrap} | default {.whitespace-nowrap} | description                                                                                                                                                                                        |
+
+| argument  | default  | description                                                                                                                                                                                        |
 | :---------------------------- | :--------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `FASTQ_R1`                    |                              | [!badge variant="info" text="required"] FASTQ file of forward reads                                                                                                                                |
 | `FASTQ_R2`                    |                              | [!badge variant="info" text="required"] FASTQ file of reverse reads                                                                                                                                |
@@ -108,8 +108,8 @@ Metassembly/
 │   └── contigs.fasta
 └── scaffolds.fasta
 ```
-{.compact .clean}
-| item    {.whitespace-nowrap}    | description                                                                   |
+
+| item        | description                                                                   |
 | :------------------------------ | :---------------------------------------------------------------------------- |
 | `busco/`                        | directory with results from the BUSCO analysis                                |
 | `busco/short_summary.*.txt`     | text file summarizing BUSCO analysis                                          |

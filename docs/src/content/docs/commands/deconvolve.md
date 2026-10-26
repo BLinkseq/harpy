@@ -20,8 +20,8 @@ order: 10
 The importance of doing barcode deconvolution at the FASTQ stage varies based on your goals. This table, by no means
 exhaustive, outlines if you should invest in it:
 
-{.compact .clean}
-| goal  {.whitespace-nowrap} | necessary?                       |
+
+| goal   | necessary?                       |
 | :------------------------- | :------------------------------- |
 | alignment                  | no, barcode information not used |
 | assembly                   | yes                              |
@@ -48,8 +48,8 @@ harpy deconvolve path/to/data/*.fq
 ```
 
 ## :icon-terminal: Running Options
-{.compact .clean}
-| argument  {.whitespace-nowrap} | default | description                                                                                                                                     |
+
+| argument   | default | description                                                                                                                                     |
 | :----------------------------- | :-----: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `INPUTS`                       |         | [!badge variant="info" text="required"] Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
 | `--density` `-d`               |   `3`   | On average, $\frac{1}{2^d}$ kmers are indexed                                                                                                   |

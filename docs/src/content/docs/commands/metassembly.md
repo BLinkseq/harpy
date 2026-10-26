@@ -30,8 +30,8 @@ harpy metassembly --threads 20 -u prokaryote -k 13,51,75,83 reads.R1.fq reads.R2
 ## :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="metassembly"] module is configured using these command-line arguments:
 
-{.compact .clean}
-| argument  {.whitespace-nowrap} | default {.whitespace-nowrap} | description                                                                                                                                    |
+
+| argument   | default  | description                                                                                                                                    |
 | :----------------------------- | :--------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------- |
 | `FASTQ_R1`                     |                              | [!badge variant="info" text="required"] deconvolved FASTQ file of forward reads                                                                |
 | `FASTQ_R2`                     |                              | [!badge variant="info" text="required"] deconvolved FASTQ file of reverse reads                                                                |
@@ -101,8 +101,8 @@ Metassembly/
 └── *spades_assembly
     └── contigs.fasta
 ```
-{.compact .clean}
-| item        {.whitespace-nowrap} | description                                                                   |
+
+| item         | description                                                                   |
 | :------------------------------- | :---------------------------------------------------------------------------- |
 | `athena/athena.asm.fa`           | final metagenome assemble                                                     |
 | `busco/`                         | directory with results from the BUSCO analysis                                |

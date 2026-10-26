@@ -54,8 +54,8 @@ harpy preprocess gih --threads 20 data/*R{1,2}.fastq.gz
 ### :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="preprocess meier2021"] module is configured using these command-line arguments:
 
-{.compact .clean}
-| argument   {.whitespace-nowrap} | default  {.whitespace-nowrap} | description                                                                |
+
+| argument    | default   | description                                                                |
 | :------------------------------ | ----------------------------- | :------------------------------------------------------------------------- |
 | `INPUTS`                        |                               | [!badge variant="info" text="required"] The sample FASTQ files (R1 and R2) |
 | `--me-seq` `-m`                 | AGATGTGTATAAGAGACAG           | ME sequence to look for                                                    |
@@ -118,8 +118,8 @@ Preprocess/
     ├── performance.QC.ipynb
     └── preprocess.QC.html
 ```
-{.compact .clean}
-| item      {.whitespace-nowrap} | description                                   |
+
+| item       | description                                   |
 | :----------------------------- | :-------------------------------------------- |
 | `*.R1.fq.gz`                   | Processed forward-reads in 'standard' format  |
 | `*.R2.fq.gz`                   | Processed reverse-reads in 'standard' format  |
@@ -159,8 +159,8 @@ harpy preprocess meier2021 --threads 20 --schema demux.schema Plate_1_S001_R*.fa
 ### :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="preprocess meier2021"] module is configured using these command-line arguments:
 
-{.compact .clean}
-| argument      {.whitespace-nowrap} | description                                                                                              |
+
+| argument       | description                                                                                              |
 | :--------------------------------- | :------------------------------------------------------------------------------------------------------- |
 | `R1_FQ`                            | [!badge variant="info" text="required"] The forward multiplexed FASTQ file                               |
 | `R2_FQ`                            | [!badge variant="info" text="required"] The reverse multiplexed FASTQ file                               |
@@ -250,7 +250,7 @@ Preprocess/
 └── reports
     └── preprocess.QC.html
 ```
-{.compact .clean}
+
 | item                         | description                                                                               |
 | :--------------------------- | :---------------------------------------------------------------------------------------- |
 | `*.F.fq.gz`                  | Forward-reads from multiplexed input `--file` belonging to samples from the `samplesheet` |

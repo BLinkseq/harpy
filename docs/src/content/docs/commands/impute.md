@@ -65,8 +65,8 @@ harpy impute --threads 20 --vcf-samples stitch.params data/variants.bcf data/*.b
 ## :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="impute"] module is configured using these command-line arguments:
 
-{.compact .clean}
-| argument  {.whitespace-nowrap} | default  {.whitespace-nowrap} | description                                                                                                                   |
+
+| argument   | default   | description                                                                                                                   |
 | :----------------------------- | :---------------------------: | :---------------------------------------------------------------------------------------------------------------------------- |
 | `PARAMETERS`                   |                               | [!badge variant="info" text="required"] STITCH [parameter file](#parameter-file) (tab-delimited)                              |
 | `VCF`                          |                               | [!badge variant="info" text="required"] Path to VCF/BCF file                                                                  |
@@ -193,7 +193,7 @@ waffles    pseudoHaploid   TRUE    50000   10      1       50
 +++example file (as a table)
 This is the table view of the tab-delimited file, shown here for clarity.
 
-{.compact .clean}
+
 | name    | model         | useBX | bxlimit | k   | s   | nGen |
 | :------ | :------------ | :---- | :------ | :-- | :-- | :--- |
 | model1  | diploid       | TRUE  | 50000   | 10  | 5   | 50   |
@@ -204,8 +204,8 @@ This is the table view of the tab-delimited file, shown here for clarity.
 See the section below for detailed information on each parameter. This
 table serves as an overview of the parameters.
 
-{.compact .clean}
-| column name {.whitespace-nowrap} |     accepted values {.whitespace-nowrap}     | description                                                                                     |
+
+| column name  |     accepted values      | description                                                                                     |
 | :------------------------------- | :------------------------------------------: | :---------------------------------------------------------------------------------------------- |
 | name                             |      alphanumeric (a-z, 0-9) and `-_.`       | Arbitrary name of the parameter set, used to name outputs                                       |
 | model                            | `pseudoHaploid`, `diploid`, `diploid-inbred` | The STITCH model/method to use  [!badge variant="secondary" text="case sensitive"]              |
@@ -272,8 +272,8 @@ Impute/
         └── modelname.summary.ipynb
 
 ```
-{.compact .clean}
-| item                 {.whitespace-nowrap}   | description                                                 |
+
+| item                    | description                                                 |
 | :------------------------------------------ | :---------------------------------------------------------- |
 | `modelname/modelname.bcf`                   | final bcf file of imputed genotypes                         |
 | `modelname/modelname.bcf.csi`               | index of `modelname.bcf`                                    |

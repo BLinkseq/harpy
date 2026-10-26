@@ -37,8 +37,8 @@ harpy phase snp --threads 20 Variants/variants.raw.bcf alignments/
 ## :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="phase"] module is configured using these command-line arguments:
 
-{.compact .clean}
-| argument       {.whitespace-nowrap} | default   {.whitespace-nowrap} | description                                                                                                                                   |
+
+| argument        | default    | description                                                                                                                                   |
 | :---------------------------------- | :----------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------- |
 | `VCF`                               |                                | [!badge variant="info" text="required"] Path to BCF/VCF file                                                                                  |
 | `INPUTS`                            |                                | [!badge variant="info" text="required"] Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments) |
@@ -139,8 +139,8 @@ Phase/
         └── Sample1.blocks.phased.log
 
 ```
-{.compact .clean}
-| item       {.whitespace-nowrap} | description                                                                              |
+
+| item        | description                                                                              |
 | :------------------------------ | :--------------------------------------------------------------------------------------- |
 | `variants.phased.bcf*`          | final vcf output of HapCut2 with all samples merged into a single file (with .csi index) |
 | `annotations/`                  | phased vcf annotated with phased blocks                                                  |

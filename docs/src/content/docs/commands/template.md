@@ -19,8 +19,8 @@ harpy template groupings INPUTS > output
 harpy template groupings data/ > samples.groups
 ```
 ### arguments
-{.compact .clean}
-| argument {.whitespace-nowrap} | description                                                                                   |
+
+| argument  | description                                                                                   |
 | :---------------------------- | :-------------------------------------------------------------------------------------------- |
 | `INPUTS`                      | [!badge variant="info" text="required"] Files or directories containing input FASTQ/BAM files |
 
@@ -96,8 +96,8 @@ harpy template report --action
 ```
 
 ### arguments
-{.compact .clean}
-| argument  {.whitespace-nowrap} | description                                            |
+
+| argument   | description                                            |
 | :----------------------------- | :----------------------------------------------------- |
 | `--action`                     | Add a report-building GitHub Action to the repository  |
 | `--update`                     | Scan the git project for reports and update `myst.yml` |

@@ -48,8 +48,8 @@ harpy validate bam --threads 20 Align/bwa
 ## :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="validate fastq"] and [!badge corners="pill" text="validate bam"] modules are configured using only command-line input arguments:
 
-{.compact .clean}
-| argument    {.whitespace-nowrap} | description                                                                                                                                            |
+
+| argument     | description                                                                                                                                            |
 | :------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `INPUTS`                         | [!badge variant="info" text="required"] Files or directories containing [input fastq or bam files](/Getting_Started/common_options.md#input-arguments) |
 
@@ -60,8 +60,8 @@ Below is a table of the format specifics [!badge corners="pill" text="validate f
 the haplotagging data format, you will find little value in running [!badge corners="pill" text="validate fastq"] on 10X FASTQ files. Take note
 of the language such as when "any" and "all" are written.
 
-{.compact .clean}
-| Criteria     {.whitespace-nowrap} | Pass Condition                                                                                   | Fail Condition                                                |
+
+| Criteria      | Pass Condition                                                                                   | Fail Condition                                                |
 | :-------------------------------- | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
 | Format                            | **all** reads with BX:Z: tag have properly formatted barcodes for the given linked-read platform | **any** BX:Z: barcodes have incorrect format                  |
 | follows SAM spec                  | **all** reads have proper `TAG:TYPE:VALUE` comments                                              | **any** reads have incorrectly formatted comments             |
@@ -72,8 +72,8 @@ of the language such as when "any" and "all" are written.
 Below is a table of the format specifics [!badge corners="pill" text="validate bam"] checks for SAM/BAM files. Take note
 of the language such as when "any" and "all" are written.
 
-{.compact .clean}
-| Criteria   {.whitespace-nowrap} | Pass Condition                                                                                        | Fail Condition                                                |
+
+| Criteria    | Pass Condition                                                                                        | Fail Condition                                                |
 | :------------------------------ | :---------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
 | name matches                    | the file name matches the `@RG ID:` tag in the header                                                 | file name does not match `@RG ID:` in the header              |
 | MI: tag                         | **any** alignments with `BX:Z:` tags also have `MI:i:` (or `MI:Z:`) tags                              | **all** reads have `BX:Z:` tag present but `MI:i:` tag absent |

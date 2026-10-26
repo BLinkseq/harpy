@@ -60,8 +60,8 @@ harpy snp freebayes --threads 20 genome.fasta Align/bwa
 ## :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](../Getting_Started/common_options.md), the [!badge corners="pill" text="snp"] module is configured using these command-line arguments:
 
-{.compact .clean}
-| argument    {.whitespace-nowrap} | default {.whitespace-nowrap} | description                                                                                                                                   |
+
+| argument     | default  | description                                                                                                                                   |
 | :------------------------------- | :--------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REFERENCE`                      |                              | [!badge variant="info" text="required"] Reference genome used for variant calling                                                             |
 | `INPUTS`                         |                              | [!badge variant="info" text="required"] Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments) |
@@ -185,8 +185,8 @@ SNP/method
     └── variants.raw.ipynb
 
 ```
-{.compact .clean}
-| item      {.whitespace-nowrap} | description                                                                              |
+
+| item       | description                                                                              |
 | :----------------------------- | :--------------------------------------------------------------------------------------- |
 | `variants.raw.bcf`             | vcf file produced from variant calling, contains all samples and loci                    |
 | `variants.normalized.bcf`      | variants, but with indels realigned and duplicates removed                               |

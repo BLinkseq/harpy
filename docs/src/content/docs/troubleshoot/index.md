@@ -1,11 +1,10 @@
 ---
-title: Start Here
-icon: book
-order: 1
+title: Troubleshooting Harpy
+sidebar:
+    hidden: true
 ---
 
-# :icon-book: Basic Troubleshooting
-Lots of stuff can go wrong during an analysis. The intent of this page is to guide you through
+Lots of stuff can go wrong during an analysis. This page guides you through
 navigating the inevitable errors associated with doing bioinformatics.
 
 ## Logging Streams
@@ -16,7 +15,7 @@ Harpy consistent and pain-free, Harpy outputs the progress bar to `stdout`, whil
 What that means in practice is that if you run harpy with a `stderr` redirect to a log file, only the progress bar appears
 in your console, keeping the log file clean. We do **not** recommend redirecting `stdout` (the progress bar) to a file. Here's an example:
 ```bash
-harpy align bwa genome.fasta data/sample_*.fq.gz 2> bwa.log
+harpy align arachne genome.fasta data/sample_*.fq.gz 2> arachne.log
 ```
 
 ## Troubleshooting Harpy
@@ -26,7 +25,7 @@ Harpy has two steps: first it performs checks and validations, then it runs Snak
 First, Harpy takes your command-line inputs and checks/validates the input files and parameters.
 If your parameters are not the correct type (e.g. a number where there should be a file), the
 program will error immediately and inform you that something isn't right.
-![Harpy option validations](/static/troubleshoot_cli.png)
+![Harpy option validations](../../../assets/troubleshoot_cli.png)
 
 If all the command-line options pass validation, then the workflow inputs
 will be validated with all kinds of scripts and checks internally. For
@@ -34,7 +33,7 @@ example, an input genome FASTA will be checked to be a properly formatted
 FASTA file. We do our best to include an error message that guides you
 on how to fix things and try again. If there are errors you're receiving
 that you think could use better wording or more information, [please let us know](https://github.com/blinkseq/harpy/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.yml)!
-![Harpy file validations](/static/errormsg.png)
+![Harpy file validations](../../../assets/errormsg.png)
 
 ### snakemake validations
 Once all the file validations pass, Harpy passes the baton over to
@@ -49,7 +48,7 @@ command from the `config.harpy.yaml` file created by Harpy, specifically listed
 under `snakemake` (either `absolute` or `relative`). If it seems like something on our end, please
 [open an issue](https://github.com/blinkseq/harpy/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml)
 and include the error text Snakemake provides.
-![copy and paste this command directly to see Snakemake error text](/static/workflow_call.png)
+![copy and paste this command directly to see Snakemake error text](../../../assets/workflow_call.png)
 
 ### error during a workflow
 Sometimes something goes wrong with one of the steps in a workflow. If/when
@@ -57,4 +56,4 @@ that happens, Harpy will print the offending step and all the information
 Snakemake has regarding the failure. If the step had a log file, it will
 print the log information too, hopefully making it easier to figure out
 what's wrong. 
-![error during a workflow](/static/error_text.png)
+![error during a workflow](../../../assets/error_text.png)

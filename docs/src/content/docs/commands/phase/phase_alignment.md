@@ -44,8 +44,8 @@ harpy phase bam --threads 10 phased.bcf data/*.bam
 ## :icon-terminal: Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="phase"] module is configured using these command-line arguments:
 
-{.compact .clean}
-| argument          {.whitespace-nowrap} | default  {.whitespace-nowrap} | description                                                                                                                                   |
+
+| argument           | default   | description                                                                                                                                   |
 | :------------------------------------- | :---------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REFERENCE`                            |                               | Path to reference genome used to create alignments                                                                                            |
 | `VCF`                                  |                               | [!badge variant="info" text="required"] Path to phased BCF/VCF file                                                                           |
@@ -102,8 +102,8 @@ Phase/bam/
     └── phasing.summary.log
 ```
 
-{.compact .clean}
-| item           {.whitespace-nowrap} | description                          |
+
+| item            | description                          |
 | :---------------------------------- | :----------------------------------- |
 | `phased/*.phased.bam`               | phased alignment file output         |
 | `logs/phasing.summary.log`          | consolidated output of whatshap logs |

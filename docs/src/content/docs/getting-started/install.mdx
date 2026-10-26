@@ -1,7 +1,6 @@
 ---
 title: Installing Harpy
 sidebar:
-  order: 1
   label: Install
 tableOfContents: false
 ---
@@ -134,7 +133,7 @@ to use most of Harpy.
       python -m pip install .
       ```
 
-      If for some reason it's fussing when you try that command, you can attempt this method:
+      If for some reason that fails, try this method:
       ```bash
       python3 -m pip install --upgrade build && python3 -m build && \
           pip install dist/*.whl
@@ -152,25 +151,19 @@ to use most of Harpy.
 
 
       Other things you need to install include:
-      - [djinn](https://blinkseq.github.io/djinn/) (download + compile)
-      - [demuxolotl](https://github.com/blinkseq/demuxolotl) (included but needs compilation)
+      - [djinn](https://blinkseq.github.io/djinn/)  [demuxolotl](https://github.com/blinkseq/demuxolotl) (included but need compilation)
       - [go](https://go.dev/doc/install) needs to be installed to compile both
 
-      ```bash title="compile demuxolotl" annotations="side"
-      go build -C harpy/utils/demuxolotl -o $PREFIX/bin -ldflags='-s -w' stagger.go   # [!annotate] Compile `demuxolotl`. Replace `$PREFIX/bin` with a directory on your `PATH` 
+      ```bash title="compile demuxolotl+djinn" annotations="side"
+      go build -C demuxolotl -o $PREFIX/bin -ldflags='-s -w'   # [!annotate] Compile `demuxolotl`. Replace `$PREFIX/bin` with a directory on your `PATH` 
+      go build -C djinn -o $PREFIX/bin -ldflags='-s -w'   # [!annotate] Compile `djinn`. Replace `$PREFIX/bin` with a directory on your `PATH` 
       ```
-
-      ```bash title="compile djinn" annotations="side"
-      wget https://github.com/BLinkseq/djinn/releases/download/3.0/djinn.3.0.tar.gz # [!annotate] Download the latest djinn release tarball. Make sure to set the correct version number
-      tar -xzfv djinn.3.0.tar.gz # [!annotate] decompress release tarball
-      cd djinn.3.0 # [!annotate] enter the djinn folder
-      go build -ldflags "-s -w" -o $PREFIX/bin   # [!annotate] Compile `djinn`. Replace `$PREFIX/bin` with a directory on your `PATH`
-      ```
+    
+    4. Updating harpy
+      Updating harpy installed this way would require repeating the steps with a different Harpy version.
 
 </Steps>
 
-### Updating harpy
-Updating harpy installed this way would require repeating the steps with a different Harpy version.
 
 ### Usage with pip
 You should be able to call `harpy` from your command line:

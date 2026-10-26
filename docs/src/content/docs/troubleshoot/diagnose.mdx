@@ -1,29 +1,31 @@
 ---
-title: Diagnose
+title: Diagnose a Workflow
 icon: unverified
 ---
+import { Badge } from '@astrojs/starlight/components';
 
-# :icon-unverified: harpy diagnose
-
-Harpy includes a series of [!badge corners="pill" text="diagnose"] commands to faciliate troubleshooting
+Harpy includes a series of `diagnose` commands to faciliate troubleshooting. These are mostly a semi-automated
+_attempt_ at short-cutting snakemake to rerun directly without intervening harpy code, which should help expose the
+issue more obviously.
 
 
 ## diagnose stall
-The [!badge corners="pill" text="diagnose stall"] command will run dry-run Snakemake for a workflow with the `--dry-run --debug-dag` options
+The `diagnose stall` command will run dry-run Snakemake for a workflow with the `--dry-run --debug-dag` options
 and print output to try to identify why Snakemake might be stalling for a workflow.
 This is typically used during development or for troubleshooting edge-cases and you're likely/hopefully
-not going to need to use this feature. Similar to [!badge corners="pill" text="resume"](/Getting_Started/Troubleshooting/resume.md),
-this requires a Harpy-generated output folder as the sole argument.
+not going to need to use this feature. Similar to `resume`, this requires a Harpy-generated output folder as the sole argument.
 
-```bash usage
+Usage
+```bash
 harpy diagnose stall path/to/dir
 ```
 
-```bash example
+Example
+```bash
 harpy diagnose stall Align/bwa
 ```
 
-## diagnose rule [!badge varaint="warning" text="unreleased"]
+## diagnose rule <Badge text="experimental" variant="caution"/>
 The [!badge corners="pill" text="diagnose rule"] command is a shortcut for trying to manually rerun a failing rule.The
 command will scan the input directory for the most recent Snakemake log file and parse it to identify the first rule
 triggering the workflow to fail. The input files of the failing rule will be checked for their existence, and if not,
@@ -39,4 +41,4 @@ harpy diagnose rule Deconvolve/
 ```
 
 The output walks you through what Harpy is trying to do:
-![terminal output of diagnose rule](/static/diagnose_rule.png)
+![terminal output of diagnose rule](../../../assets/diagnose_rule.png)

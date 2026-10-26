@@ -1,16 +1,12 @@
 ---
 title: Utilities
-sidebar:
-  order: 1
 ---
 
 Harpy is the sum of its parts and some of those parts are utilities
 used by the workflows that are accessible from within the Harpy conda environment (or however Harpy was installed).
 This page serves to document those utilities, since using them outside of a workflow
-might be useful too. Each of these utilities are accessible with the `harpy-utils` prefix, e.g.:
-```bash
-harpy-utils check-bam
-```
+might be useful too. Each of these utilities are accessible with the `harpy-utils` prefix, e.g., `harpy-utils check-bam`.
+
 You can call up the docstring for any one of these utilities by calling the program without any arguments.
 You can view all the utilities by calling the docstring of `harpy-utils` itself.
 

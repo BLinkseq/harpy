@@ -34,7 +34,7 @@ download the website templates/assets if necessary, then start a local liveserve
 harpy report live <options> DIRECTORY
 ```
 
-{.compact .clean}
+
 | argument             | default | description                                                           |
 | :------------------- | :-----: | :-------------------------------------------------------------------- |
 | `DIRECTORY`          |   `.`   | Path of where to setup configs and launch server                      |
@@ -74,7 +74,7 @@ files, but will lack the nicer features and formatting of the intended Jupyter-B
 harpy report static <options> NOTEBOOKS
 ```
 
-{.compact .clean}
+
 | argument                | default | description                                                   |
 | :---------------------- | :-----: | :------------------------------------------------------------ |
 | `NOTEBOOKS`             |         | Paths to ipynb files (expected to already have been executed) |

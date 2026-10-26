@@ -1,17 +1,13 @@
 ---
 title: Common Issues
-icon: bug
 ---
 
-# :icon-bug: Common Issues
-
 ## imputation or phasing failure
-If you use `bamutils clipOverlap` on alignments that are used for the [!badge corners="pill" text="impute"](/Commands/impute.md) or
-[!badge corners="pill" text="phase"](/Commands/Phase/phase_snp.md) modules, they will cause both programs to error. We don't know why, but they do.
+If you use `bamutils clipOverlap` on alignments that are used for the `impute` or
+`snp phase` modules, they will cause both programs to error. We don't know why, but they do.
 
 **Solution**: Do not clip overlapping alignments for bam files you intend to use for
-the [!badge corners="pill" text="impute"](/Commands/impute.md) or
-[!badge corners="pill" text="phase"](/Commands/Phase/phase_snp.md) modules. Harpy does not clip overlapping alignments, so
+the `impute` or `phase snp` commands. Harpy does not clip overlapping alignments, so
 alignments produced by Harpy should work just fine.
 
 ## SAM name and ID mismatch
@@ -24,7 +20,7 @@ Harpy will check for this and will preemtively warn you of a mismatch between fi
 sample name. Due to certain expectations of the workflow, this mismatch will absolutely cause things
 to fail, hence the pre-flight check.
 
-**Solution**: If you need to rename a bam file, do so using the [rename_bam](../utilities.md#rename-bam) script bundled with Harpy, which is a just a thin veneer over `samtools addreplacerg` with some extra validations.
+**Solution**: If you need to rename a bam file, do so using the [rename_bam](../../getting-started/utilities#rename-bam) script bundled with Harpy, which is a just a thin veneer over `samtools addreplacerg` with some extra validations.
 ```bash
 rename_bam newname input.bam 
 ```
