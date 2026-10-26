@@ -1,3 +1,6 @@
 [submodule "djinn"]
 	path = djinn
 	url = https://github.com/BLinkseq/djinn.git
+[submodule "demuxolotl"]
+	path = demuxolotl
+	url = https://github.com/BLinkseq/demuxolotl.git
