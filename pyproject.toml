@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=80"]
+requires = ["setuptools>=80", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -52,8 +52,6 @@ altair = ">=6.0.0,<7"
 bcftools = ">=1.23"
 click = ">=8.2"
 conda = ">=24.8"
-djinn = ">=2.4"
-go = ">=1.26.5,<2"
 htslib = "1.23.*"
 ipykernel = ">=7.3.0,<8"
 jupyter-book = ">=2.1.0,<3"
@@ -72,11 +70,15 @@ vl-convert-python = ">=2.0.0rc1,<3"
 [tool.pixi.pypi-dependencies]
 harpy = { path = ".", editable = true }
 
+[tool.pixi.environments.build.dependencies]
+go = ">=1.26.5,<2"   # for djinn and demuxolotl
+
 [tool.pixi.activation]
 env = { JUPYTER_NOTARY_DB = ":memory:" }
 scripts = ["resources/register-kernel.sh", "resources/shell_completion.sh"]
 
 [tool.pixi.tasks]
-build-demux         = {cmd = "go build -C harpy/utils/demuxolotl -o $CONDA_PREFIX/bin/demuxolotl -ldflags='-s -w'"}
-completion          = {cmd = "bash resources/generate_completion.sh $CONDA_PREFIX python"}
-build = {depends-on = ["build-demux", "completion"]}
+build            = {depends-on = ["build-demuxolotl", "build-djinn", "completion"]}
+completion       = {cmd = "bash resources/generate_completion.sh $CONDA_PREFIX python"}
+build-djinn      = {cmd = "go build -C demuxolotl -o $CONDA_PREFIX/bin/demuxolotl -ldflags='-s -w'", default-environment = "build"}
+build-demuxolotl = {cmd = "go build -C djinn -o $CONDA_PREFIX/bin/djinn -ldflags='-s -w'", default-environment = "build"}

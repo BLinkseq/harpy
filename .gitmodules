@@ -1,3 +1,6 @@
 [submodule "harpy/utils/demuxolotl"]
 	path = harpy/demuxolotl
 	url = https://github.com/BLinkseq/demuxolotl.git
+[submodule "djinn"]
+	path = djinn
+	url = https://github.com/BLinkseq/djinn.git

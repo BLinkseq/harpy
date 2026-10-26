@@ -9,7 +9,10 @@ for _program in harpy harpy-utils hv; do
 done
 
 ## build Go binaries
-go build -C harpy/utils/demoxolotl -o $PREFIX/bin/demoxolotl -ldflags='-s -w'
+{
+  go build -C djinn -o $PREFIX/bin/djinn -ldflags='-s -w'
+  go build -C demoxolotl -o $PREFIX/bin/demoxolotl -ldflags='-s -w'
+}
 
 ## activate/deactive processes
 mkdir -p $PREFIX/etc/conda/activate.d

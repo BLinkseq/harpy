@@ -13,9 +13,15 @@ mkdir -p ${CONDA_PREFIX}/bin
 pip install --no-deps --disable-pip-version-check -e . && rm -rf build
 
 # shell completion scripts (bash, zsh, fish), sourced on activation
-bash resources/generate_completion.sh "${CONDA_PREFIX}" python
-mkdir -p "${CONDA_PREFIX}/etc/conda/activate.d"
-cp resources/shell_completion.sh "${CONDA_PREFIX}/etc/conda/activate.d/harpy-completion.sh"
-cp resources/shell_completion.fish "${CONDA_PREFIX}/etc/conda/activate.d/harpy-completion.fish"
+{
+    bash resources/generate_completion.sh "${CONDA_PREFIX}" python
+    mkdir -p "${CONDA_PREFIX}/etc/conda/activate.d"
+    cp resources/shell_completion.sh "${CONDA_PREFIX}/etc/conda/activate.d/harpy-completion.sh"
+    cp resources/shell_completion.fish "${CONDA_PREFIX}/etc/conda/activate.d/harpy-completion.fish"
+}
 
-go build -C harpy/utils/demoxolotl -o $CONDA_PREFIX/bin/demoxolotl -ldflags='-s -w'
+# Go-based binaries
+{
+    go build -C demoxolotl -o $CONDA_PREFIX/bin/demoxolotl -ldflags='-s -w'
+    go build -C djinn -o $CONDA_PREFIX/bin/djinn -ldflags='-s -w'
+}
