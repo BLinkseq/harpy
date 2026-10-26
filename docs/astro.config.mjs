@@ -43,7 +43,7 @@ export default defineConfig({
           {
             label: 'Getting Started',
             link: '/getting-started/install',
-            icon: 'open-book',
+            icon: 'information',
             items: [
               {
                 label: 'Getting Started',
@@ -56,7 +56,7 @@ export default defineConfig({
           {
             label: 'Commands',
             link: '/commands/',
-            icon: 'information',
+            icon: 'seti:html',
             items: [
               {
                 label: 'Commands',
@@ -69,7 +69,7 @@ export default defineConfig({
           {
             label: 'Guides',
             link: '/guides/',
-            icon: 'information',
+            icon: 'open-book',
             items: [
               {
                 label: 'Guides',
@@ -82,7 +82,7 @@ export default defineConfig({
           {
             label: 'Troubleshoot',
             link: '/troubleshoot/',
-            icon: 'information',
+            icon: 'warning',
             items: [
               {
                 label: 'Troubleshoot',
