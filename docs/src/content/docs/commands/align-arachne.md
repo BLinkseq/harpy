@@ -42,7 +42,7 @@ In addition to the [common runtime options](../../getting-started/common-options
 | argument     | default  | description                                                                                                                                     |
 | :------------------------------- | :--------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REFERENCE`                      |                              | <Badge variant="tip" text="required"/> Reference assembly for read mapping                                                                     |
-| `INPUTS`                         |                              | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
+| `INPUTS`                         |                              | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](/getting-started/common-options#input-arguments) |
 | `-depth-window` `-w`             |           `50000`            | Interval size (in bp) for depth stats                                                                                                           |
 | `--extra-params` `-x`            |                              | Additional BWA arguments, in quotes                                                                                                             |
 | `--keep-unmapped` `-u`           |            false             | Output unmapped sequences too                                                                                                                   |

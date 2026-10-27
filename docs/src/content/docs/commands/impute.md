@@ -39,7 +39,7 @@ tasks yourself prior to running the [!badge corners="pill" text="impute"] module
 After variants have been called, you may want to impute missing genotypes to get the
 most from your data. Harpy uses `STITCH` to impute genotypes, a haplotype-based
 method that is linked-read aware. Imputing genotypes requires a variant call file 
-**containing SNPs**, such as that produced by [!badge corners="pill" text="harpy snp"](snp.md) and preferably [filtered in some capacity](/Getting_Started/Guides/filtering_snps.md).
+**containing SNPs**, such as that produced by [!badge corners="pill" text="harpy snp"](snp.md) and preferably [filtered in some capacity](/getting-started/guides/filtering_snps.md).
 You can impute genotypes with Harpy using the [!badge corners="pill" text="impute"] module:
 ```bash usage
 harpy impute OPTIONS... PARAMETERS VCF INPUTS...
@@ -70,7 +70,7 @@ In addition to the [common runtime options](../../getting-started/common-options
 | :----------------------------- | :---------------------------: | :---------------------------------------------------------------------------------------------------------------------------- |
 | `PARAMETERS`                   |                               | <Badge variant="tip" text="required"/> STITCH [parameter file](#parameter-file) (tab-delimited)                              |
 | `VCF`                          |                               | <Badge variant="tip" text="required"/> Path to VCF/BCF file                                                                  |
-| `INPUTS`                       |                               | <Badge variant="tip" text="required"/> Files or directories containing [input BAM files](/Getting_Started/common_options.md) |
+| `INPUTS`                       |                               | <Badge variant="tip" text="required"/> Files or directories containing [input BAM files](/getting-started/common-options) |
 | `--extra-params` `-x`          |                               | Extra arguments to add to STITCH, provided in quotes                                                                          |
 | `--grid-size` `-g`             |         `1` (per-snp)         | Perform imputation in windows of a specific size, instead of per-SNP                                                          |
 | `--vcf-samples`, `-V`          |                               | Use samples present in vcf file for imputation rather than those found the directory ([see below](#prioritize-the-vcf-file))  |
@@ -219,7 +219,7 @@ table serves as an overview of the parameters.
 
 ----
 ## Imputation Workflow
-+++ :icon-git-merge: details
+<TabItem label="details">
 [STITCH](https://github.com/rwdavies/STITCH) is a genotype imputation software developed for use in
 the R programming language. It has quite a few model parameters that can be tweaked, but HARPY only
 focuses on a small handful that have the largest impact on the quality of the results. Imputation is

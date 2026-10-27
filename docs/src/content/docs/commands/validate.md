@@ -51,7 +51,7 @@ In addition to the [common runtime options](../../getting-started/common-options
 
 | argument     | description                                                                                                                                            |
 | :------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `INPUTS`                         | <Badge variant="tip" text="required"/> Files or directories containing [input fastq or bam files](/Getting_Started/common_options.md#input-arguments) |
+| `INPUTS`                         | <Badge variant="tip" text="required"/> Files or directories containing [input fastq or bam files](/getting-started/common-options#input-arguments) |
 
 ## Workflow
 

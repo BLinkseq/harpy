@@ -93,7 +93,7 @@ or considerably more when `N` nucleotides are present.
 
 ---
 ### Workflow
-+++ :icon-git-merge: details
+<TabItem label="details">
 
 ```mermaid
 graph LR
@@ -221,7 +221,7 @@ Sample03    C03
 
 ---
 ### Workflow
-+++ :icon-git-merge: details
+<TabItem label="details">
 
 ```mermaid
 graph LR

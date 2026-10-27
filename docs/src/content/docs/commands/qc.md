@@ -11,7 +11,7 @@ order: 4
 
 ===  <Accordion title="📝 You will need">
 - at least 2 cores/threads available
-- paired-end [fastq](/Getting_Started/inputformat.md/#naming-conventions) sequence files [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
+- paired-end [fastq](/getting-started/inputformat.md/#naming-conventions) sequence files [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
     - **sample names**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
     - **forward**: [!badge variant="success" text="_F"] [!badge variant="success" text=".F"] [!badge variant="success" text=".1"] [!badge variant="success" text="_1"] [!badge variant="success" text="_R1_001"] [!badge variant="success" text=".R1_001"] [!badge variant="success" text="_R1"] [!badge variant="success" text=".R1"] 
     - **reverse**: [!badge variant="success" text="_R"] [!badge variant="success" text=".R"] [!badge variant="success" text=".2"] [!badge variant="success" text="_2"] [!badge variant="success" text="_R2_001"] [!badge variant="success" text=".R2_001"] [!badge variant="success" text="_R2"] [!badge variant="success" text=".R2"] 
@@ -37,7 +37,7 @@ In addition to the [common runtime options](../../getting-started/common-options
 
 | argument       | default    | description                                                                                                                                     |
 | :--------------------------------- | :----------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `INPUTS`                           |                                | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
+| `INPUTS`                           |                                | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](/getting-started/common-options#input-arguments) |
 | `--deduplicate` `-d`               |                                | Identify and remove PCR duplicates                                                                                                              |
 | `--extra-params` `-x`              |                                | Additional fastp arguments, in quotes                                                                                                           |
 | `--length` `-l`                    |            `30,150`            | [Minimum,Maximum] read lengths                                                                                                                    |
@@ -79,7 +79,7 @@ harpy qc -l 30,150 -x "--max_len2 125" -a data/fastq/
 
 ---
 ## QC Workflow
-+++ :icon-git-merge: details
+<TabItem label="details">
 [Fastp](https://github.com/OpenGene/fastp) is an ultra-fast all-in-one adapter remover, deduplicator, 
 and quality trimmer. Harpy uses it to remove adapters, low-quality bases, and trim sequences down to a particular
 length (default 150bp). Harpy uses the fastp overlap analysis to identify adapters for removal and a sliding window

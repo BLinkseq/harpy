@@ -64,7 +64,7 @@ In addition to the [common runtime options](../../getting-started/common-options
 | argument     | default  | description                                                                                                                                   |
 | :------------------------------- | :--------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REFERENCE`                      |                              | <Badge variant="tip" text="required"/> Reference genome used for variant calling                                                             |
-| `INPUTS`                         |                              | <Badge variant="tip" text="required"/> Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments) |
+| `INPUTS`                         |                              | <Badge variant="tip" text="required"/> Files or directories containing [input BAM files](/getting-started/common-options#input-arguments) |
 | `--extra-params` `-x`            |                              | Additional mpileup/freebayes arguments, in quotes                                                                                             |
 | `--ploidy` `-n`                  |             `2`              | Ploidy of samples                                                                                                                             |
 | `--populations` `-p`             |                              | Tab-delimited file of sample\<*tab*\>group                                                                                                    |
@@ -131,7 +131,7 @@ have reason to believe there is a biologically meaningful grouping scheme to you
 it.
 
 ## SNP calling workflow
-+++ :icon-git-merge: details
+<TabItem label="details">
 The workflow is parallelized over genomic intervals (`--regions`). All intermediate outputs are removed, leaving 
 you only the raw variants file (in `.bcf` format), the index of that file, and some stats about it.
 

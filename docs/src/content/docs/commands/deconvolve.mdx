@@ -1,0 +1,65 @@
+---
+title: deconvolve
+---
+import { Badge, Tabs, TabItem } from '@astrojs/starlight/components';
+import Accordion from '@/components/Accordion.astro';
+
+Resolve barcodes shared by different molecules
+
+<Accordion title="📝 You will need">
+- paired-end reads from an Illumina sequencer in FASTQ format <Badge text="gzipped recommended"/>
+    - **sample name**: <Badge variant="success" text="a-z"/> <Badge variant="success" text="0-9"/> <Badge variant="success" text="."/> <Badge variant="success" text="_"/> <Badge variant="success" text="-"/> <Badge  text="case insensitive"/>
+    - **forward**: <Badge variant="success" text="_F"/> <Badge variant="success" text=".F"/> <Badge variant="success" text=".1"/> <Badge variant="success" text="_1"/> <Badge variant="success" text="_R1_001"/> <Badge variant="success" text=".R1_001"/> <Badge variant="success" text="_R1"/> <Badge variant="success" text=".R1"/> 
+    - **reverse**: <Badge variant="success" text="_R"/> <Badge variant="success" text=".R"/> <Badge variant="success" text=".2"/> <Badge variant="success" text="_2"/> <Badge variant="success" text="_R2_001"/> <Badge variant="success" text=".R2_001"/> <Badge variant="success" text="_R2"/> <Badge variant="success" text=".R2"/> 
+    - **fastq extension**: <Badge variant="success" text=".fq"/> <Badge variant="success" text=".fastq"/> <Badge text="case insensitive"/>
+    - **barcode**: must be the terminal comment in the FASTQ header
+</Accordion>
+<Accordion title="Is deconvolution necessary?">
+
+The importance of doing barcode deconvolution at the FASTQ stage varies based on your goals. This table, by no means
+exhaustive, outlines if you should invest in it:
+
+
+| goal        | necessary?                                      |
+| :---------- | :---------------------------------------------- |
+| alignment   | no, downstream software deconvolutes internally |
+| assembly    | yes                                             |
+| imputation  | no, performs  internally                        |
+| metassembly | yes                                             |
+| phasing     | no, performs  internally                        |
+| preprocess  | no, barcodes not yet identified                 |
+| qc          | no, barcode information not used                |
+| SNP calling | no, barcode information not used                |
+| SV calling  | no, performs  internally                        |
+
+</Accordion>
+
+This workflow uses a reference-free method, [QuickDeconvolution](https://github.com/RolandFaure/QuickDeconvolution), 
+which uses k-mers to look at "read clouds" (all reads with the same linked-read barcode) and decide which ones likely originate
+from different molecules. Being a reference-free method, QuickDeconvolution reads all the sequences into memory, so it
+can require quite a bit of RAM. More threads will increase RAM demand.
+
+```bash title="Usage"
+harpy deconvolve OPTIONS... INPUTS...
+```
+
+```bash title="Example: deconvolve with default parameters"
+harpy deconvolve path/to/data/*.fq
+```
+
+## Running Options
+
+| argument             | default | description                                                                                                                                    |
+| :------------------- | :-----: | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| `INPUTS`             |         | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](../../getting-started/common-options#input-arguments) |
+| `--density` `-d`     |   `3`   | On average, 1/(2^d) kmers are indexed                                                                                                  |
+| `--dropout` `-a`     |   `0`   | Minimum cloud size to deconvolve                                                                                                               |
+| `--kmer-length` `-k` |  `21`   | Size of k-mers to search for similarities                                                                                                      |
+| `--window-size` `-w` |  `40`   | Size of window guaranteed to contain at least one kmer                                                                                         |
+
+## Resulting Barcodes
+After deconvolution, some barcodes may have a hyphenated suffix like `-1` or `-2` (e.g. `A01C33B41D93-1`).
+This is how deconvolution methods create unique variants of barcodes to denote that identical barcodes
+do not come from the same original molecules. QuickDeconvolution adds the `-0` suffix to barcodes it was unable
+to deconvolve.
+

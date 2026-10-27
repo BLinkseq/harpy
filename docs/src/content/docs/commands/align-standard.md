@@ -35,7 +35,7 @@ In addition to the [common runtime options](../../getting-started/common-options
 | argument     | default  | description                                                                                                                                     |
 | :------------------------------- | :--------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REFERENCE`                      |                              | <Badge variant="tip" text="required"/> Reference assembly for read mapping                                                                     |
-| `INPUTS`                         |                              | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
+| `INPUTS`                         |                              | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](/getting-started/common-options#input-arguments) |
 | `-depth-window` `-w`             |           `50000`            | Interval size (in bp) for depth stats                                                                                                           |
 | `--extra-params` `-x`            |                              | Additional aligner-specific arguments, in quotes                                                                                                |
 | `--keep-unmapped` `-u`           |            false             | Output unmapped sequences too                                                                                                                   |
@@ -168,7 +168,7 @@ The default output directory is `Align/{aligner}` with the folder structure belo
 +++
 
 ==- minibwa
-+++ :icon-git-merge: details
+<TabItem label="details">
 - ignores barcode information (but retains in output) 
 - fast and accurate
 
@@ -220,7 +220,7 @@ Below is a list of all `minibwa map` command line arguments, excluding those Har
 +++
 
 ==- strobealign
-+++ :icon-git-merge: details
+<TabItem label="details">
 - ignores barcode information (but retains in output) 
 - [as-good-or-better accuracy](https://github.com/ksahlin/strobealign/blob/main/evaluation.md) to BWA MEM for sequences greater than 100bp
     - accuracy may be lower for sequences shorter than 100bp
@@ -266,7 +266,7 @@ Below is a list of all `strobealign` command line arguments, excluding those Har
 +++
 
 ==- minimap2
-+++ :icon-git-merge: details
+<TabItem label="details">
 - ignores barcode information (but retains in output) 
 - ultra-fast
 - highly tuned for long-read data
