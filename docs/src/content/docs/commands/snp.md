@@ -57,7 +57,7 @@ harpy snp mpileup --threads 20 genome.fasta Align/bwa
 harpy snp freebayes --threads 20 genome.fasta Align/bwa
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](../Getting_Started/common_options.md), the [!badge corners="pill" text="snp"] module is configured using these command-line arguments:
 
 
@@ -130,7 +130,7 @@ Grouping samples changes the way the variant callers computes certain statistics
 have reason to believe there is a biologically meaningful grouping scheme to your samples, then you should include
 it.
 
-## :icon-git-pull-request: SNP calling workflow
+## SNP calling workflow
 +++ :icon-git-merge: details
 The workflow is parallelized over genomic intervals (`--regions`). All intermediate outputs are removed, leaving 
 you only the raw variants file (in `.bcf` format), the index of that file, and some stats about it.
@@ -163,7 +163,7 @@ graph LR
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
 
-+++ :icon-file-directory: snp output
++++ snp output
 The default output directory is `SNP/mpileup` or `SNP/freebayes`(depending on workflow) with the folder structure below.
 Below, `contig1` and `contig2` are generic contig names from an imaginary `genome.fasta` for demonstration purposes.
 The resulting folder also includes a `workflow` directory (not shown) with workflow-relevant runtime files and information.
@@ -198,7 +198,7 @@ SNP/method
 | `logs/samples.names`           | list of sample names associated with alignment files used for variant calling            |
 | `reports/variants.*.ipynb`     | report summarizing variants                                                              |
 
-+++ :icon-code-square: mpileup parameters
++++  mpileup parameters
 By default, Harpy runs `mpileup` with these parameters (excluding inputs and outputs):
 ```bash
 bcftools mpileup --region contigname:START-END --annotate AD --output-type b --ploidy ploidy
@@ -207,7 +207,7 @@ bcftools mpileup --region contigname:START-END --annotate AD --output-type b --p
 The mpileup module of samtools has *a lot* of command line options. Listing them all here would be difficult to read, therefore please
 refer to the [mpileup documentation](http://www.htslib.org/doc/samtools-mpileup.html#OPTIONS) to explore ways to configure your mpileup run.
 
-+++ :icon-code-square: freebayes parameters
++++  freebayes parameters
 By default, Harpy runs `freebayes` with these parameters (excluding inputs and outputs):
 ```bash
 freebayes -f genome.fasta -r contigname:START-END -L bam.list -p ploidy

@@ -62,7 +62,7 @@ harpy template impute > stitch.params
 harpy impute --threads 20 --vcf-samples stitch.params data/variants.bcf data/*.bam
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="impute"] module is configured using these command-line arguments:
 
 
@@ -218,7 +218,7 @@ table serves as an overview of the parameters.
 +++
 
 ----
-## :icon-git-pull-request: Imputation Workflow
+## Imputation Workflow
 +++ :icon-git-merge: details
 [STITCH](https://github.com/rwdavies/STITCH) is a genotype imputation software developed for use in
 the R programming language. It has quite a few model parameters that can be tweaked, but HARPY only
@@ -248,7 +248,7 @@ graph LR
     style Inputs fill:#f0f0f0,stroke:#e8e8e8,stroke-width:2px,rx:10px,ry:10px
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
-+++ :icon-file-directory: impute output
++++ impute output
 The default output directory is `Impute` with the folder structure below. `contig1` and `contig2` 
 are generic contig names from an imaginary `genome.fasta` for demonstration purposes. The directory `modelname`
 is a placeholder for whatever `name` you gave that parameter set in the parameter file's `name` column.
@@ -282,7 +282,7 @@ Impute/
 | `modelname/contigs/*.vcf.gz`                | variants resulting from imputation                          |
 | `modelname/contigs/*.vcf.gz.tbi`            | index of variant file                                       |
 
-+++ :icon-code-square: STITCH parameters
++++  STITCH parameters
 While you are expected to run STITCH using your own set of 
 configurable parameters as described in the section below, Harpy 
 also runs STITCH with a few fixed parameters:

@@ -27,7 +27,7 @@ harpy metassembly OPTIONS... FASTQ_R1 FASTQ_R2
 harpy metassembly --threads 20 -u prokaryote -k 13,51,75,83 reads.R1.fq reads.R2.fq
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="metassembly"] module is configured using these command-line arguments:
 
 
@@ -51,7 +51,7 @@ sharing the [linked read] barcode `A03C45B11D91` would have one of them recoded 
 like [QuickDeconvolution](https://github.com/RolandFaure/QuickDeconvolution), which is used by [!badge corners="pill" text="deconvolve"](deconvolve.md) will parse
 your fastq input files and perform this deconvolution.
 
-## :icon-git-pull-request: Metassembly Workflow
+## Metassembly Workflow
 +++ :icon-git-merge: details
 Initial assembly is performed with [spades](http://ablab.github.io/spades/) or [cloudspades](https://github.com/ablab/spades/tree/cloudspades-ismb)
 depending on whether `--ignore-bx` was used. After the initial spades-based assembly,
@@ -80,7 +80,7 @@ graph LR
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
 
-+++ :icon-file-directory: metassembly output
++++ metassembly output
 The default output directory is `Metassembly` with the folder structure below. If `--ignore-bx` is used, the initial
 spades assembly will be in `*/spades_assembly`, otherwise it will be in `*/cloudspades_assembly`. Using `--skip-reports`
 will skip the QUAST/BUSCO analysis as well. The file structure below isn't exhaustive and serves to highlight the general
@@ -115,7 +115,7 @@ Metassembly/
 | `*spades_assembly/`              | directory with the SPADES output                                              |
 | `*spades_assembly/contigs.fasta` | the resulting primary assembly                                                |
 
-+++ :icon-code-square: SPADES parameters
++++  SPADES parameters
 By default, Harpy runs `spades` with these parameters (excluding inputs and outputs):
 ```bash
 spades.py --meta -t threads -m mem -k k --gemcode1-1 FQ_R1 --gemcode1-2 FQ_R2

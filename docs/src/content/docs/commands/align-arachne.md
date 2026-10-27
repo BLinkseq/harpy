@@ -1,13 +1,10 @@
 ---
-title: arachne
-description: Align sequences using linked-read information with arachne
-category: [linked-read]
-tags: [linked-read]
-icon: dot
-order: 5
+title: Align sequences using linked-read information
+sidebar:
+    label: align arachne
 ---
 
-# :icon-quote: align with linked-read information
+
 Arachne is the successor to lariat, the linked-read aware aligner
 originally developed by 10X Genomics. It incorporates linked-read information
 to better place alignments, which tends to show improvement when aligning over
@@ -38,7 +35,7 @@ harpy align arachne OPTIONS... REFERENCE INPUTS...
 harpy align arachne genome.fasta Sequences/ 
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="align bwa"]/[!badge corners="pill" text="align strobe"] modules are configured using these command-line arguments:
 
 

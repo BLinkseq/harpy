@@ -1,13 +1,9 @@
 ---
-title: bwa/strobe/minimap
-description: Align sequences with minibwa / strobealign /minimap2
-category: [linked-read, wgs]
-tags: [linked-read, wgs]
-icon: dot
-order: 5
+title: Align sequences without linked-read information
+sidebar:
+    label: align wgs
 ---
 
-# :icon-quote: align without linked-read information
 The process and commands for using minibwa, strobealign, and minimap2 are identical and consolidated here.
 
 ===  :icon-checklist: You will need
@@ -32,7 +28,7 @@ harpy align bwa|stobe|minimap OPTIONS... REFERENCE INPUTS...
 harpy align bwa genome.fasta Sequences/ 
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="align bwa"]/[!badge corners="pill" text="align strobe"] modules are configured using these command-line arguments:
 
 
@@ -106,10 +102,10 @@ alignments as duplicates if the primary alignment was marked as a duplicate. Dup
 
 ----
 
-## :icon-git-pull-request: Workflows
+## Workflows
 Regardless of which aligner you choose, the workflows are mostly identical:
 
-+++ :icon-git-pull-request: workflow
++++ workflow
 ```mermaid
 graph LR
     A([index genome]):::clean --> B([align to genome]):::clean
@@ -135,20 +131,20 @@ graph LR
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
 
-+++ :icon-file-directory: output
++++ output
 The default output directory is `Align/{aligner}` with the folder structure below.
 `Sample1` is a generic sample name for demonstration purposes. The resulting folder also includes a `workflow` directory
 (not shown) with workflow-relevant runtime files and information.
 
 {.list-icon}
-- :icon-file-directory: Align/{aligner}
-  - :icon-file-directory: aligned
+- Align/{aligner}
+  - aligned
     - :icon-file: Sample1.bam
-  - :icon-file-directory: logs
-  - :icon-file-directory: reports
-    - :icon-file-directory: data
-      - :icon-file-directory: lrsats
-      - :icon-file-directory: coverage
+  - logs
+  - reports
+    - data
+      - lrsats
+      - coverage
     - :icon-file: barcodes.summary.ipynb
     - :icon-file: {aligner}.summary.ipynb
     - :icon-file: Sample1.ipynb
@@ -180,7 +176,7 @@ The [bwa](https://github.com/lh3/minibwa) workflow maps all reads against the re
 Duplicates are marked using `samtools markdup`. The `BX:Z` tags in the read headers are still added to the alignment headers, even though barcodes
 are not used to inform mapping. The `-d` threshold is used for calculating statistics.
 
-+++ :icon-code-square: minbwa parameters
++++  minbwa parameters
 By default, Harpy runs `minibwa` with these parameters (excluding inputs and outputs):
 ```bash
 minibwa map -y -x sr -R "@RG\tID:samplename\tSM:samplename"
@@ -232,7 +228,7 @@ Below is a list of all `minibwa map` command line arguments, excluding those Har
 The `BX:Z` tags in the read headers are still added to the alignment headers, even though barcodes
 are not used to inform mapping. The `-d` threshold is used for alignment molecule assignment.
 
-+++ :icon-code-square: strobealign parameters
++++  strobealign parameters
 By default, Harpy runs `strobealign` with these parameters (excluding inputs and outputs):
 ```bash
 strobealign [--use-index -r ...] -t THREADS -U -C --rg-id={sample} --rg=SM:{sample}
@@ -281,7 +277,7 @@ The `BX:Z` tags in the read headers are still added to the alignment headers, ev
 are not used to inform mapping. The `-d` threshold is used for alignment molecule assignment.
 
 
-+++ :icon-code-square: minimap2 parameters
++++  minimap2 parameters
 By default, Harpy runs `minimap2` with these parameters (excluding inputs and outputs):
 ```bash
 minimap2 -t {threads} -a --MD -y -x map-{technology} -R "@RG\tID:samplename\tSM:samplename"

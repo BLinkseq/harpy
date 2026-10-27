@@ -1,20 +1,15 @@
 ---
 title: Software Management
-author: 
-  - name: Pavel Dimens
-    avatar: https://cals.cornell.edu/sites/default/files/styles/faculty/public/2024-09/afs-headshot-high-res-2cropped_0.jpg
-date: 2024-06-21
-category: guides
-description: Deciding between using Conda or Containers
-icon: container
-image: https://visualpharm.com/assets/917/Docker-595b40b65ba036ed117d3f62.svg
 ---
+import { Card } from '@astrojs/starlight/components';
+import Accordion from '@/components/Accordion.astro';
 
-## TL;DR
+<Card title="TL;DR">
 - container is more likely to work on all systems, but much slower
   - `Apptainer` (what Snakemake uses) is only available on Linux systems
 - conda is quicker and better for troubleshooting, but may have unexpected errors
   - but works on any operation system, assuming it's installed
+</Card>
 
 There are two ways you can run Harpy, using a container with the necessary
 software environments in it (`--container`), or with local conda environments
@@ -38,7 +33,7 @@ workflows generate. Snakemake will make environments of those recipes, then jump
 environments as dictated by the software needs of any given job (given in 
 the `conda:` directive  within a rule). Those local environments live inside 
 `.environments/wildhashnumber`, with auto-generated names reflecting the 
-hash of the environment (e.g. `.environments/21ceb8c2fe7dd21206ab90c2af8f847f_`).
+hash of the environment (e.g., `.environments/21ceb8c2fe7dd21206ab90c2af8f847f_`).
 
 **But**, those environments need to be created at runtime if they don't 
 already exist in `.environments/`, so Harpy (technically Snakemake) will install 
@@ -53,7 +48,7 @@ Snakemake officially integrates Pixi into workflow management, Harpy will make t
 shift shortly after.
 
 ## Harpy and Containers
-==- Containers, a Primer
+<Accordion title="Containers, a Primer">
 If you aren't sure exactly what containers are, great, we aren't either! But
 here's what we do know: it's a tiny mountable file containing an entire
 operating system and whatever other bits you might need. Creating containers
@@ -62,14 +57,14 @@ container) and adds "layers" of modifications to that base image. Imagine a
 simple recipe where you declare a base image of a minimal Ubuntu 22 system 
 and your "layer" (modification) is installing a program into it using `sudo apt install ...`. You could then use this container as the "environment" to
 run particular things with the software you installed into it.
-===
+</Accordion>
 
 Harpy is distributed with Bioconda and every conda package in Bioconda has a corresponding Docker BioContainer automatically created and uploaded to Quay.io. You can find it [here](https://quay.io/repository/biocontainers/harpy)
 
 ## What's the Catch?
 While local conda enviroments at runtime or containers might seem like  foolproof approaches, there are drawbacks.
 
-###  Conda Caveats:
+##  Conda Caveats
 #### ⚠️ Conda Caveat 1: Inconsistent
 Despite our and conda's best efforts, sometimes programs just don't install 
 correctly on some systems due to unexpected system (or conda) configurations.

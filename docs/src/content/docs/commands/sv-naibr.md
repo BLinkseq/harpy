@@ -1,13 +1,8 @@
 ---
-title: naibr
-description: Call structural variants using NAIBR (plus)
-category: [linked-read]
-tags: [linked-read]
-icon: dot
-order: 1
+title: Call structural variants using NAIBR
+sidebar:
+    label: sv naibr
 ---
-
-# :icon-sliders: sv naibr
 
 ===  :icon-checklist: You will need
 - at least 4 cores/threads available
@@ -24,7 +19,7 @@ This file is optional and only useful if you want variant calling to happen on a
 - if created with [!badge corners="pill" text="harpy template groupings"](../template.md#groupings), all the samples will be assigned to group `pop1`
     - make sure to edit the second column to reflect your data correctly.
 
-``` example file for --populations
+```txt title="populations.txt"
 sample1 pop1
 sample2 pop1
 sample3 pop2
@@ -63,7 +58,7 @@ harpy sv naibr OPTIONS... REFERENCE INPUTS...
 harpy sv naibr --threads 20 genome.fasta Align/bwa
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="sv naibr"] module is configured using these command-line arguments:
 
 
@@ -100,7 +95,7 @@ group-level variants, if that's what your primary interest is.
 
 ----
 
-## :icon-git-pull-request: NAIBR workflow
+## NAIBR workflow
 +++ :icon-git-merge: details
 [Naibr](https://github.com/raphael-group/NAIBR) is a variant caller that uses linked read barcode information 
 to call structural variants (indels, inversions, etc.) exclusively, meaning it does not call SNPs. The original 
@@ -124,7 +119,7 @@ graph LR
     style id2 fill:#f0f0f0,stroke:#e8e8e8,stroke-width:2px,rx:10px,ry:10px
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
-+++ :icon-file-directory: naibr output
++++ naibr output
 The default output directory is `SV/naibr` with the folder structure below. `sample1` and `sample2` are generic sample 
 names for demonstration purposes.
 The resulting folder also includes a `workflow` directory (not shown) with workflow-relevant runtime files and information.
@@ -170,7 +165,7 @@ SV/naibr
 | `reports/`                      | summary report with interactive plots of detected SV       |
 | `vcf/`                          | the resulting variants, but in `.VCF` format               |
 
-+++ :icon-code-square: naibr parameters
++++  naibr parameters
 By default, Harpy runs `naibr` with these parameters (excluding inputs and outputs):
 ```python
 min_mapq = 30

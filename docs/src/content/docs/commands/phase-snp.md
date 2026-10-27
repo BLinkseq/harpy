@@ -34,7 +34,7 @@ harpy phase snp OPTIONS... VCF INPUTS...
 harpy phase snp --threads 20 Variants/variants.raw.bcf alignments/ 
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="phase"] module is configured using these command-line arguments:
 
 
@@ -78,7 +78,7 @@ low-confidence SNPs from consideration. With Harpy, you configure this value as 
 between 0-100, (_i.e._ `-p 30` is equivalent to a 0.30 threshold, aka 30%).
 
 ---
-## :icon-git-pull-request: Phasing Workflow
+## Phasing Workflow
 +++ :icon-git-merge: details
 Phasing is performed using [HapCut2](https://github.com/vibansal/HapCUT2). Most of the tasks cannot
 be parallelized, but HapCut2 operates on a per-sample basis, so the workflow is parallelized
@@ -106,7 +106,7 @@ graph LR
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
 
-+++ :icon-file-directory: phasing output
++++ phasing output
 The default output directory is `Phase` with the folder structure below. `Sample1` is a generic sample name for demonstration purposes.
 The resulting folder also includes a `workflow` directory (not shown) with workflow-relevant runtime files and information.
 
@@ -157,7 +157,7 @@ Phase/
 | `phaseBlocks/*.blocks*`         | output from HapCut2                                                                      |
 | `phaseBlocks/logs`              | everything HapCut2 prints to `stderr`                                                    |
 
-+++ :icon-code-square: HapCut2 parameters
++++  HapCut2 parameters
 By default, Harpy runs `HAPCUT2` with these parameters (excluding inputs and outputs):
 ```bash
 HAPCUT2 --nf 1 --error_analysis_mode 1 --call_homozygous 1 --outvcf 1

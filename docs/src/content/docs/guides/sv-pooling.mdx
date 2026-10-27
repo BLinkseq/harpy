@@ -1,17 +1,13 @@
 ---
 title: Pooling samples for SV calling
-author: 
-  - name: Pavel Dimens
-    avatar: https://cals.cornell.edu/sites/default/files/styles/faculty/public/2024-09/afs-headshot-high-res-2cropped_0.jpg
-date: 2024-08-01
-category: guides
-description: Why pool samples for SV calling and when to do it
-image: https://visualpharm.com/assets/214/Merge%20Files-595b40b75ba036ed117d8636.svg
 ---
+import { Aside, Card } from '@astrojs/starlight/components';
+import Accordion from '@/components/Accordion.astro';
 
-## TL;DR
+<Card title="TL;DR">
 - Samples can be concatenated together into a single "pool" and have SV called on the pool
 - Pooling samples requires barcode deconvolution
+</Card>
 
 One of the cool benefits of linked-read data is the fact that you
 can call structural variants with it. Depending on the depth of 
@@ -29,7 +25,7 @@ Think of coverage as horizontal and depth as vertical. If depth is given
 as "15X", that means every sequenced genomic position has about 15 sequences
 per position (a.k.a. 15 replicates per locus). For clarity, when we say "depth",
 we are referring to this "vertical" description of replicates per locus.
-![The difference between depth and coverage. The locus on the left would be considered 5X.](/static/depth_coverage.png)
+![The difference between depth and coverage. The locus on the left would be considered 5X.](../../../assets/depth_coverage.png)
 ### Depth, in context
 Historically, one would have wanted to sequence fewer individuals at higher depth
 to get confident genotype calls, rather than sequence more individuals at lower depth.
@@ -65,36 +61,35 @@ get results like these:
 
 Given these results, a sensible pooling strategy may be:
 
-{.compact .clean .whitespace-nowrap}
 | Pool | Sample Locations           |
-| :---:| :------------------------- |
-| 1    | Miramichi                  |
-| 2    | Annapolis                  |
-| 3    | St_Johns                   |
-| 4    | Santee_Cooper              |
-| 5    | Roanoke, Chowan-Blackwater |
-| 6    | Potomac                    |
-| 7    | Delaware                   |
-| 8    | Hudson                     |
-| 9    | Connecticut                |
-| 10   | Merrimack, Kennebec        |
+| :--: | :------------------------- |
+|  1   | Miramichi                  |
+|  2   | Annapolis                  |
+|  3   | St_Johns                   |
+|  4   | Santee_Cooper              |
+|  5   | Roanoke, Chowan-Blackwater |
+|  6   | Potomac                    |
+|  7   | Delaware                   |
+|  8   | Hudson                     |
+|  9   | Connecticut                |
+|  10  | Merrimack, Kennebec        |
 
-!!!danger Do not concatenate manually!
-!!!
+<Aside type="caution" title="Do not concatenate manually!"/>
+
 
 It would seem natural to use `samtools cat` to combine alignment files
-quickly and easily, but **do not do this**. The [!badge corners="pill" text="harpy sv"](/Commands/SV/SV.md)
+quickly and easily, but **do not do this**. The `harpy sv`
 workflows will intelligently concatenate files and will make sure
-every individual will have unique `BX` (or `MI`) values that are not shared with any
+every individual will have unique `BX` values that are not shared with any
 other individual in the pool. If you need to concatenate linked-read alignment files outside
 of a workflow, use [djinn](https://blinkseq.github.io/djinn/) shipped with Harpy
 instead of `samtools cat` or other similar tools.
 
-==- technical explanation
+<Accordion title="Technical explanation">
 Every sample has a set of unique-to-itself barcodes from a pool of all possible barcodes.
 As soon as you do a niave concatenation, you will have barcodes shared between samples.
 This is a problem because it's impossible that reads with one barcode from sample1 and reads
 with that same barcode from sample2 came from the same molecule. A basic concatenation will flood
 the resulting file with clashing BX (or MI) tags, which will make it impossible for a linked-read
 aware SV caller to make sense of the data and do its job well.
-===
+</Accordion>

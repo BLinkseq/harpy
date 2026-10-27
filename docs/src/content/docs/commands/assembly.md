@@ -27,7 +27,7 @@ harpy metassembly OPTIONS... FASTQ_R1 FASTQ_R2
 harpy metassembly --threads 20 -u prokaryote -k 13,51,75,83 data.R1.fq data.R2.fq
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="assembly"]
 module is configured using the command-line arguments below. Since the assembly process consists of several distinct phases,
 the descriptions are provided with an extra badge to reflect which part of the assembly process they correspond to.
@@ -62,7 +62,7 @@ sharing the [linked read] barcode `A03C45B11D91` would have one of them recoded 
 like [QuickDeconvolution](https://github.com/RolandFaure/QuickDeconvolution), which is used by [!badge corners="pill" text="deconvolve"](deconvolve.md) will parse
 your fastq input files and perform this deconvolution.
 
-## :icon-git-pull-request: Assembly Workflow
+## Assembly Workflow
 +++ :icon-git-merge: details
 Initial assembly is performed with [cloudspades](https://github.com/ablab/spades/tree/cloudspades-ismb),
 followed by [tigmint](https://github.com/bcgsc/tigmint), [arcs](https://github.com/bcgsc/arcs),
@@ -89,7 +89,7 @@ graph LR
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
 
-+++ :icon-file-directory: assembly output
++++ assembly output
 The default output directory is `Assembly` with the folder structure below. Using `--skip-reports`
 will skip the QUAST/BUSCO analysis as well. The file structure below isn't exhaustive and serves
 to highlight the general structure and most important outputs.
@@ -123,7 +123,7 @@ Metassembly/
 | `quast/predicted_genes/`        | GLIMMER gene-finding output                                                   |
 | `reports/assembly.metrics.html` | aggregate and generalization of QUAST and BUSCO results                       |
 
-+++ :icon-code-square: SPADES parameters
++++  SPADES parameters
 By default, Harpy runs `spades` with these parameters (excluding inputs and outputs):
 ```bash
 spades.py -t threads -m mem -k k --gemcode1-1 FQ_R1 --gemcode1-2 FQ_R2

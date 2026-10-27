@@ -47,7 +47,7 @@ harpy deconvolve OPTIONS... INPUTS...
 harpy deconvolve path/to/data/*.fq
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 
 | argument   | default | description                                                                                                                                     |
 | :----------------------------- | :-----: | :---------------------------------------------------------------------------------------------------------------------------------------------- |

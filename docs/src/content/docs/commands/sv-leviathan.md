@@ -1,13 +1,12 @@
 ---
-title: leviathan
-description: Call structural variants using Leviathan
+title: Call structural variants using Leviathan
+sidebar:
+    label: sv leviathan
 category: [linked-read]
 tags: [linked-read]
 icon: dot
 order: 1
 ---
-
-# :icon-sliders: sv leviathan
 
 ===  :icon-checklist: You will need
 - at least 4 cores/threads available
@@ -27,7 +26,7 @@ This file is optional and only useful if you want variant calling to happen on a
 - if created with [!badge corners="pill" text="harpy template groupings"](../template.md#groupings), all the samples will be assigned to group `pop1`
     - make sure to edit the second column to reflect your data correctly.
 
-``` example file for --populations
+```txt title="populations.txt"
 sample1 pop1
 sample2 pop1
 sample3 pop2
@@ -57,7 +56,7 @@ harpy sv leviathan OPTIONS... REFERENCE INPUTS...
 harpy sv leviathan --threads 20 -s 90,95,95 genome.fasta Align/bwa
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="sv leviathan"] module is configured using these command-line arguments:
 
 
@@ -103,7 +102,7 @@ it too well.
 
 ----
 
-## :icon-git-pull-request: LEVIATHAN workflow
+## LEVIATHAN workflow
 +++ :icon-git-merge: details
 [Leviathan](https://github.com/morispi/LEVIATHAN) is an alternative variant caller that uses linked read barcode information 
 to call structural variants (indels, inversions, etc.) exclusively, meaning it does not call SNPs. Harpy first uses [LRez](https://github.com/morispi/LRez) to index the barcodes 
@@ -124,7 +123,7 @@ graph LR
     style id2 fill:#f0f0f0,stroke:#e8e8e8,stroke-width:2px,rx:10px,ry:10px
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
-+++ :icon-file-directory: leviathan output
++++ leviathan output
 The default output directory is `SV/leviathan` with the folder structure below. `sample1` and `sample2` are generic sample names for demonstration purposes.
 The resulting folder also includes a `workflow` directory (not shown) with workflow-relevant runtime files and information.
 
@@ -158,7 +157,7 @@ SV/leviathan
 | `reports/`                     | summary report  with interactive plots of detected SV                                    |
 | `vcf/`                         | structural variants identified by LEVIATHAN                                              |
 
-+++ :icon-code-square: leviathan parameters
++++  leviathan parameters
 Below is a list of all `leviathan` command line options, excluding those Harpy already uses or those made redundant by Harpy's implementation of LEVIATHAN.
 These are taken directly from the [LEVIATHAN documentation](https://github.com/morispi/LEVIATHAN).
 ``` LEVIATHAN arguments

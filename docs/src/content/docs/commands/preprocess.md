@@ -51,7 +51,7 @@ harpy preprocess gih OPTIONS... INPUTS
 ```bash title="example | using wildcards"
 harpy preprocess gih --threads 20 data/*R{1,2}.fastq.gz
 ```
-### :icon-terminal: Running Options
+### Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="preprocess meier2021"] module is configured using these command-line arguments:
 
 
@@ -92,7 +92,7 @@ or considerably more when `N` nucleotides are present.
 !!!
 
 ---
-### :icon-git-pull-request: Workflow
+### Workflow
 +++ :icon-git-merge: details
 
 ```mermaid
@@ -104,7 +104,7 @@ graph LR
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
 
-+++ :icon-file-directory: preprocessing output
++++ preprocessing output
 The default output directory is `Preprocess` with the folder structure below. `Sample1` and `Sample2` are
 generic sample names for demonstration purposes. The resulting folder also includes a `workflow` directory
 (not shown) with workflow-relevant runtime files and information.
@@ -156,7 +156,7 @@ harpy preprocess meier2021 OPTIONS... R1_FQ R2_FQ I1_FQ I2_FQ
 ```bash title="example | using wildcards instead of manually writing each file name"
 harpy preprocess meier2021 --threads 20 --schema demux.schema Plate_1_S001_R*.fastq.gz Plate_1_S001_I*.fastq.gz
 ```
-### :icon-terminal: Running Options
+### Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="preprocess meier2021"] module is configured using these command-line arguments:
 
 
@@ -220,7 +220,7 @@ Sample03    C03
 +++
 
 ---
-### :icon-git-pull-request: Workflow
+### Workflow
 +++ :icon-git-merge: details
 
 ```mermaid
@@ -237,7 +237,7 @@ graph LR
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
 
-+++ :icon-file-directory: preprocessing output
++++ preprocessing output
 The default output directory is `Preprocess` with the folder structure below. `Sample1` and `Sample2` are
 generic sample names for demonstration purposes. The resulting folder also includes a `workflow` directory
 (not shown) with workflow-relevant runtime files and information.

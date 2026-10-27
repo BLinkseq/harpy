@@ -41,7 +41,7 @@ harpy phase bam OPTIONS... VCF INPUTS...
 harpy phase bam --threads 10 phased.bcf data/*.bam 
 ```
 
-## :icon-terminal: Running Options
+## Running Options
 In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="phase"] module is configured using these command-line arguments:
 
 
@@ -75,7 +75,7 @@ in favor of it, a distance above `250000` (250kbp) would probably do more harm t
 See [Barcode Thresholds](https://blinkseq.github.io/linkedreads/clashing/#barcode-thresholds) for a more thorough explanation.
 
 ---
-## :icon-git-pull-request: Phasing Workflow
+## Phasing Workflow
 +++ :icon-git-merge: details
 Phasing is performed using [Whatshap](https://github.com/whatshap/whatshap).
 
@@ -90,7 +90,7 @@ graph LR
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```
 
-+++ :icon-file-directory: phasing output
++++ phasing output
 The default output directory is `Phase/bam` with the folder structure below. `Sample1` and `Sample2` are generic sample names
 for demonstration purposes. The resulting folder also includes a `workflow` directory (not shown) with workflow-relevant runtime files and information.
 
@@ -108,7 +108,7 @@ Phase/bam/
 | `phased/*.phased.bam`               | phased alignment file output         |
 | `logs/phasing.summary.log`          | consolidated output of whatshap logs |
 
-+++ :icon-code-square: Whatshap parameters
++++  Whatshap parameters
 By default, Harpy runs `whatshap haplotag` with these parameters (excluding inputs and outputs):
 ```bash
 whatshap haplotag --tag-supplementary copy-primary --no-supplementary-strand-match --supplementary-distance {3 * mol_dist} --ignore-read-groups --skip-missing-contigs
