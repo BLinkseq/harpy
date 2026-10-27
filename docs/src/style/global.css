@@ -7,6 +7,12 @@
   --sl-color-text-accent: #88a6c1ff;
 }
 
+@media (min-width: 72rem) {
+  :root {
+    --sl-content-width: calc(100vw - 2 * var(--sl-sidebar-width) - 6rem);
+  }
+}
+
 .card {
   border: none;
   border-radius: 1.25rem; /* rounder corners, tune to taste */
