@@ -9,13 +9,13 @@ order: 4
 
 # :icon-codescan-checkmark: qc
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 2 cores/threads available
 - paired-end [fastq](/Getting_Started/inputformat.md/#naming-conventions) sequence files [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
-    - **sample names**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] [!badge variant="secondary" text="case insensitive"]
+    - **sample names**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
     - **forward**: [!badge variant="success" text="_F"] [!badge variant="success" text=".F"] [!badge variant="success" text=".1"] [!badge variant="success" text="_1"] [!badge variant="success" text="_R1_001"] [!badge variant="success" text=".R1_001"] [!badge variant="success" text="_R1"] [!badge variant="success" text=".R1"] 
     - **reverse**: [!badge variant="success" text="_R"] [!badge variant="success" text=".R"] [!badge variant="success" text=".2"] [!badge variant="success" text="_2"] [!badge variant="success" text="_R2_001"] [!badge variant="success" text=".R2_001"] [!badge variant="success" text="_R2"] [!badge variant="success" text=".R2"] 
-    - **fastq extension**: [!badge variant="success" text=".fq"] [!badge variant="success" text=".fastq"] [!badge variant="secondary" text="case insensitive"]
+    - **fastq extension**: [!badge variant="success" text=".fq"] [!badge variant="success" text=".fastq"] <Badge  text="case insensitive"/>
 ===
 
 Raw sequences are not suitable for downstream analyses. They have sequencing adapters,
@@ -32,12 +32,12 @@ harpy qc --threads 20 -a auto Sequences_Raw/
 ```
 
 ## Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="qc"] module is configured using these command-line arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="qc"] module is configured using these command-line arguments:
 
 
 | argument       | default    | description                                                                                                                                     |
 | :--------------------------------- | :----------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `INPUTS`                           |                                | [!badge variant="info" text="required"] Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
+| `INPUTS`                           |                                | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
 | `--deduplicate` `-d`               |                                | Identify and remove PCR duplicates                                                                                                              |
 | `--extra-params` `-x`              |                                | Additional fastp arguments, in quotes                                                                                                           |
 | `--length` `-l`                    |            `30,150`            | [Minimum,Maximum] read lengths                                                                                                                    |

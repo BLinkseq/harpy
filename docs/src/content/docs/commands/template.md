@@ -22,7 +22,7 @@ harpy template groupings data/ > samples.groups
 
 | argument  | description                                                                                   |
 | :---------------------------- | :-------------------------------------------------------------------------------------------- |
-| `INPUTS`                      | [!badge variant="info" text="required"] Files or directories containing input FASTQ/BAM files |
+| `INPUTS`                      | <Badge variant="tip" text="required"/> Files or directories containing input FASTQ/BAM files |
 
 This optional file is useful if you want SNP variant calling to happen on a
 per-population level via [!badge corners="pill" text="harpy snp"](snp.md#populations) or on samples

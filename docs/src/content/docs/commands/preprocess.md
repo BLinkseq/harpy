@@ -39,7 +39,7 @@ requires padding so the demultiplexer can start looking for barcodes at a consis
 also requires the removal of the ME sequence after the linked-read barcodes. The preprocessing workflow in Harpy accounts
 for these characteristics, so it does not require user intervention. 
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 2 cores/threads available
 - sample-demultiplexed paired-end reads (R1, R2) from an Illumina sequencer in FASTQ format [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
 ===
@@ -52,12 +52,12 @@ harpy preprocess gih OPTIONS... INPUTS
 harpy preprocess gih --threads 20 data/*R{1,2}.fastq.gz
 ```
 ### Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="preprocess meier2021"] module is configured using these command-line arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="preprocess meier2021"] module is configured using these command-line arguments:
 
 
 | argument    | default   | description                                                                |
 | :------------------------------ | ----------------------------- | :------------------------------------------------------------------------- |
-| `INPUTS`                        |                               | [!badge variant="info" text="required"] The sample FASTQ files (R1 and R2) |
+| `INPUTS`                        |                               | <Badge variant="tip" text="required"/> The sample FASTQ files (R1 and R2) |
 | `--me-seq` `-m`                 | AGATGTGTATAAGAGACAG           | ME sequence to look for                                                    |
 | `--mismatch` `n`                | 2                             | Allow $n$ mismatches in ME sequence                                        |
 
@@ -143,7 +143,7 @@ do **not** demultiplex the sequences. Requires the use of [bcl2fastq](https://su
 `--use-bases-mask=Y151,I13,I13,Y151` and `--create-fastq-for-index-reads`. With Generation I beadtags, the `C` barcode is sample-specific,
 meaning a single sample should have the same `C` barcode for all of its sequences.
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 2 cores/threads available
 - **bulk** paired-end reads from an Illumina sequencer in FASTQ format [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
   - bulk meaning that sample demultiplexing hasn't been done and the FASTQ files are aggregates of all samples in a run
@@ -157,19 +157,19 @@ harpy preprocess meier2021 OPTIONS... R1_FQ R2_FQ I1_FQ I2_FQ
 harpy preprocess meier2021 --threads 20 --schema demux.schema Plate_1_S001_R*.fastq.gz Plate_1_S001_I*.fastq.gz
 ```
 ### Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="preprocess meier2021"] module is configured using these command-line arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="preprocess meier2021"] module is configured using these command-line arguments:
 
 
 | argument       | description                                                                                              |
 | :--------------------------------- | :------------------------------------------------------------------------------------------------------- |
-| `R1_FQ`                            | [!badge variant="info" text="required"] The forward multiplexed FASTQ file                               |
-| `R2_FQ`                            | [!badge variant="info" text="required"] The reverse multiplexed FASTQ file                               |
-| `I1_FQ`                            | [!badge variant="info" text="required"] The forward FASTQ index file provided by the sequencing facility |
-| `I2_FQ`                            | [!badge variant="info" text="required"] The reverse FASTQ index file provided by the sequencing facility |
+| `R1_FQ`                            | <Badge variant="tip" text="required"/> The forward multiplexed FASTQ file                               |
+| `R2_FQ`                            | <Badge variant="tip" text="required"/> The reverse multiplexed FASTQ file                               |
+| `I1_FQ`                            | <Badge variant="tip" text="required"/> The forward FASTQ index file provided by the sequencing facility |
+| `I2_FQ`                            | <Badge variant="tip" text="required"/> The reverse FASTQ index file provided by the sequencing facility |
 | `--keep-unknown-samples` `-u`      | Keep a separate file of reads with recognized barcodes but don't match any sample in the schema          |
 | `--keep-unknown-barcodes` `-b`     | Keep a separate file of reads with unrecognized barcodes                                                 |
 | `--qxrx` `-q`                      | Include the `QX:Z` and `RX:Z` tags in the read header                                                    |
-| `--schema` `-s`                    | [!badge variant="info" text="required"] Tab-delimited file of sample\<tab\>barcode                       |
+| `--schema` `-s`                    | <Badge variant="tip" text="required"/> Tab-delimited file of sample\<tab\>barcode                       |
 
 #### Keeping Unknown Samples
 It's not uncommon that some sequences cannot be demultiplexed due to sequencing errors at the ID location. Use `--keep-unknown-samples`/`-u` to

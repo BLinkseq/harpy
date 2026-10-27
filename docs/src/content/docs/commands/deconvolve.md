@@ -9,12 +9,12 @@ order: 10
 
 # :icon-tag: deconvolve
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - paired-end reads from an Illumina sequencer in FASTQ format [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
-    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] [!badge variant="secondary" text="case insensitive"]
+    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
     - **forward**: [!badge variant="success" text="_F"] [!badge variant="success" text=".F"] [!badge variant="success" text=".1"] [!badge variant="success" text="_1"] [!badge variant="success" text="_R1_001"] [!badge variant="success" text=".R1_001"] [!badge variant="success" text="_R1"] [!badge variant="success" text=".R1"] 
     - **reverse**: [!badge variant="success" text="_R"] [!badge variant="success" text=".R"] [!badge variant="success" text=".2"] [!badge variant="success" text="_2"] [!badge variant="success" text="_R2_001"] [!badge variant="success" text=".R2_001"] [!badge variant="success" text="_R2"] [!badge variant="success" text=".R2"] 
-    - **fastq extension**: [!badge variant="success" text=".fq"] [!badge variant="success" text=".fastq"] [!badge variant="secondary" text="case insensitive"]
+    - **fastq extension**: [!badge variant="success" text=".fq"] [!badge variant="success" text=".fastq"] <Badge  text="case insensitive"/>
     - **barcode**: must be the terminal comment in the FASTQ header
 ==- ⁉️ Is deconvoluting necessary?
 The importance of doing barcode deconvolution at the FASTQ stage varies based on your goals. This table, by no means
@@ -51,7 +51,7 @@ harpy deconvolve path/to/data/*.fq
 
 | argument   | default | description                                                                                                                                     |
 | :----------------------------- | :-----: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `INPUTS`                       |         | [!badge variant="info" text="required"] Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
+| `INPUTS`                       |         | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
 | `--density` `-d`               |   `3`   | On average, $\frac{1}{2^d}$ kmers are indexed                                                                                                   |
 | `--dropout` `-a`               |   `0`   | Minimum cloud size to deconvolve                                                                                                                |
 | `--kmer-length` `-k`           |  `21`   | Size of k-mers to search for similarities                                                                                                       |

@@ -9,11 +9,11 @@ order: 8
 
 # :icon-project: impute
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 4 cores/threads available
 - a tab-delimited [parameter file](#parameter-file) 
-- sequence alignments: [!badge variant="success" text=".bam"] [!badge variant="secondary" icon=":exclamation:" text="coordinate-sorted"]
-    - **sample names**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] [!badge variant="secondary" text="case insensitive"]
+- sequence alignments: <Badge variant="success" text=".bam"/> <Badge text="coordinate-sorted"/>
+    - **sample names**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
 - a variant call format file: [!badge variant="success" text=".vcf"] [!badge variant="success" text=".vcf.gz"] [!badge variant="success" text=".bcf"]
 ==- :icon-codescan: Curation of input VCF file
 To work well with STITCH, Harpy needs the input variant call file to meet specific criteria.
@@ -63,14 +63,14 @@ harpy impute --threads 20 --vcf-samples stitch.params data/variants.bcf data/*.b
 ```
 
 ## Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="impute"] module is configured using these command-line arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="impute"] module is configured using these command-line arguments:
 
 
 | argument   | default   | description                                                                                                                   |
 | :----------------------------- | :---------------------------: | :---------------------------------------------------------------------------------------------------------------------------- |
-| `PARAMETERS`                   |                               | [!badge variant="info" text="required"] STITCH [parameter file](#parameter-file) (tab-delimited)                              |
-| `VCF`                          |                               | [!badge variant="info" text="required"] Path to VCF/BCF file                                                                  |
-| `INPUTS`                       |                               | [!badge variant="info" text="required"] Files or directories containing [input BAM files](/Getting_Started/common_options.md) |
+| `PARAMETERS`                   |                               | <Badge variant="tip" text="required"/> STITCH [parameter file](#parameter-file) (tab-delimited)                              |
+| `VCF`                          |                               | <Badge variant="tip" text="required"/> Path to VCF/BCF file                                                                  |
+| `INPUTS`                       |                               | <Badge variant="tip" text="required"/> Files or directories containing [input BAM files](/Getting_Started/common_options.md) |
 | `--extra-params` `-x`          |                               | Extra arguments to add to STITCH, provided in quotes                                                                          |
 | `--grid-size` `-g`             |         `1` (per-snp)         | Perform imputation in windows of a specific size, instead of per-SNP                                                          |
 | `--vcf-samples`, `-V`          |                               | Use samples present in vcf file for imputation rather than those found the directory ([see below](#prioritize-the-vcf-file))  |
@@ -209,7 +209,7 @@ table serves as an overview of the parameters.
 | :------------------------------- | :------------------------------------------: | :---------------------------------------------------------------------------------------------- |
 | name                             |      alphanumeric (a-z, 0-9) and `-_.`       | Arbitrary name of the parameter set, used to name outputs                                       |
 | model                            | `pseudoHaploid`, `diploid`, `diploid-inbred` | The STITCH model/method to use  [!badge variant="secondary" text="case sensitive"]              |
-| usebx                            |         `true`, `false`, `yes`, `no`         | Whether to incorporate beadtag information [!badge variant="secondary" text="case insensitive"] |
+| usebx                            |         `true`, `false`, `yes`, `no`         | Whether to incorporate beadtag information <Badge  text="case insensitive"/> |
 | bxlimit                          |                     ≥ 1                      | Distance between identical BX tags at which to consider them different molecules                |
 | k                                |                     ≥ 1                      | Number of founder haplotypes                                                                    |
 | s                                |                     ≥ 1                      | Number of instances of the founder haplotypes to average results over                           |

@@ -9,11 +9,11 @@ order: 2
 
 # :icon-sliders: snp
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 4 cores/threads available
-- sequence alignments: [!badge variant="success" text=".bam"] [!badge variant="secondary" text="coordinate-sorted"]
-    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] [!badge variant="secondary" text="case insensitive"]
-- genome assembly in FASTA format: [!badge variant="success" text=".fasta"] [!badge variant="success" text=".fa"] [!badge variant="success" text=".fasta.gz"] [!badge variant="success" text=".fa.gz"] [!badge variant="secondary" text="case insensitive"]
+- sequence alignments: <Badge variant="success" text=".bam"/> [!badge variant="secondary" text="coordinate-sorted"]
+    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
+- genome assembly in FASTA format: <Badge variant="success" text=".fasta"/> <Badge variant="success" text=".fa"/> <Badge variant="success" text=".fasta.gz"/> <Badge variant="success" text=".fa.gz"/> <Badge  text="case insensitive"/>
 - [!badge variant="ghost" text="optional"] sample grouping file
 ==- :icon-file: sample grouping file [!badge variant="ghost" text="optional"]
 This file is optional and useful if you want variant calling to happen on a per-population level.
@@ -58,13 +58,13 @@ harpy snp freebayes --threads 20 genome.fasta Align/bwa
 ```
 
 ## Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](../Getting_Started/common_options.md), the [!badge corners="pill" text="snp"] module is configured using these command-line arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="snp"] module is configured using these command-line arguments:
 
 
 | argument     | default  | description                                                                                                                                   |
 | :------------------------------- | :--------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| `REFERENCE`                      |                              | [!badge variant="info" text="required"] Reference genome used for variant calling                                                             |
-| `INPUTS`                         |                              | [!badge variant="info" text="required"] Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments) |
+| `REFERENCE`                      |                              | <Badge variant="tip" text="required"/> Reference genome used for variant calling                                                             |
+| `INPUTS`                         |                              | <Badge variant="tip" text="required"/> Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments) |
 | `--extra-params` `-x`            |                              | Additional mpileup/freebayes arguments, in quotes                                                                                             |
 | `--ploidy` `-n`                  |             `2`              | Ploidy of samples                                                                                                                             |
 | `--populations` `-p`             |                              | Tab-delimited file of sample\<*tab*\>group                                                                                                    |

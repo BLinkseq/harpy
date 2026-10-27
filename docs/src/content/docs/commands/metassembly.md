@@ -9,7 +9,7 @@ order: 8
 
 # :icon-workflow: metassembly
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 2 cores/threads available
 - paired-end reads from an Illumina sequencer in FASTQ format [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
     - deconvolved with [!badge corners="pill" text="deconvolve"](deconvolve.md) (QuickDeconvolution) or equivalent [!badge variant="warning" text="IMPORTANT"]
@@ -28,19 +28,19 @@ harpy metassembly --threads 20 -u prokaryote -k 13,51,75,83 reads.R1.fq reads.R2
 ```
 
 ## Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="metassembly"] module is configured using these command-line arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="metassembly"] module is configured using these command-line arguments:
 
 
-| argument   | default  | description                                                                                                                                    |
-| :----------------------------- | :--------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------- |
-| `FASTQ_R1`                     |                              | [!badge variant="info" text="required"] deconvolved FASTQ file of forward reads                                                                |
-| `FASTQ_R2`                     |                              | [!badge variant="info" text="required"] deconvolved FASTQ file of reverse reads                                                                |
-| `--bx-tag` `-b`                |             `BX`             | [!badge variant="info" text="required"] Which sequence header tag encodes the linked-read barcode (`BX` for `BX:Z` or `BC` for `BC:Z`)         |
-| `--extra-params` `-x`          |                              | Additional spades parameters, in quotes                                                                                                        |
-| `--ignore-bx`                  |                              | Ignore linked-read info for initial spades assembly                                                                                            |
-| `--kmer-length` `-k`           |            `auto`            | Kmer lengths to use for initial spades assembly. They must be **odd** and **<128**, separated by commas, and without spaces. (e.g. `13,23,51`) |
-| `--max-memory` `-r`            |           `10000`            | Maximum memory for spades to use, given in megabytes                                                                                           |
-| `--organism-type` `-u`         |         `eukaryote`          | Organism type for assembly report. Options: `eukaryote`,`prokaryote`,`fungus`                                                                  |
+| argument               |   default   | description                                                                                                                                    |
+| :--------------------- | :---------: | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FASTQ_R1`             |             | <Badge variant="tip" text="required"/> deconvolved FASTQ file of forward reads                                                                |
+| `FASTQ_R2`             |             | <Badge variant="tip" text="required"/> deconvolved FASTQ file of reverse reads                                                                |
+| `--bx-tag` `-b`        |    `BX`     | <Badge variant="tip" text="required"/> Which sequence header tag encodes the linked-read barcode (`BX` for `BX:Z` or `BC` for `BC:Z`)         |
+| `--extra-params` `-x`  |             | Additional spades parameters, in quotes                                                                                                        |
+| `--ignore-bx`          |             | Ignore linked-read info for initial spades assembly                                                                                            |
+| `--kmer-length` `-k`   |   `auto`    | Kmer lengths to use for initial spades assembly. They must be **odd** and **<128**, separated by commas, and without spaces. (e.g. `13,23,51`) |
+| `--max-memory` `-r`    |   `10000`   | Maximum memory for spades to use, given in megabytes                                                                                           |
+| `--organism-type` `-u` | `eukaryote` | Organism type for assembly report. Options: `eukaryote`,`prokaryote`,`fungus`                                                                  |
 
 ## :icon-tag: Deconvolved Inputs
 For linked-read assemblies, the barcodes need to be deconvolved in the sequence data, meaning that

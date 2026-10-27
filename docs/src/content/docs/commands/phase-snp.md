@@ -9,12 +9,12 @@ order: 6
 
 # :icon-stack: phase snp
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 2 cores/threads available
-- sequence alignments: [!badge variant="success" text=".bam"] [!badge variant="secondary" icon=":exclamation:" text="coordinate-sorted"]
-    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] [!badge variant="secondary" text="case insensitive"]
+- sequence alignments: <Badge variant="success" text=".bam"/> <Badge text="coordinate-sorted"/>
+    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
 - a variant call format file of genotypes: [!badge variant="success" text=".vcf"] [!badge variant="success" text=".bcf"]
-- [!badge variant="ghost" text="optional"] a reference genome in FASTA format: [!badge variant="success" text=".fasta"] [!badge variant="success" text=".fa"] [!badge variant="success" text=".fasta.gz"] [!badge variant="success" text=".fa.gz"] [!badge variant="secondary" text="case insensitive"]
+- [!badge variant="ghost" text="optional"] a reference genome in FASTA format: <Badge variant="success" text=".fasta"/> <Badge variant="success" text=".fa"/> <Badge variant="success" text=".fasta.gz"/> <Badge variant="success" text=".fa.gz"/> <Badge  text="case insensitive"/>
 
 ===
 
@@ -35,13 +35,13 @@ harpy phase snp --threads 20 Variants/variants.raw.bcf alignments/
 ```
 
 ## Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="phase"] module is configured using these command-line arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="phase"] module is configured using these command-line arguments:
 
 
 | argument        | default    | description                                                                                                                                   |
 | :---------------------------------- | :----------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| `VCF`                               |                                | [!badge variant="info" text="required"] Path to BCF/VCF file                                                                                  |
-| `INPUTS`                            |                                | [!badge variant="info" text="required"] Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments) |
+| `VCF`                               |                                | <Badge variant="tip" text="required"/> Path to BCF/VCF file                                                                                  |
+| `INPUTS`                            |                                | <Badge variant="tip" text="required"/> Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments) |
 | `--contigs`                         |                                | [Contigs to plot](/Getting_Started/common_options.md#--contigs) in the report                                                                 |
 | `--extra-params` `-x`               |                                | Additional Hapcut2 arguments, in quotes                                                                                                       |
 | `--reference` `-r`                  |                                | Path to reference genome if wanting to also use reads spanning indels                                                                         |

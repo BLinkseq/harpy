@@ -77,10 +77,8 @@ rule barcode_stats:
         temp("reports/data/{sample}.bxcount")
     log:
         "logs/bxcount/{sample}.count.log"
-    params:
-        f'-p {lr_type}'
     shell:
-        "djinn fq stats {params} {input} > {output} 2> {log}"
+        "djinn fq stats {input} > {output} 2> {log}"
 
 rule barcode_report:
     retries: 1

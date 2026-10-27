@@ -9,13 +9,13 @@ order: 6
 
 # :icon-stack: phase bam
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 3 cores/threads available
-- sequence alignments: [!badge variant="success" text=".bam"]  [!badge variant="secondary" icon=":exclamation:" text="coordinate-sorted"]
-    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] [!badge variant="secondary" text="case insensitive"]
+- sequence alignments: <Badge variant="success" text=".bam"/>  <Badge text="coordinate-sorted"/>
+    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
     - **linked reads**: barcode must be in alignment `BX` tag
-- a variant call format file of genotypes: [!badge variant="success" text=".vcf"] [!badge variant="success" text=".bcf"]  [!badge variant="secondary" icon=":exclamation:" text="phased"]
-- a reference genome in FASTA format: [!badge variant="success" text=".fasta"] [!badge variant="success" text=".fa"] [!badge variant="success" text=".fasta.gz"] [!badge variant="success" text=".fa.gz"] [!badge variant="secondary" text="case insensitive"]
+- a variant call format file of genotypes: [!badge variant="success" text=".vcf"] [!badge variant="success" text=".bcf"]  <Badge text="phased"/>
+- a reference genome in FASTA format: <Badge variant="success" text=".fasta"/> <Badge variant="success" text=".fa"/> <Badge variant="success" text=".fasta.gz"/> <Badge variant="success" text=".fa.gz"/> <Badge  text="case insensitive"/>
 ===
 
 If you are considering structural variant detection, then you will likely need to phase your alignments.
@@ -42,14 +42,14 @@ harpy phase bam --threads 10 phased.bcf data/*.bam
 ```
 
 ## Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="phase"] module is configured using these command-line arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="phase"] module is configured using these command-line arguments:
 
 
 | argument           | default   | description                                                                                                                                   |
 | :------------------------------------- | :---------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------- |
 | `REFERENCE`                            |                               | Path to reference genome used to create alignments                                                                                            |
-| `VCF`                                  |                               | [!badge variant="info" text="required"] Path to phased BCF/VCF file                                                                           |
-| `INPUTS`                               |                               | [!badge variant="info" text="required"] Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments) |
+| `VCF`                                  |                               | <Badge variant="tip" text="required"/> Path to phased BCF/VCF file                                                                           |
+| `INPUTS`                               |                               | <Badge variant="tip" text="required"/> Files or directories containing [input BAM files](/Getting_Started/common_options.md#input-arguments) |
 | `--extra-params` `-x`                  |                               | Additional `whatshap haplotag` arguments, in quotes                                                                                           |
 | `--molecule-distance` `-d`             |           `100000`            | Base-pair distance threshold to separate molecules                                                                                            |
 | `--ploidy` `-n`                        |              `2`              | Ploidy of samples                                                                                                                             |

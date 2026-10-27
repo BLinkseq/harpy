@@ -14,14 +14,14 @@ aligns the processed linked-reads with Arachne, while everything else gets align
 using minibwa.
 
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 4 cores/threads available
-- a genome assembly in FASTA format: [!badge variant="success" text=".fasta"] [!badge variant="success" text=".fa"] [!badge variant="success" text=".fasta.gz"] [!badge variant="success" text=".fa.gz"] [!badge variant="secondary" text="case insensitive"]
+- a genome assembly in FASTA format: <Badge variant="success" text=".fasta"/> <Badge variant="success" text=".fa"/> <Badge variant="success" text=".fasta.gz"/> <Badge variant="success" text=".fa.gz"/> <Badge  text="case insensitive"/>
 - paired-end fastq sequence files [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
-    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] [!badge variant="secondary" text="case insensitive"]
+    - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
     - **forward**: [!badge variant="success" text="_F"] [!badge variant="success" text=".F"] [!badge variant="success" text=".1"] [!badge variant="success" text="_1"] [!badge variant="success" text="_R1_001"] [!badge variant="success" text=".R1_001"] [!badge variant="success" text="_R1"] [!badge variant="success" text=".R1"] 
     - **reverse**: [!badge variant="success" text="_R"] [!badge variant="success" text=".R"] [!badge variant="success" text=".2"] [!badge variant="success" text="_2"] [!badge variant="success" text="_R2_001"] [!badge variant="success" text=".R2_001"] [!badge variant="success" text="_R2"] [!badge variant="success" text=".R2"] 
-    - **fastq extension**: [!badge variant="success" text=".fq"] [!badge variant="success" text=".fastq"] [!badge variant="secondary" text="case insensitive"]
+    - **fastq extension**: [!badge variant="success" text=".fq"] [!badge variant="success" text=".fastq"] <Badge  text="case insensitive"/>
 ===
 
 Once sequences have been trimmed and passed through other QC filters, they will need to
@@ -36,13 +36,13 @@ harpy align arachne genome.fasta Sequences/
 ```
 
 ## Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="align bwa"]/[!badge corners="pill" text="align strobe"] modules are configured using these command-line arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="align bwa"]/[!badge corners="pill" text="align strobe"] modules are configured using these command-line arguments:
 
 
 | argument     | default  | description                                                                                                                                     |
 | :------------------------------- | :--------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `REFERENCE`                      |                              | [!badge variant="info" text="required"] Reference assembly for read mapping                                                                     |
-| `INPUTS`                         |                              | [!badge variant="info" text="required"] Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
+| `REFERENCE`                      |                              | <Badge variant="tip" text="required"/> Reference assembly for read mapping                                                                     |
+| `INPUTS`                         |                              | <Badge variant="tip" text="required"/> Files or directories containing [input FASTQ files](/Getting_Started/common_options.md#input-arguments) |
 | `-depth-window` `-w`             |           `50000`            | Interval size (in bp) for depth stats                                                                                                           |
 | `--extra-params` `-x`            |                              | Additional BWA arguments, in quotes                                                                                                             |
 | `--keep-unmapped` `-u`           |            false             | Output unmapped sequences too                                                                                                                   |

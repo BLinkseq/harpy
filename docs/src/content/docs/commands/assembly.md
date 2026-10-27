@@ -9,7 +9,7 @@ order: 11
 
 # :icon-git-commit: assembly
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 2 cores/threads available
 - paired-end reads from an Illumina sequencer in FASTQ format [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
     - deconvolved with [!badge corners="pill" text="deconvolve"](deconvolve.md) (QuickDeconvolution) or equivalent [!badge variant="warning" text="IMPORTANT"]
@@ -28,15 +28,15 @@ harpy metassembly --threads 20 -u prokaryote -k 13,51,75,83 data.R1.fq data.R2.f
 ```
 
 ## Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="assembly"]
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="assembly"]
 module is configured using the command-line arguments below. Since the assembly process consists of several distinct phases,
 the descriptions are provided with an extra badge to reflect which part of the assembly process they correspond to.
 
 
 | argument  | default  | description                                                                                                                                                                                        |
 | :---------------------------- | :--------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `FASTQ_R1`                    |                              | [!badge variant="info" text="required"] FASTQ file of forward reads                                                                                                                                |
-| `FASTQ_R2`                    |                              | [!badge variant="info" text="required"] FASTQ file of reverse reads                                                                                                                                |
+| `FASTQ_R1`                    |                              | <Badge variant="tip" text="required"/> FASTQ file of forward reads                                                                                                                                |
+| `FASTQ_R2`                    |                              | <Badge variant="tip" text="required"/> FASTQ file of reverse reads                                                                                                                                |
 | `--extra-params` `-x`         |                              | [!badge variant="secondary" text="spades assembly"] Additional spades parameters, in quotes                                                                                                        |
 | `--kmer-length` `-k`          |            `auto`            | [!badge variant="secondary" text="spades assembly"] Kmer lengths to use for initial spades assembly. They must be **odd** and **<128**, separated by commas, and without spaces. (e.g. `13,23,51`) |
 | `--max-memory` `-r`           |           `10000`            | [!badge variant="secondary" text="spades assembly"] Maximum memory for spades to use, given in megabytes                                                                                           |

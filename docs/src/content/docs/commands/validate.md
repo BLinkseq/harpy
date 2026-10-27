@@ -9,14 +9,14 @@ order: 5
 
 # :icon-rocket: validate
 
-===  :icon-checklist: You will need
+===  <Accordion title="📝 You will need">
 - at least 2 cores/threads available
 - [!badge corners="pill" text="validate bam"]: SAM/BAM alignment files [!badge variant="secondary" text="BAM recommended"]
 - [!badge corners="pill" text="validate fastq"]: paired-end reads from an Illumina sequencer in FASTQ format [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
-    - **sample names**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] [!badge variant="secondary" text="case insensitive"]
+    - **sample names**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
     - **forward**: [!badge variant="success" text="_F"] [!badge variant="success" text=".F"] [!badge variant="success" text=".1"] [!badge variant="success" text="_1"] [!badge variant="success" text="_R1_001"] [!badge variant="success" text=".R1_001"] [!badge variant="success" text="_R1"] [!badge variant="success" text=".R1"] 
     - **reverse**: [!badge variant="success" text="_R"] [!badge variant="success" text=".R"] [!badge variant="success" text=".2"] [!badge variant="success" text="_2"] [!badge variant="success" text="_R2_001"] [!badge variant="success" text=".R2_001"] [!badge variant="success" text="_R2"] [!badge variant="success" text=".R2"] 
-    - **fastq extension**: [!badge variant="success" text=".fq"] [!badge variant="success" text=".fastq"] [!badge variant="secondary" text="case insensitive"]
+    - **fastq extension**: [!badge variant="success" text=".fq"] [!badge variant="success" text=".fastq"] <Badge  text="case insensitive"/>
 ===
 
 Harpy does a lot of stuff with a lot of software and each of these programs expect the incoming data to follow particular formats (plural, unfortunately).
@@ -46,12 +46,12 @@ harpy validate bam --threads 20 Align/bwa
 ```
 
 ## Running Options
-In addition to the [!badge variant="info" corners="pill" text="common runtime options"](/Getting_Started/common_options.md), the [!badge corners="pill" text="validate fastq"] and [!badge corners="pill" text="validate bam"] modules are configured using only command-line input arguments:
+In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="validate fastq"] and [!badge corners="pill" text="validate bam"] modules are configured using only command-line input arguments:
 
 
 | argument     | description                                                                                                                                            |
 | :------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `INPUTS`                         | [!badge variant="info" text="required"] Files or directories containing [input fastq or bam files](/Getting_Started/common_options.md#input-arguments) |
+| `INPUTS`                         | <Badge variant="tip" text="required"/> Files or directories containing [input fastq or bam files](/Getting_Started/common_options.md#input-arguments) |
 
 ## Workflow
 
