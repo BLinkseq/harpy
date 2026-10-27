@@ -78,7 +78,7 @@ rule barcode_stats:
     log:
         "logs/bxcount/{sample}.count.log"
     params:
-        lr_type
+        f'-p {lr_type}'
     shell:
         "djinn fq stats {params} {input} > {output} 2> {log}"
 
