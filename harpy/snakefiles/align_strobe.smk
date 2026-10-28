@@ -63,7 +63,7 @@ rule align:
     conda:
         "envs/align.yaml"
     container:
-        f"docker://pdimens/harpy:align_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
         """
         mkdir -p {resources.tmpdir}; trap "rm -rf {resources.tmpdir}" 0

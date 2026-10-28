@@ -84,7 +84,7 @@ rule demultiplex:
     conda:
         "envs/preprocess.yaml"
     container:
-        f"docker://pdimens/harpy:preprocess_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:preprocess_{VERSION}"
     shell:
         "dmox --i1 {input.I1} --i2 {input.I2} --r1 {input.R1} --r2 {input.R2} "
         "--ref-a {input.segment_a} --ref-b {input.segment_b} --ref-c {input.segment_c} "
@@ -103,7 +103,7 @@ rule assess_quality:
     conda:
         "envs/preprocess.yaml"
     container:
-        f"docker://pdimens/harpy:preprocess_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:preprocess_{VERSION}"
     shell:
         """
         ( falco --quiet --threads {threads} -skip-report -skip-summary -data-filename {output} {input} ) > {log} 2>&1 ||
@@ -136,7 +136,7 @@ rule quality_report:
     conda:
         "envs/qc.yaml"
     container:
-        f"docker://pdimens/harpy:qc_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "multiqc --config workflow/multiqc.yaml {params} > {output} 2> {log}"
 

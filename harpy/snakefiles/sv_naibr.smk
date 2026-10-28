@@ -134,7 +134,7 @@ rule call_variants:
     conda:
         "envs/variants.yaml"
     container:
-        f"docker://pdimens/harpy:variants_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
     shell:
         "naibr {input.conf} > {log} 2>&1 && rm -rf naibrlog"
 

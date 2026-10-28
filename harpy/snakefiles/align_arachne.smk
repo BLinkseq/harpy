@@ -48,7 +48,7 @@ rule process_reference:
     conda:
         "envs/align.yaml"
     container:
-        f"docker://pdimens/harpy:align_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell: 
         """
         {{
@@ -71,7 +71,7 @@ rule arachne_prep:
     conda:
         "envs/align.yaml"
     container:
-        f"docker://pdimens/harpy:align_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
         """
         arachne prep -t {threads} arachne-prep/{wildcards.sample} {input} 2> {log}
@@ -100,7 +100,7 @@ rule align:
     conda:
         "envs/align.yaml"
     container:
-        f"docker://pdimens/harpy:align_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
         """
         {{

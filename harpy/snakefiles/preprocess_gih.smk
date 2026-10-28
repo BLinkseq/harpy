@@ -110,7 +110,7 @@ rule assess_quality:
     conda:
         "envs/qc.yaml"
     container:
-        f"docker://pdimens/harpy:qc_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "falco --quiet --threads 1 -skip-report -skip-summary -data-filename {output} {input} > {log} 2>&1"
 
@@ -128,7 +128,7 @@ rule quality_report:
     conda:
         "envs/qc.yaml"
     container:
-        f"docker://pdimens/harpy:qc_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "multiqc --config workflow/multiqc.yaml {params} > {output} 2> {log}"
 

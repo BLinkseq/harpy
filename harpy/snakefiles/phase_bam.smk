@@ -126,7 +126,7 @@ rule phase_alignments:
     conda:
         "envs/phase.yaml"
     container:
-        f"docker://pdimens/harpy:phase_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:phase_{VERSION}"
     threads:
         3
     shell:

@@ -41,7 +41,7 @@ rule construct_graph:
     conda:
         "envs/variants.yaml"
     container:
-        f"docker://pdimens/harpy:variants_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
     shell:
         """
         SVJEDI_DIR="$(python3 -c 'import svjedi_tag, os; print(os.path.dirname(svjedi_tag.__file__))')"
@@ -61,7 +61,7 @@ rule index_graph:
     conda:
         "envs/variants.yaml"
     container:
-        f"docker://pdimens/harpy:variants_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
     shell:
         "vg autoindex --workflow sr-giraffe -g {input} -p graph/graph 2> {log}"
 
@@ -82,7 +82,7 @@ rule map_to_graph:
     conda:
         "envs/variants.yaml"
     container:
-        f"docker://pdimens/harpy:variants_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
     shell:
         "vg giraffe -t {threads} -Z {input.gbz} -m {input.zmin} -z {input.zipc} -d {input.dist} -f {input.R1} -f {input.R2} "
         "-o gaf --named-coordinates --comments-as-tags > {output} 2> {log}"
@@ -104,7 +104,7 @@ rule call_genotypes:
     conda:
         "envs/variants.yaml"
     container:
-        f"docker://pdimens/harpy:variants_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
     shell:
         """
         SVJEDI_DIR="$(python3 -c 'import svjedi_tag, os; print(os.path.dirname(svjedi_tag.__file__))')"

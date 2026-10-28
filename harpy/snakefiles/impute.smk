@@ -152,7 +152,7 @@ rule impute:
     conda:
         "envs/impute.yaml"
     container:
-        f"docker://pdimens/harpy:impute_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:impute_{VERSION}"
     shell:
         """
         mkdir -p {resources.tmpdir}; trap "rm -rf {resources.tmpdir}" 0
