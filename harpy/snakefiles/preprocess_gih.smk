@@ -17,6 +17,7 @@ skip_reports = REPORTS.get("skip", False)
 me_seq       = PARAMETERS.get("ME-sequence", "AGATGTGTATAAGAGACAG")
 mismatch     = PARAMETERS.get("ME-mismatch", 2) 
 qxrx         = PARAMETERS.get("qx-rx", False)
+keep_discard = PARAMETERS.get("keep-discard", False)
 schemafile   = INPUTS.get("schema", "embedded")
 
 bn_r = r"([_\.][12]|[_\.][FR]|[_\.]R[12](?:\_00[0-9])*)?\.((fastq|fq)(\.gz)?)$"
@@ -57,6 +58,7 @@ rule all:
     input: 
         'adapters.fasta',
         collect("{sample}.R{FR}.fq.gz", sample = samplenames, FR = [1,2]),
+        collect("{sample}.noME.fq.gz", sample = samplenames) if keep_discard else [],
         collect("reports/data/{sample}.bxcount", sample = samplenames),
         "reports/preprocess.QA.html" if not skip_reports else [],
         "reports/performance.ipynb" if not skip_reports else []
@@ -79,6 +81,7 @@ rule demultiplex:
     output:
         fq1 = "{sample}.R1.fq.gz",
         fq2 = "{sample}.R2.fq.gz",
+        discards = "{samples}.noME.fq.gz" if keep_discard else [],
         stats = "reports/data/{sample}.dmxstats"
     log:
         "logs/{sample}.preproc"
@@ -86,6 +89,7 @@ rule demultiplex:
         f'--me {me_seq}',
         f'--max-mismatch {mismatch}',
         '--qx-rx' if qxrx else '',
+        '-keep-discarded' if keep_discard else '',
         f'-s {schemafile}' if schemafile != 'embedded' else ''
     threads:
         4
