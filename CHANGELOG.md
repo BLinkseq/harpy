@@ -48,6 +48,7 @@
 - jobs that fail and are retried by snakemake (`retries:` in HPC profiles, or `--retries` in `--snakemake`) no longer stop the progress bar or make the workflow report a failure
   - a failure is only reported once snakemake gives up on the job. Previously the first error ended monitoring (and a workflow that went on to succeed was reported as failed)
   - only the error of the final attempt is passed to the error parser, instead of one for every attempt
+- `harpy deps conda` and `harpy deps container` now work again
 - `harpy resume` no longer overwrites the harpy version of `workflow.yaml`
 - error printing when using `--container` correctly displays full apptainer-prefixed shell call
 - mitigated possibility of concurrent notebooks clashing when running on HPC
@@ -63,7 +64,7 @@
 - hidden command `harpy-utils process-notebook` replaced with `harpy-utils run-notebook`, which combines a nuanced
 python-API call to `papermill` with the post-processing that was previously covered by `process-notebook`. 
   - functionally, this means the command line interface is cleaner in workflows, and the kernel engine can be declared to be IPC instead of TCP, which works better for concurrency.
-
+- harpy-managed dependency containers now hosted on GHCR (GitHub Container Registry) instead of DockerHub
 
 # Added but not exposed yet
 - `harpy snp deepvariant` - call SNPs in high-depth samples using Google's DeepVariant. AI AI AI!!!

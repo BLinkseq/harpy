@@ -335,8 +335,11 @@ class Workflow():
         elif self.quiet < 2:
             self.print.rule("[dim bold]Setup Complete", style="dim")
 
-    def launch(self, absolute:bool = False):
-        """Launch Snakemake as a monitored subprocess"""
+    def launch(self, absolute: bool = False, summary: bool = True):
+        """
+        Launch Snakemake as a monitored subprocess. The `absolute` option calls snakemake with absolute paths.
+        The `summary` option ensures a plaintext summary file is provided at the end of a workflow. 
+        """
         cmd = self.snakemake_cmd_absolute if absolute else self.snakemake_cmd_relative
         sm = LaunchSnakemake(cmd, self.output_directory, self.quiet, self.print)
         if self.clean:
@@ -346,8 +349,9 @@ class Workflow():
                     self.print.log(f"Removing: [blue]{j}/[/]")
                     shutil.rmtree(os.path.join(self.output_directory, j), ignore_errors=True)
         if sm.exitcode == 0:
-            with open(os.path.join(self.output_directory, "workflow", f"{self.name.replace('_','.')}.summary"), "w") as f_out:
-                f_out.write(Summary(self.version, self.config).get())
+            if summary:
+                with open(os.path.join(self.output_directory, "workflow", f"{self.name.replace('_','.')}.summary"), "w") as f_out:
+                    f_out.write(Summary(self.version, self.config).get())
             self.onsuccess()
         else:
             if sm.exitcode in (1,2):
@@ -362,4 +366,21 @@ class Workflow():
                 ErrorHandler(sm.errorlog).process()
             with open(".harpyerror", 'w') as f:
                 f.write(self.output_directory)
+            sys.exit(1)
+
+    def launchdeps(self, absolute: bool = False):
+        """
+        Launch Snakemake as a monitored subprocess, specifically for locally installing the dependency environments.
+        This is a stripped-down version of `launch()`.
+        """
+        cmd = self.snakemake_cmd_absolute if absolute else self.snakemake_cmd_relative
+        sm = LaunchSnakemake(cmd, self.output_directory, self.quiet, self.print)
+        if sm.exitcode == 0:
+            pass
+        else:
+            if sm.exitcode in (1,2):
+                self.print.setup_error(sm.exitcode)
+            elif sm.exitcode == 3:
+                self.print.on_error(last_sm_log(self.output_directory), datetime.now() - self.start_time)
+            ErrorHandler(sm.errorlog).process()
             sys.exit(1)

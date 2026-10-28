@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import sys
 
 import rich_click as click
 
@@ -66,8 +67,8 @@ def conda(workflows):
     if "assembly" in workflows:
         config_params += " spades=True"
     config_params += " envs=[\"" + "\",\"".join(workflows) + "\"]"
-    workflow.snakemake_cmd_relative = " ".join(["snakemake", "-s", os.path.join(workflow.workflow_directory, "workflow.smk"), "--sdm", "conda", "--cores 2", "--conda-prefix ../.environments", "--conda-cleanup-pkgs cache", "--directory localenv", config_params])
-    workflow.launch()
+    workflow.snakemake_cmd_relative = f"snakemake -s {os.path.join(workflow.workflow_directory, 'workflow.smk')} --sdm conda --cores 2 --conda-prefix ../.environments --conda-cleanup-pkgs cache --directory localenv {config_params}"
+    workflow.launchdeps()
     shutil.rmtree(workflow.output_directory, ignore_errors = True)
 
 @click.command()
@@ -81,8 +82,8 @@ def container():
     """
     workflow = Workflow("localcontainer", "environments.smk", "localenv/", None, True, 1)
     workflow.fetch_snakefile()
-    workflow.snakemake_cmd_relative = " ".join(["snakemake", "-s", os.path.join(workflow.workflow_directory, "workflow.smk"), "--sdm", "apptainer", "--cores 2", "--apptainer-prefix ../.environments", "--directory localenv"])
-    workflow.launch()
+    workflow.snakemake_cmd_relative = f"snakemake -s {os.path.join(workflow.workflow_directory, 'workflow.smk')} --sdm apptainer --cores 2 --apptainer-prefix ../.environments --directory localenv"
+    workflow.launchdeps()
     shutil.rmtree(workflow.output_directory, ignore_errors = True)
 
 deps.add_command(conda)
