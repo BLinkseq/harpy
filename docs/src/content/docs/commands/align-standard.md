@@ -9,7 +9,7 @@ The process and commands for using minibwa, strobealign, and minimap2 are identi
 ===  <Accordion title="📝 You will need">
 - at least 4 cores/threads available
 - a genome assembly in FASTA format: <Badge variant="success" text=".fasta"/> <Badge variant="success" text=".fa"/> <Badge variant="success" text=".fasta.gz"/> <Badge variant="success" text=".fa.gz"/> <Badge  text="case insensitive"/>
-- paired-end fastq sequence files [!badge variant="secondary" icon=":heart:" text="gzipped recommended"]
+- paired-end fastq sequence files [!badge text="gzipped recommended"]
     - **sample name**: [!badge variant="success" text="a-z"] [!badge variant="success" text="0-9"] [!badge variant="success" text="."] [!badge variant="success" text="_"] [!badge variant="success" text="-"] <Badge  text="case insensitive"/>
     - **forward**: [!badge variant="success" text="_F"] [!badge variant="success" text=".F"] [!badge variant="success" text=".1"] [!badge variant="success" text="_1"] [!badge variant="success" text="_R1_001"] [!badge variant="success" text=".R1_001"] [!badge variant="success" text="_R1"] [!badge variant="success" text=".R1"] 
     - **reverse**: [!badge variant="success" text="_R"] [!badge variant="success" text=".R"] [!badge variant="success" text=".2"] [!badge variant="success" text="_2"] [!badge variant="success" text="_R2_001"] [!badge variant="success" text=".R2_001"] [!badge variant="success" text="_R2"] [!badge variant="success" text=".R2"] 

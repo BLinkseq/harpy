@@ -1,14 +1,15 @@
 ---
-title: Filtering SNPs
+title: A gentle introduction to filtering SNPs
+sidebar:
+    label: Filtering SNPs
 ---
-import { Tabs, TabItem, Steps } from '@astrojs/starlight/components';
+import { Card, Tabs, TabItem, Steps } from '@astrojs/starlight/components';
 
-## A gentle introduction to the wild world of filtering SNPs
-## TL;DR
+<Card title="TL;DR">
 - Called SNPs need filtering
 - No single way to filter SNPs, but there are things that are generally/usually filtered
 - `bcftools` is your best friend
-
+</Card>
 
 The discussion around filtering SNPs and indels is _massive_ and many researchers go about it differently, each very
 opinionated as to why their method is the best. As a starting point, have a look at how the authors of `HTSlib` give [a

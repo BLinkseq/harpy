@@ -27,7 +27,7 @@ harpy template groupings data/ > samples.groups
 This optional file is useful if you want SNP variant calling to happen on a
 per-population level via [!badge corners="pill" text="harpy snp"](snp.md#populations) or on samples
 pooled-as-populations via [!badge corners="pill" text="harpy sv"](SV/naibr.md#pooled-sample-variant-calling).
-- takes the format of sample[!badge variant="ghost" text="tab"]group
+- takes the format of sample<i>\<tab></i>group
 - all the samples will be assigned to group `pop1` since file names don't always provide grouping information
     - so make sure to edit the second column to reflect your data correctly.
 - the file will look like:

@@ -4,20 +4,15 @@ title: Non linked-read data
 import { Aside, Card } from '@astrojs/starlight/components';
 import Accordion from '@/components/Accordion.astro';
 
-As of Harpy v3, the program will auto-detect that your input FASTQ or BAM files are not linked-read data. This can also be forced with `--unlinked` / `-U`. You can safely ignore the linked-read information in some of the reports Harpy produces.
+<Card title="TL;DR">
+- Non linked-read data is supported and auto-detected
+- Without linked-read information, harpy is still a viable way to QC, align, call SNPs, etc.
+- Workflows can be forced into non linked-read mode with `-U`
+</Card>
 
-<Accordion title="Harpy versions 1-2">
-- version `2.0`-`2.6`: use `--ignore-bx`
-- version `2.7+` use `--lr-type none`
-
-As of version `2.0`, Harpy can be used to process regular whole genome
-sequencing (WGS) data. Specifically, you can quality checks and trim samples,
-align sequences, call SNPs and small indels, phase, and impute genotypes. All of that is done setting
-`--lr-type none` for workflows where `--lr-type` is available (`--ignore-bx` toggle in versions \<2.7).
-RADseq data may also work, however the SNP calling workflows
-probably won't be very computationally efficient for a highly fragmented RAD assembly. 
-There is also another consideration for RADseq regarding marking duplicates (described below).
-</Accordion>
+Since version 2, harpy has supported non linked-read data like whole genome sequencing. It will
+auto-detect that your input FASTQ or BAM files are not linked-read data. This can also be forced
+with `--unlinked` / `-U`. You can safely ignore the linked-read information in some of the reports Harpy produces.
 
 ## Quality Assessment
 Setting `--unlinked` in `qc` just ignores calculating/reporting linked-read metrics, the actual QC process doesn't incorporate linked-read data.
