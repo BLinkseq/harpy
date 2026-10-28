@@ -26,6 +26,13 @@ bn 			  = os.path.basename(genomefile)
 aligner = WORKFLOW.get("name", "align_bwa").split("_")[-1]
 include: f"align_{aligner}.smk"
 
+onerror:
+    for i in ['markdup', 'tmp', 'sort', '.harpyreports', aligner]:
+        try:
+            os.rmdir(i)
+        except (OSError, FileNotFoundError):
+            pass
+
 rule sort:
     retries: 3
     input:

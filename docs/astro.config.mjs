@@ -15,10 +15,11 @@ export default defineConfig({
     mermaid(),
     starlight({
       customCss: ['./src/style/global.css'],
-      title: '4.3',
+      title: 'Harpy',
       logo: {
         light: '/src/assets/logo_trans.png',
         dark: '/src/assets/logo_trans.png',
+        replacesTitle: true
       },
       favicon: '/favicon.png',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/BLinkseq/harpy' }],
@@ -31,7 +32,8 @@ export default defineConfig({
         codeblocks(),
         starlightUiTweaks({
         navbarLinks: [
-           { label: "BLink-seq", href: "https://blinkseq.github.io"},
+          { label: 'Version: 4.3', href: "javascript:void(0);" },
+          { label: "BLink-seq", href: "https://blinkseq.github.io"},
         ],
       }),
         starlightScrollToTop({
@@ -67,16 +69,23 @@ export default defineConfig({
             ],
           },
           {
-            label: 'Guides',
-            link: '/guides/',
+            label: 'Resources',
+            link: '/resources/',
             icon: 'open-book',
             items: [
               {
                 label: 'Guides',
                 items: [
-                  { autogenerate: { directory: '/guides/' } }
+                  { autogenerate: { directory: '/resources/guides' } }
                 ]
               },
+              {
+                label: 'Other',
+                items: [
+                  { autogenerate: { directory: '/resources/other' } }
+                ]
+              },
+
             ],
           },
           {

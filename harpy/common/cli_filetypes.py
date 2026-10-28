@@ -1,6 +1,6 @@
 """Module with python-click types for command-line level validations of inputs"""
 
-from multiprocessing.sharedctypes import Value
+from traitlets import ValidateHandler
 import os
 import re
 from pathlib import Path
@@ -22,6 +22,8 @@ class FileCompletion(click.ParamType):
     def shell_complete(self, ctx, param, incomplete):
         return [CompletionItem(incomplete, type = "file")]
 
+SAMre = re.compile(r"\.(bam|sam)$", re.IGNORECASE)
+SAMinvre = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
 class SAMfile(FileCompletion):
     """A CLI class to validate a BAM/SAM file as input. Checks for presence, format, and returns the absolute path"""
     name = "bam_file"
@@ -29,8 +31,6 @@ class SAMfile(FileCompletion):
         super().__init__()
         self.single = single
         self.dir_ok = False if single else dir_ok
-        self.re_ext = re.compile(r"\.(bam|sam)$", re.IGNORECASE)
-        self.inv_pattern = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
 
     def convert(self, value, param, ctx):
         infiles = []
@@ -40,22 +40,21 @@ class SAMfile(FileCompletion):
 
         if not filepath.is_dir():
             _f = filepath.absolute().as_posix()
-            if not self.re_ext.search(_f):
+            if not SAMre.search(_f):
                 self.fail(f"{value} does not end with the accepted extensions for alignment files: .bam/.sam (case insensitive).")
             infiles.append(_f)
         else:
             if filepath.is_dir() and not self.dir_ok:
                 self.fail("Alignment input cannot be a directory", param, ctx)
             for i in filepath.glob("*"):
-                if i.is_file() and self.re_ext.search(i.name):
+                if i.is_file() and SAMre.search(i.name):
                     infiles.append(i.absolute().as_posix())
 
         # name and permission validations
         for _file in infiles:
             if not os.access(_file, os.R_OK):
                 self.fail(f"Alignment file {_file} does not have user read permission.", param, ctx)
-            #if self.inv_pattern.search(_file):
-            if self.inv_pattern.search(os.path.basename(_file)):
+            if SAMinvre.search(os.path.basename(_file)):
                 self.fail(f"Invalid characters detected in file name {_file}. Valid file names may contain only:\n  - A-Z 0-9 characters (case insensitive)\n  - . (period)\n  - _ (underscore)\n  - - (dash)")
 
         if len(infiles) < 1:
@@ -66,23 +65,24 @@ class SAMfile(FileCompletion):
         else:
             return infiles
 
+FASTAre = re.compile(r"\.(fa|fas|fasta|fna|ffn|frn)(?:\.gz)?$", re.IGNORECASE)
 class FASTAfile(FileCompletion):
     """A CLI class to validate a FASTA file as input. Checks for presence, format, and returns the absolute path"""
     name = "fasta_file"
-
     def convert(self, value, param, ctx):
-        re_ext = re.compile(r"\.(fa|fas|fasta|fna|ffn|frn)(?:\.gz)?$", re.IGNORECASE)
         filepath = Path(value)
         if not filepath.exists() or not filepath.is_file():
             self.fail(f"FASTA file {value} was not found.", param, ctx)
         if not os.access(value, os.R_OK):
             self.fail(f"FASTA file {value} does not have reading permission.", param, ctx)
 
-        if not re_ext.search(value):
+        if not FASTAre.search(value):
             self.fail(f"File {value} does not have any of the recognized [case insensitive] FASTA file extensions (.fa, .fas, .fasta, .fna, .ffn, .frn). Gzipping (.gz) is also permitted.", param, ctx)
 
         return filepath.absolute().as_posix()
 
+FASTQre = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
+FASTQrextre = re.compile(r"\.(fq|fastq)(?:\.gz)?$", re.IGNORECASE)
 class FASTQfile(FileCompletion):
     """
     A CLI class to validate a FASTQ file as input. Checks for presence, format, and returns the absolute path.
@@ -93,8 +93,6 @@ class FASTQfile(FileCompletion):
         super().__init__()
         self.single = single
         self.dir_ok = False if single else dir_ok
-        self.inv_pattern = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
-        self.re_ext = re.compile(r"\.(fq|fastq)(?:\.gz)?$", re.IGNORECASE)
 
     def convert(self, value, param, ctx):
         infiles = []
@@ -106,18 +104,18 @@ class FASTQfile(FileCompletion):
 
         if not filepath.is_dir():
             _f = filepath.absolute().as_posix()
-            if not self.re_ext.search(_f):
+            if not FASTQrextre.search(_f):
                 self.fail(f"{value} does not end with the accepted extensions for FASTQ files: .fq[.gz]/.fastq[.gz] (case insensitive).")
             infiles.append(filepath.absolute().as_posix())
         else:
             for i in filepath.glob("*"):
-                if i.is_file() and self.re_ext.search(i.name):
+                if i.is_file() and FASTQrextre.search(i.name):
                     infiles.append(i.absolute().as_posix())
 
         for _file in infiles:
             if not os.access(_file, os.R_OK):
                 self.fail(f"FASTQ file {_file} does not have user read permission.", param, ctx)
-            if self.inv_pattern.search(os.path.basename(_file)):
+            if FASTQre.search(os.path.basename(_file)):
                 self.fail(f"Invalid characters detected in file name {_file}. Valid file names may contain only:\n  - A-Z 0-9 characters (case insensitive)\n  - . (period)\n  - _ (underscore)\n  - - (dash)")
 
         if len(infiles) < 1:
@@ -128,6 +126,8 @@ class FASTQfile(FileCompletion):
         else:
             return infiles
 
+IPYNBre = re.compile(r"\.(ipynb)$", re.IGNORECASE)
+IPYNBinvre = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
 class IPYNBfile(FileCompletion):
     """A CLI class to validate an IPYNB file as input. Checks for file extension and returns the absolute path"""
     name = "ipynb_file"
@@ -135,8 +135,6 @@ class IPYNBfile(FileCompletion):
         super().__init__()
         self.single = single
         self.dir_ok = False if single else dir_ok
-        self.re_ext = re.compile(r"\.(ipynb)$", re.IGNORECASE)
-        self.inv_pattern = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
 
     def convert(self, value, param, ctx):
         infiles = []
@@ -146,22 +144,21 @@ class IPYNBfile(FileCompletion):
 
         if not filepath.is_dir():
             _f = filepath.absolute().as_posix()
-            if not self.re_ext.search(_f):
+            if not IPYNBre.search(_f):
                 self.fail(f"{value} does not end with .ipynb.")
             infiles.append(_f)
         else:
             if filepath.is_dir() and not self.dir_ok:
                 self.fail("Input cannot be a directory", param, ctx)
             for i in filepath.glob("*"):
-                if i.is_file() and self.re_ext.search(i.name):
+                if i.is_file() and IPYNBre.search(i.name):
                     infiles.append(i.absolute().as_posix())
 
         # name and permission validations
         for _file in infiles:
             if not os.access(_file, os.R_OK):
                 self.fail(f"Notebook file {_file} does not have user read permission.", param, ctx)
-            #if self.inv_pattern.search(_file):
-            if self.inv_pattern.search(os.path.basename(_file)):
+            if IPYNBinvre.search(os.path.basename(_file)):
                 self.fail(f"Invalid characters detected in file name {_file}. Valid file names may contain only:\n  - A-Z 0-9 characters (case insensitive)\n  - . (period)\n  - _ (underscore)\n  - - (dash)")
 
         if len(infiles) < 1:
@@ -172,13 +169,13 @@ class IPYNBfile(FileCompletion):
         else:
             return infiles
 
+VCFre = re.compile(r"\.(vcf|vcf\.gz|bcf)$", re.IGNORECASE)
 class VCFfile(FileCompletion):
     """A CLI class to validate a VCF/BCF file as input. Checks for presence, format, and returns the absolute path"""
     name = "vcf_file"
     def __init__(self, gzip_ok: bool = True):
         super().__init__()
         self.gzip_ok = gzip_ok
-        self.re_ext = re.compile(r"\.(vcf|vcf\.gz|bcf)$", re.IGNORECASE)
 
     def convert(self, value, param, ctx):
         filepath = Path(value)
@@ -190,7 +187,7 @@ class VCFfile(FileCompletion):
         if is_gzip(value) and not self.gzip_ok:
             self.fail(f"Variant call format file {value} cannot be gzipped. Please decompress it.", param, ctx)
 
-        if not self.re_ext.search(_file):
+        if not VCFre.search(_file):
             self.fail(f"File {value} was not recognized as having the [case-insensitive] accepted variant call format file extensions: .vcf, .vcf.gz, .bcf", param, ctx)
         else:
             return _file
@@ -278,10 +275,10 @@ To install the missing plugins:
 ''')
         return Path(value).absolute().as_posix()
 
+SEGMENT_PATTERN = re.compile(r'^[A-D]\d{2}$')
 class DemuxSchema(FileCompletion):
     """A class for a click type that accepts a demultiplex schema and performs validation"""
     name = "demultiplex_schema"
-
     def convert(self, value, param, ctx):
         filepath = Path(value)
         if not filepath.exists():
@@ -296,7 +293,6 @@ class DemuxSchema(FileCompletion):
         segment_ids = set()
         samples = set()
         duplicates = False
-        segment_pattern = re.compile(r'^[A-D]\d{2}$')
         bases = ['A','T','C','G']
         is_stitch: bool = False
         with open(filepath, 'r') as file:
@@ -338,7 +334,7 @@ class DemuxSchema(FileCompletion):
                             )
                     else:
                         sample, segment_id = _splitline
-                    if not segment_pattern.match(segment_id):
+                    if not SEGMENT_PATTERN.match(segment_id):
                         hp.error(
                             "invalid segment format",
                             f"Segment ID [green]{segment_id}[/] does not follow the expected format.",
@@ -381,7 +377,6 @@ class DemuxSchema(FileCompletion):
 
 class ImputeStrategy(click.ParamType):
     name = "impute_strategy"
-
     def isInt(self, x: str) -> bool:
         try:
             int(x)
@@ -414,10 +409,10 @@ class ImputeStrategy(click.ParamType):
 
         return value
 
+NUC = re.compile(r'^[ATCG]+$', re.IGNORECASE)
 class QCAdapters(FileCompletion):
     name = "qc_adapters"
     def convert(self, value, param, ctx):
-        nuc = re.compile(r'^[ATCG]+$', re.IGNORECASE)
 
         if not value or value == "auto":
             return value
@@ -427,7 +422,7 @@ class QCAdapters(FileCompletion):
                 self.fail(f"--trim-adapters was given {value}, but that file does not have read permissions. Please modify the persmissions of the file to grant read access.", param, ctx)
             return filepath(value)
 
-        elif nuc.match(value.strip()):
+        elif NUC.match(value.strip()):
             return value.upper()
 
         else:
@@ -437,3 +432,34 @@ class QCAdapters(FileCompletion):
                 "If it was a nucleotide sequence, it must contain only ATCG (case-insensitive) characters.",
                 param, ctx
             )
+
+class BEDfile(FileCompletion):
+    name = "bed_file"
+    def convert(self, value, param, ctx):
+        filepath = Path(value)
+        if not filepath.exists():
+            self.fail(f"{value} does not exist. Please check the spelling and try again.", param, ctx)
+        if filepath.is_dir():
+            self.fail(f"{value} is a directory, but should be a file.", param, ctx)
+        if not os.access(value, os.R_OK):
+            self.fail(f"{value} is not readable. Please check file permissions and try again", param, ctx)
+        with open(value, 'r') as bed:
+            for idx,line in enumerate(bed,1):
+                line = line.strip()
+                if not line:
+                    continue
+                _split: list[str] = line.split()
+                if len(_split) <3:
+                    raise self.fail(f"Line {idx} in {filepath.name} has fewer than 3 fields. Value observed: {line}")
+                chrom, start, end  = _split[:3]
+                try:
+                    s = int(start)
+                except ValueError:
+                    raise self.fail(f"Start must be an integer. Error on line: {idx}:\n{line}")
+                try:
+                    e = int(end)
+                except ValueError:
+                    raise self.fail(f"End position must be an integer. Error on line {idx}:\n{line}")
+                if s > e:
+                    raise self.fail(f"Start position ({s}) is greater than end position ({e}). Error on line {idx}:\n{line}")
+        return filepath.absolute().as_posix()

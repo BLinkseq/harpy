@@ -4,7 +4,7 @@ import os
 
 import rich_click as click
 
-from harpy.common.cli_filetypes import FASTAfile, FASTQfile, HPCProfile
+from harpy.common.cli_filetypes import BEDfile, FASTAfile, FASTQfile, HPCProfile
 from harpy.common.cli_params import BwaParams, MinimapParams, SnakemakeParams, StrobeAlignParams
 from harpy.common.system_ops import container_ok
 from harpy.common.workflow import Workflow
@@ -23,7 +23,7 @@ def align():
     is carried over to the alignment records.
     """
 
-@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog= "Documentation: https://blinkseq.github.io/harpy/workflows/align/standard/")
+@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog= "Documentation: https://blinkseq.github.io/harpy/commands/align-bwa")
 @click.option('-w', '--depth-window', panel = "Parameters", default = 50000, show_default = True, type = click.IntRange(min = 50), help = 'Interval size (in bp) for depth stats')
 @click.option('-x', '--extra-params', panel = "Parameters", type = BwaParams(), help = 'Additional bwa mem parameters, in quotes')
 @click.option('-u', '--keep-unmapped', panel = "Parameters",  is_flag = True, default = False, help = 'Include unmapped sequences in output')
@@ -85,7 +85,7 @@ def bwa(reference, inputs, output, depth_window, unlinked, threads, keep_unmappe
 
     workflow.initialize(setup)
 
-@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog= "Documentation: https://blinkseq.github.io/harpy/workflows/align/standard/")
+@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog= "Documentation: https://blinkseq.github.io/harpy/commands/align-bwa")
 @click.option('-w', '--depth-window', panel = "Parameters", default = 50000, show_default = True, type = click.IntRange(min = 50), help = 'Interval size (in bp) for depth stats')
 @click.option('-x', '--extra-params', panel = "Parameters", type = StrobeAlignParams(), help = 'Additional strobealign parameters, in quotes')
 @click.option('-u', '--keep-unmapped', panel = "Parameters",  is_flag = True, default = False, help = 'Include unmapped sequences in output')
@@ -119,7 +119,7 @@ def strobe(reference, inputs, output, unlinked, keep_unmapped, depth_window, thr
     """
     workflow = Workflow("align_strobe", "align.smk", output, container, clean, quiet)
     workflow.setup_snakemake(threads, hpc, snakemake, no_temp)
-    workflow.notebook_files = ["align_stats.ipynb", "align_lrstats.ipynb", "samtools_stats.ipynb"]
+    workflow.notebook_files = ["align_sample_stats.ipynb", "align_lrstats.ipynb", "samtools_stats.ipynb"]
     workflow.conda = ["align", "qc"]
 
     ## checks and validations ##
@@ -149,7 +149,7 @@ def strobe(reference, inputs, output, unlinked, keep_unmapped, depth_window, thr
     workflow.initialize(setup)
 
 
-@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog= "Documentation: https://blinkseq.github.io/harpy/workflows/align/standard/")
+@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog= "Documentation: https://blinkseq.github.io/harpy/commands/align-bwa")
 @click.option('-w', '--depth-window', panel = "Parameters", default = 50000, show_default = True, type = click.IntRange(min = 50), help = 'Interval size (in bp) for depth stats')
 @click.option('-x', '--extra-params', panel = "Parameters", type = MinimapParams(), help = 'Additional minimap2 parameters, in quotes')
 @click.option('-u', '--keep-unmapped', panel = "Parameters",  is_flag = True, default = False, help = 'Include unmapped sequences in output')
@@ -183,7 +183,7 @@ def minimap(reference, inputs, output, depth_window, unlinked, threads, keep_unm
     """
     workflow = Workflow("align_minimap", "align.smk", output, container, clean, quiet)
     workflow.setup_snakemake(threads, hpc, snakemake, no_temp)
-    workflow.notebook_files = ["align_stats.ipynb", "align_lrstats.ipynb", "samtools_stats.ipynb"]
+    workflow.notebook_files = ["align_sample_stats.ipynb", "align_lrstats.ipynb", "samtools_stats.ipynb"]
     workflow.conda = ["align", "qc"]
 
     ## checks and validations ##
@@ -214,13 +214,16 @@ def minimap(reference, inputs, output, depth_window, unlinked, threads, keep_unm
 
     workflow.initialize(setup)
 
-@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog= "Documentation: https://blinkseq.github.io/harpy/workflows/align/standard/")
+@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog= "Documentation: https://blinkseq.github.io/harpy/commands/align-arachne/")
+@click.option('-c', '--centromeres', panel = "Parameters", type = BEDfile(), help = 'Centromeres, in BED format')
 @click.option('-w', '--depth-window', panel = "Parameters", default = 50000, show_default = True, type = click.IntRange(min = 50), help = 'Interval size (in bp) for depth stats')
 #@click.option('-x', '--extra-params', panel = "Parameters", type = MinimapParams(), help = 'Additional minimap2 parameters, in quotes')
 @click.option('-u', '--keep-unmapped', panel = "Parameters",  is_flag = True, default = False, help = 'Include unmapped sequences in output')
+@click.option('--10x', 'tenx', panel = "Parameters",  is_flag = True, default = False, help = 'Input data is 10X format with inline barcodes')
 @click.option('-q', '--min-quality', panel = "Parameters", default = 30, show_default = True, type = click.IntRange(0, 40, clamp = True), help = 'Minimum mapping quality to output')
 @click.option('-d', '--molecule-distance', panel = "Parameters", default = 50000, show_default = True, type = click.IntRange(min = 0), help = 'Distance cutoff for molecule assignment (bp)')
 @click.option('-O', '--output', panel = "Workflow Options", type = click.Path(exists = False, resolve_path = True), default = "Align/arachne", show_default=True,  help = 'Output directory name')
+@click.option('--rfa', panel = "Parameters",  is_flag = True, default = False, help = 'Use the RFA (lariat) algorithm instead of EM (EMA)')
 @click.option('-@', '--threads', panel = "Workflow Options", default = 4, show_default = True, type = click.IntRange(4,999, clamp = True), help = 'Number of threads to use')
 @click.option('--clean', hidden = True, panel = "Workflow Options", type = str, help = 'Delete the log (`l`), .snakemake (`s`), and/or workflow (`w`) folders when done')
 @click.option('-C', '--container', panel = "Workflow Options",  is_flag = True, default = False, help = 'Use a container instead of conda', callback=container_ok)
@@ -233,32 +236,37 @@ def minimap(reference, inputs, output, depth_window, unlinked, threads, keep_unm
 @click.help_option('--help', hidden = True)
 @click.argument('reference', type=FASTAfile(), required = True, nargs = 1)
 @click.argument('inputs', required=True, type=FASTQfile(), nargs=-1)
-def arachne(reference, inputs, output, depth_window, threads, keep_unmapped, min_quality, molecule_distance, snakemake, skip_reports, quiet, hpc, clean, container, no_temp, setup):
-    #MISSING EXTRA PARAMS, CENTROMERES
+def arachne(reference, inputs, output, depth_window, threads, keep_unmapped, tenx, rfa, centromeres, min_quality, molecule_distance, snakemake, skip_reports, quiet, hpc, clean, container, no_temp, setup):
     """
-    Align sequences to reference genome using arachne
+    Barcode-aware sequence alignment using arachne
 
     Provide the reference fasta followed by input fastq files and/or directories at the end of the command as individual
     files/folders, using shell wildcards (e.g. `data/echidna*.fastq.gz`), or both.
 
-    Arachne is the successor to the linked-read barcode-aware aligner Lariant (by 10X Genomics).
+    Defaults to the EM algorithm from EMA, but can revert to the RFA algorithm from Lariat with `--rfa`. Providing an optional
+    BED file of centromere locations will set MAPQ to 0 for alignments falling into centromeric regions. 
     Setting `--molecule-distance` to `>0` activates alignment-distance based barcode deconvolution for reporting only (the barcodes remain unmodified).
     """
     workflow = Workflow("align_arachne", "align.smk", output, container, clean, quiet)
     workflow.setup_snakemake(threads, hpc, snakemake, no_temp)
-    workflow.notebook_files = ["align_stats.ipynb", "align_lrstats.ipynb", "samtools_stats.ipynb"]
+    workflow.notebook_files = ["align_sample_stats.ipynb", "align_lrstats.ipynb", "samtools_stats.ipynb"]
     workflow.conda = ["align", "qc"]
 
     ## checks and validations ##
-    fastq = FASTQ(inputs, detect_bc = True, quiet = quiet)
+    fastq = FASTQ(inputs, detect_bc = not tenx, quiet = quiet)
     fasta = FASTA(reference, quiet = quiet)
+    if tenx:
+        fastq.lr_type = "10x"
 
     workflow.linkedreads["type"] = fastq.lr_type
     workflow.notebooks["skip"] = skip_reports
     workflow.input(fasta.file, "reference")
+    if centromeres:
+        workflow.input(centromeres, "centromeres")
     workflow.input(fastq.files, "fastq")
     workflow.param(molecule_distance, "distance-threshold")
     workflow.param(min_quality, "min-map-quality")
+    workflow.param(rfa, "use-rfa")
     workflow.param(keep_unmapped, "keep-unmapped")
     workflow.param(depth_window, "depth-windowsize")
     #if extra_params:
@@ -267,6 +275,7 @@ def arachne(reference, inputs, output, depth_window, threads, keep_unmapped, min
     workflow.info = {
         "Samples": fastq.count,
         "Data Format": fastq.lr_type,
+        "Algorithm": "RFA" if rfa else "EM",
         "Reference": os.path.basename(reference),
         "Output Folder" : os.path.relpath(output) + "/"
     }

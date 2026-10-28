@@ -29,7 +29,7 @@ def template():
     All commands write to `stdout`. Use hpc-* and impute without arguments.
     """
 
-@click.command(panel = "Input Files", no_args_is_help=True, epilog = "Documentation: https://blinkseq.github.io/harpy/workflows/snp/#sample-grouping-file")
+@click.command(panel = "Input Files", no_args_is_help=True, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/snp/#sample-grouping-file")
 @click.argument('inputdir', required=True, type=click.Path(exists=True, file_okay=False))
 @click.help_option('--help', hidden = True)
 def groupings(inputdir):
@@ -222,7 +222,7 @@ def hpc_googlebatch():
     package_absent("snakemake-executor-plugin-googlebatch")
 
 
-@click.command(panel =  "Input Files", context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/workflows/impute/#parameter-file")
+@click.command(panel =  "Input Files", context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/impute/#parameter-file")
 @click.help_option('--help', hidden = True)
 def impute():
     """

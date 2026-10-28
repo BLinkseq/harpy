@@ -33,7 +33,7 @@ onstart:
         "report_comment": "Generated as part of the Harpy preprocess workflow",
         "report_header_info": [
             {"Submit an issue": "https://github.com/blinkseq/harpy/issues/new/choose"},
-            {"Read the Docs": "https://blinkseq.github.io/harpy/workflows/preprocess/"},
+            {"Read the Docs": "https://blinkseq.github.io/harpy/commands/preprocess/"},
             {"Project Homepage": "https://github.com/blinkseq/harpy"}
         ]
     }

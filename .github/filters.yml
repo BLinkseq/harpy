@@ -54,7 +54,7 @@ align: &align
   - 'harpy/snakefiles/align_strobe.smk'
   - 'harpy/snakefiles/align_minimap.smk'
   - 'harpy/snakefiles/align.smk'
-  - 'harpy/notebooks/align_stats.ipynb'
+  - 'harpy/notebooks/align_sample_stats.ipynb'
   - 'harpy/notebooks/align_lrstats.ipynb'
   - 'harpy/notebooks/samtools_stats.ipynb'
   - 'harpy/utils/molecule_coverage.py'

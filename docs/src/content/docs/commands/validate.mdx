@@ -1,0 +1,85 @@
+---
+title: Perform file format checks on linked-read FASTQ/BAM files
+sidebar:
+    label: validate
+---
+import { Badge, Tabs, TabItem } from '@astrojs/starlight/components';
+import Accordion from '@/components/Accordion.astro';
+
+ <Accordion title="📝 You will need">
+- at least 2 cores/threads available
+- `validate bam`: SAM/BAM alignment files <Badge text="BAM recommended"/>
+- `validate fastq`: paired-end reads from an Illumina sequencer in FASTQ format <Badge text="gzipped recommended"/>
+    - **sample names**: <Badge variant="success" text="a-z"/> <Badge variant="success" text="0-9"/> <Badge variant="success" text="."/> <Badge variant="success" text="_"/> <Badge variant="success" text="-"/> <Badge text="case insensitive"/>
+    - **forward**: <Badge variant="success" text="_F"/> <Badge variant="success" text=".F"/> <Badge variant="success" text=".1"/> <Badge variant="success" text="_1"/> <Badge variant="success" text="_R1_001"/> <Badge variant="success" text=".R1_001"/> <Badge variant="success" text="_R1"/> <Badge variant="success" text=".R1"/> 
+    - **reverse**: <Badge variant="success" text="_R"/> <Badge variant="success" text=".R"/> <Badge variant="success" text=".2"/> <Badge variant="success" text="_2"/> <Badge variant="success" text="_R2_001"/> <Badge variant="success" text=".R2_001"/> <Badge variant="success" text="_R2"/> <Badge variant="success" text=".R2"/> 
+    - **fastq extension**: <Badge variant="success" text=".fq"/> <Badge variant="success" text=".fastq"/> <Badge text="case insensitive"/>
+</Accordion>
+
+Harpy does a lot of stuff with a lot of software and each of these programs expect the incoming data to follow particular formats (plural, unfortunately).
+These formatting opinions/specifics are at the mercy of the original developers and while there are times when Harpy can (and does)
+modify input/output files for format compatability, it's not always feasible or practical to handle all possible cases. So, our
+solution is perform what we lovingly call "pre-flight checks" to assess if your input FASTQ or BAM files are formatted correctly
+for the pipeline. There are separate `validate fastq` and `validate bam` submodules and the result of each is a report detailing file format quality checks. 
+
+## When to run
+-  `validate fastq`: the validation checks for FASTQ files are best performed _after_ demultiplexing (or trimming/QC) and _before_ sequence alignment
+- `validate bam`: the validation checks for BAM files should be run _after_ sequence alignment and _before_ consuming those files for other purposes
+(e.g. variant calling, phasing, imputation)
+
+
+```bash title="Usage"
+harpy validate fastq OPTIONS... INPUTS...
+harpy validate bam OPTIONS... INPUTS...
+```
+
+```bash title="Examples"
+harpy validate fastq --threads 20 raw_data
+harpy validate bam --threads 20 Align/bwa
+```
+
+## Running Options
+In addition to the [common runtime options](../../getting-started/common-options), the `validate fastq` and `validate bam`
+commands are configured using only command-line input arguments:
+
+
+| argument | description                                                                                                                                             |
+| :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `INPUTS` | Files or directories containing [input fastq or bam files](../../getting-started/common-options#input-arguments) <Badge variant="tip" text="required"/> |
+
+## Workflow
+
+<Tabs>
+<TabItem label="fastq files">
+Below is a table of the format specifics `validate fastq` checks for FASTQ files. Since 10X data doesn't use
+the haplotagging data format, you will find little value in running`validate fastq` on 10X FASTQ files. Take note
+of the language such as when "any" and "all" are written.
+
+
+| Criteria           | Pass Condition                                                                                   | Fail Condition                                                |
+| :----------------- | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
+| Format             | **all** reads with BX:Z: tag have properly formatted barcodes for the given linked-read platform | **any** BX:Z: barcodes have incorrect format                  |
+| follows SAM spec   | **all** reads have proper `TAG:TYPE:VALUE` comments                                              | **any** reads have incorrectly formatted comments             |
+| BX:Z: last comment | **all** reads have `BX:Z`: as final comment                                                      | **at least 1 read** doesn't have `BX:Z:` tag as final comment |
+| BX:Z: tag          | any `BX:Z:` tags present                                                                         | **all** reads lack `BX:Z:` tag                                |
+
+</TabItem>
+<TabItem label="bam files">
+Below is a table of the format specifics`validate bam` checks for SAM/BAM files. Take note
+of the language such as when "any" and "all" are written.
+
+
+| Criteria       | Pass Condition                                                                                        | Fail Condition                                                |
+| :------------- | :---------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
+| name matches   | the file name matches the `@RG ID:` tag in the header                                                 | file name does not match `@RG ID:` in the header              |
+| MI: tag        | **any** alignments with `BX:Z:` tags also have `MI:i:` (or `MI:Z:`) tags                              | **all** reads have `BX:Z:` tag present but `MI:i:` tag absent |
+| BX:Z: tag      | any `BX:Z:` tags present                                                                              | **all** alignments lack `BX:Z:` tag                           |
+| Format         | **all** alignments with BX:Z: tag have properly formatted barcodes for the given linked-read platform | **any** `BX:Z:` barcodes have incorrect format                |
+| BX:Z: last tag | **all** reads have `BX:Z`: as final tag in alignment records                                          | **at least 1 read** doesn't have `BX:Z:` tag as final tag     |
+
+</TabItem>
+<TabItem label="output">
+The default output directory is `Validate/fastq` or `Validate/bam` depending on which mode you are using.
+The sole output of the validation workflow will be an .ipynb file containing the validation report.
+</TabItem>
+</Tabs>

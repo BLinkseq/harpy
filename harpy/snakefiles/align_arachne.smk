@@ -15,6 +15,8 @@ molecule_distance = PARAMETERS.get("distance-threshold", 0)
 fqlist            = INPUTS["fastq"]
 genomefile 	      = INPUTS["reference"]
 centromeres 	  = INPUTS.get("centromeres", None)
+is10X             = WORKFLOW.get("linkedreads", {}).get("type", "standard") == "10x"
+useRFA            = WORKFLOW.get('use-rfa', False)
 
 # overwrite what's in align.smk
 bx_tag            = True 
@@ -39,7 +41,7 @@ rule process_reference:
     input:
         genomefile
     output: 
-        multiext("workflow/reference/ref.fa.gz", '.amb', '.ann', '.bwt', '.pac', '.sa'),
+        multiext("workflow/reference/ref.fa.gz", '.l2b', '.mbw'),
         geno = "workflow/reference/ref.fa.gz",
         fai = "workflow/reference/ref.fa.gz.fai",
         gzi = "workflow/reference/ref.fa.gz.gzi"
@@ -62,29 +64,31 @@ rule arachne_prep:
     input:
         get_fq
     output:
-        R1 = temp("arachne-prep/{sample}.R1.fq.gz"),
-        R2 = temp("arachne-prep/{sample}.R2.fq.gz"),
+        R1 = temp("prep/{sample}.arachne.R1.fq.gz"),
+        R2 = temp("prep/{sample}.arachne.R2.fq.gz"),
     threads:
         4
     log:
         "logs/preprocess/{sample}.prep.log"
+    params:
+        "--bc-list 10x" if is10X else ""
     conda:
         "envs/align.yaml"
     container:
         f"ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
         """
-        arachne prep -t {threads} arachne-prep/{wildcards.sample} {input} 2> {log}
-        mv arachne-prep/{wildcards.sample}.arachne.R1.fq.gz {output.R1}
-        mv arachne-prep/{wildcards.sample}.arachne.R2.fq.gz {output.R2}
+        arachne prep -t {threads} prep/{wildcards.sample} {input} 2> {log}
+        #mv arachne-prep/{wildcards.sample}.arachne.R1.fq.gz {output.R1}
+        #mv arachne-prep/{wildcards.sample}.arachne.R2.fq.gz {output.R2}
         """
 
 rule align:
     input:
-        multiext('workflow/reference/ref.fa.gz', '.amb', '.ann', '.bwt', '.pac', '.sa'),
+        multiext('workflow/reference/ref.fa.gz', '.l2b', '.mbw'),
         ref   = 'workflow/reference/ref.fa.gz',
-        R1 = 'arachne-prep/{sample}.R1.fq.gz',
-        R2 = 'arachne-prep/{sample}.R2.fq.gz',
+        R1 = 'prep/{sample}.arachne.R1.fq.gz',
+        R2 = 'prep/{sample}.arachne.R2.fq.gz',
         centromeres = centromeres if centromeres else []
     output:
         temp("arachne/{sample}.arachne.bam")
