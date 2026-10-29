@@ -4,6 +4,7 @@ sidebar:
   label: Running on an HPC
 description: Best-practices for running on a computing cluster
 ---
+import { Aside } from from '@astrojs/starlight/components';
 
 You'll be working with genomic data, so it's very likely you'll try to run Harpy on a high-performance computing (HPC) cluster at some point.
 Doing so will usually require you to log into a head node and submit jobs that some kind of scheduler (e.g. SLURM, HTCondor)
@@ -18,7 +19,7 @@ major Harpy workflows rely on Snakemake and, conveniently/thankfully, the Snakem
 execution on HPC clusters.
 
 ## Snakemake HPC execution
-Snakemake has [executor plugins](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html) for various cluster job 
+Snakemake has [executor plugins](https://snakemake.github.io/snakemake-plugin-catalog/index.html) for various cluster job 
 managers (like SLURM) and storage plugins (like `fs` or `s3`) to automate workflow execution and file transfer in HPC contexts. In order
 to activate the "HPC mode" (not a real phrase) of Snakemake, you need to provide a yaml file with configuration details for your HPC job
 manager and [possibly] the file storage system. Behind the scenes, Snakemake will use the configuration information and 
@@ -55,6 +56,12 @@ harpy qc -a auto --hpc hpc/slurm.yaml data/porcupine
 In addition to the config file, you will need to install the executor plugins you intend to use. This is done with
 e.g. `conda install bioconda::snakemake-executor-plugin-slurm` and ` conda install bioconda::snakemake-storage-plugin-fs ` or their
 Pixi equivalents with e.g. `pixi add snakemake-executor-plugin-slurm`.
+
+<Aside>
+The leftmost column of the harpy progress bar typically describes how many active jobs there are for a step/rule. However,
+when running harpy in HPC contexts, a job being submitted to the scheduler doesn't necessarily mean it's actively running.
+Therefore, the leftmost column should be considered _"jobs submitted"_ and the timer column is more of proxy of _"time waiting and/or running"_.
+</Aside>
 
 The Snakemake framework also allows you to overwrite Harpy's internal workflow defaults
 in the event your dataset needs more (or less) resources. For example, you can change the
