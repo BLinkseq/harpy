@@ -53,6 +53,7 @@
 - error printing when using `--container` correctly displays full apptainer-prefixed shell call
 - mitigated possibility of concurrent notebooks clashing when running on HPC
 - input file handling now respects symlinks instead of resolving to their targets
+- alignment barcode stats report exits early, without an error, with helpful information as to why there are no valid barcodes
 
 # Internal
 - simplified summaries logic
