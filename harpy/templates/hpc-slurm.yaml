@@ -3,6 +3,8 @@ executor: slurm
 default-resources:
   slurm_account: $USER
   slurm_partition: regular
+  slurm_status_command: sacct
+  slurm_jobname_prefix: {rule}-{wildcard}
   mem_mb: attempt * 2000
   runtime: 10
 jobs: 50

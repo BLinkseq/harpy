@@ -1,0 +1,24 @@
+__use_yte__: true
+executor: sge
+jobs: 50
+latency-wait: 45
+retries: 1
+default-resources:
+  sge_project: PROJECT NAME 
+  sge_keep_successful_logs: True 
+  sge_use_qacct: False 	
+  sge_logdir: .snakemake/sge_logs
+  sge_export_env: True	
+  sge_join_logs: False
+  sge_notify: False
+  sge_array_limit: 75000 	
+  #sge_queue:
+  #sge_jobname_prefix: 	
+  #sge_pe: 
+  #sge_requeue: 	
+  #sge_reservation: 
+  #sge_mail_on: 	
+  #sge_mail_address: 
+  #sge_hold_jid: 	
+  #sge_task_concurrency:
+  #sge_extra: 

@@ -197,17 +197,6 @@ def hpc_lsf():
     fetch_template("hpc-lsf.yaml")
     package_absent("snakemake-executor-plugin-lsf")
 
-@click.command(panel = "HPC Configurations")
-@click.help_option('--help', hidden = True)
-def hpc_slurm():
-    """
-    Create a template config for SLURM
-
-    This command creates a configuration for the SLURM HPC scheduler. Writes to `stdout`.
-    You will also need to install `snakemake-executor-plugin-slurm` for the HPC job submission to work.
-    """
-    fetch_template("hpc-slurm.yaml")
-    package_absent("snakemake-executor-plugin-slurm")
 
 @click.command(panel = "HPC Configurations")
 @click.help_option('--help', hidden = True)
@@ -221,6 +210,29 @@ def hpc_googlebatch():
     fetch_template("hpc-googlebatch.yaml")
     package_absent("snakemake-executor-plugin-googlebatch")
 
+@click.command(panel = "HPC Configurations")
+@click.help_option('--help', hidden = True)
+def hpc_sge():
+    """
+    Create a template config for SGE/UGE/OGS
+
+    This command creates a configuration for the Sun Grid Engine (SGE), Univa Grid Engine (UGE), and Open Grid Scheduler (OGS) clusters.
+    Writes to `stdout`. You will also need to install `snakemake-executor-plugin-sge` for the HPC job submission to work.
+    """
+    fetch_template("hpc-sge.yaml")
+    package_absent("snakemake-executor-plugin-sge")
+
+@click.command(panel = "HPC Configurations")
+@click.help_option('--help', hidden = True)
+def hpc_slurm():
+    """
+    Create a template config for SLURM
+
+    This command creates a configuration for the SLURM HPC scheduler. Writes to `stdout`.
+    You will also need to install `snakemake-executor-plugin-slurm` for the HPC job submission to work.
+    """
+    fetch_template("hpc-slurm.yaml")
+    package_absent("snakemake-executor-plugin-slurm")
 
 @click.command(panel =  "Input Files", context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/impute/#parameter-file")
 @click.help_option('--help', hidden = True)
