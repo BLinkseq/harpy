@@ -1,0 +1,36 @@
+__use_yte__: true
+executor: cluster-generic
+cluster-generic-submit-cmd: |
+  logdir="$PWD/logs"; mkdir -p "$logdir"; SMJOBSCRIPT="${@: -1}"
+  res="ncpus={resources.threads},mem={resources.mem_gb}GB,walltime={resources.walltime},storage={resources.storage},jobfs={resources.jobfs}"
+  echo "[$(date)] qsub -N smk_{rule} -P {resources.project} -q {resources.queue} -l $res -l wd -j oe -o "${logdir}/{rule}.{jobid}.log" "$SMJOBSCRIPT" 2>> "$PWD/submit_debug.log"
+  qsub -N "smk_{rule}" -P {resources.project} -q "{resources.queue}" -l "$res" -l wd -j oe -o "${logdir}/{rule}.{jobid}.log" "$SMJOBSCRIPT" 2>> "$PWD/submit_debug.log"
+cluster-generic-status-cmd: |
+  out=$(qstat -x -f "$1" 2>/dev/null)
+  state=$(echo "$out" | awk '/job_state/ {print $3}')
+  code=$(echo "$out" | awk '/Exit_status/ {print $3}')
+  case "$state" in
+    F) [ "$code" = "0" ] && echo success || echo failed ;;
+    *) echo running ;;
+  esac
+cluster-generic-cancel-cmd: qdel
+jobs: 50
+latency-wait: 60
+default-resources:
+  mem_gb: 4
+  walltime: "00:05:00"
+  queue: normal
+  project: PROJECT NAME
+  storage: PATH/TO/STORAGE
+  jobfs: "100MB"
+
+
+# This section is for advanced copying into a scratch directory #
+## requires snakemake-storage-plugin-fs, which can be installed via conda
+#default-storage-provider: fs
+#local-storage-prefix: /home2/$USER
+#shared-fs-usage:
+#  - persistence
+#  - software-deployment
+#  - sources
+#  - source-cache

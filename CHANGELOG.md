@@ -9,7 +9,7 @@
   - the completion scripts are generated during the conda/pixi build, installed where each shell looks for them, and enabled automatically when the environment is activated (conda, `pixi shell`), no user setup required
   - file-like arguments (FASTQ, FASTA, BAM, VCF, HPC profiles, etc.) defer to the shell's own file completion
   - adds the hidden `harpy completion <shell> [program]` command that prints the script for a given shell and program (used by the build)
-- `sge` cluster support added to `template`
+- `sge` and `pbs` cluster support added to `template`. The latter is experimental.
 
 # Changes
 - much faster CLI startup: `harpy --version` and `harpy --help` go from ~2s to ~0.2s
