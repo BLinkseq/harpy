@@ -8,7 +8,7 @@ from harpy.common.cli_filetypes import DemuxSchema, FASTQfile, HPCProfile
 from harpy.common.cli_params import SnakemakeParams
 from harpy.common.file_ops import fetch_template
 from harpy.common.system_ops import container_ok
-from harpy.common.workflow import Workflow
+from harpy.runtime.workflow import Workflow
 from harpy.validation.fastq import FASTQ
 from harpy.validation.demux import pheniqsSchema
 

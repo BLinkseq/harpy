@@ -12,7 +12,7 @@ import yaml
 from harpy import __version__
 from harpy.common.environments import HarpyEnvs
 from harpy.common.file_ops import filepath, last_sm_log, purge_empty_logs
-from harpy.common.launch import LaunchSnakemake
+from harpy.runtime.launch import LaunchSnakemake
 from harpy.common.printing import HarpyPrint
 from harpy.common.summaries import Summary
 

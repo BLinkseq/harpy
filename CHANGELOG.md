@@ -67,6 +67,7 @@
 python-API call to `papermill` with the post-processing that was previously covered by `process-notebook`. 
   - functionally, this means the command line interface is cleaner in workflows, and the kernel engine can be declared to be IPC instead of TCP, which works better for concurrency.
 - harpy-managed dependency containers now hosted on GHCR (GitHub Container Registry) instead of DockerHub
+- `harpy.common.launch` and `harpy.common.workflow` moved from `harpy.common` to own module `harpy.runtime.*`
 
 # Added but not exposed yet
 - `harpy snp deepvariant` - call SNPs in high-depth samples using Google's DeepVariant. AI AI AI!!!

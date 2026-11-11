@@ -7,7 +7,7 @@ import rich_click as click
 from harpy.common.cli_filetypes import FASTQfile, HPCProfile, SAMfile
 from harpy.common.cli_params import SnakemakeParams
 from harpy.common.system_ops import container_ok
-from harpy.common.workflow import Workflow
+from harpy.runtime.workflow import Workflow
 from harpy.validation.fastq import FASTQ
 from harpy.validation.xam import XAM
 

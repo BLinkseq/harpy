@@ -7,7 +7,7 @@ import sys
 import rich_click as click
 
 from harpy.common.environments import HarpyEnvs
-from harpy.common.workflow import Workflow
+from harpy.runtime.workflow import Workflow
 
 env_list = ['all'] + list(HarpyEnvs().environments().keys())
 

@@ -15,7 +15,7 @@ from harpy.common.cli_params import (
 )
 from harpy.common.file_ops import genomic_windows
 from harpy.common.system_ops import container_ok
-from harpy.common.workflow import Workflow
+from harpy.runtime.workflow import Workflow
 from harpy.validation.fasta import FASTA
 from harpy.validation.populations import Populations
 from harpy.validation.xam import XAM

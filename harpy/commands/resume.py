@@ -8,7 +8,7 @@ import yaml
 
 from harpy.common.environments import check_environments
 from harpy.common.printing import HarpyPrint
-from harpy.common.workflow import Workflow
+from harpy.runtime.workflow import Workflow
 
 hp = HarpyPrint()
 
