@@ -53,7 +53,7 @@ class XAM():
             self.print.error(
                 "invalid file type",
                 f"[yellow]{len(badfiles)}[/] of the input alignment files did not conform to SAM/BAM format expectations.",
-                "Please verify that the files listed below are properly formatted SAM or BAM files."
+                "Please verify that the files listed below are properly formatted SAM or BAM files.",
                 "Offending Files",
                 ", ".join(badfiles)
             )
