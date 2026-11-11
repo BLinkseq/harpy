@@ -10,6 +10,7 @@
   - file-like arguments (FASTQ, FASTA, BAM, VCF, HPC profiles, etc.) defer to the shell's own file completion
   - adds the hidden `harpy completion <shell> [program]` command that prints the script for a given shell and program (used by the build)
 - `sge` and `pbs` cluster support added to `template`. The latter is experimental.
+- `harp phase snp` now does supplemental statistical phasing with `shapeit4` when provided a population file
 
 # Changes
 - much faster CLI startup: `harpy --version` and `harpy --help` go from ~2s to ~0.2s
@@ -22,6 +23,8 @@
   - not technically invalid, but the key absence/mismatch will default to all optional features turned off, which may be unintended
 - fastq validation is now limited to 100 records, which should see a significant validation speedup
 - `bx-stats-sam` correctly names the column `fragments`, was formerly `reads`
+- `phase snp`: `--prune-threshold` short name changed to `-t` from `-p`
+  - accommodates new `--populations` option for shapeit4 statistical phasing
 - workflows that typically output many files now output them into a subdirectory for neatness. This should make it much easier to interrogate output directories without being hit with a wall of filenames
   - `qc`: final fastq outputs in `<outdir>/processed`
   - `align`: final BAM outputs in `<outdir>/aligned`

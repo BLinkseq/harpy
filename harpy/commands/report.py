@@ -28,10 +28,10 @@ def report():
     """
 
 @click.command(epilog = "Documentation: https://blinkseq.github.io/harpy/reports/")
+@click.option('-c', '--clear-cache', is_flag = True, default = False, help = 'Remove `_build` directory prior to server launch')
 @click.option('-d', '--debug', is_flag = True, help = 'Dump all of jupyterbook\'s output to the terminal')
 @click.option('-h', '--headless', is_flag = True, help = 'Run the server in headless mode, with only the content server started')
 @click.option('-m', '--md', is_flag = True, help = 'Also scan for markdown files (.md)')
-@click.option('-c', '--clear-cache', is_flag = True, default = False, help = 'Remove `_build` directory prior to server launch')
 @click.option('-p', '--port', type = int, help = 'Run the application server from the specified port number')
 @click.option('-r', '--refresh', type = click.IntRange(min = 0, max_open=True), show_default = True, default = 0, help = 'Refresh interval, in seconds (disabled with `0`)')
 @click.option('-s', '--server-port', type = int, help = 'Run the content server from the specified port number')
@@ -117,8 +117,8 @@ def live(directory, debug, md, headless, clear_cache, port, server_port, refresh
 
 @click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/reports/")
 @click.option('-d', '--debug', is_flag = True, default = False, help = 'Log process information to stderr')
-@click.option('-s', '--self-contained', is_flag = True, default = False, help = 'Store all JS and CSS within the output file')
 @click.option('-Q', '--quiet', is_flag = True, default = False, help = 'Do not print progress')
+@click.option('-s', '--self-contained', is_flag = True, default = False, help = 'Store all JS and CSS within the output file')
 @click.help_option('--help', hidden = True)
 @click.argument('notebooks', required=True, type=IPYNBfile(), nargs=-1)
 def static(notebooks, debug, quiet, self_contained):

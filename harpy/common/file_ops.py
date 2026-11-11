@@ -125,12 +125,12 @@ def is_plaintext(file_path: str) -> bool:
     except UnicodeDecodeError:
         return False
 
-def pop_manifest(groupingfile, filelist) -> dict:
+def pop_manifest(groupingfile, filelist) -> dict[str,list[str]]:
     '''
     Create dictionary of population => filenames to make it easier to
     set the snakemake rules/wildcards for population grouping
     '''
-    d = {}
+    d: dict[str, list[str]] = {}
     with open(groupingfile) as f:
         for line in f:
             samp, pop = line.rstrip().split()
@@ -143,6 +143,50 @@ def pop_manifest(groupingfile, filelist) -> dict:
             else:
                 d[pop].append(sampl)
     return d
+
+def pop_manifest_simple(groupingfile) -> dict[str,list[str]]:
+    '''
+    Create dictionary of population => sample_names to make it easier to
+    set the snakemake rules/wildcards for population grouping. Input format
+    is preserved, including directories, extensions, etc.
+
+    Example:
+    pop1    sample1
+    pop1    sample2
+    pop2    sample3
+    pop3    sample4
+
+    becomes
+
+    {
+        'pop1' : ['sample1', 'sample2'],
+        'pop2' : ['sample3'],
+        'pop3' : ['sample4']
+    }
+    '''
+    d: dict[str, list[str]] = {}
+    with open(groupingfile) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            if line.lstrip().startswith("#"):
+                continue
+            samp, pop = line.split()
+            samp = samp.strip()
+            pop = pop.strip()
+            if pop not in d:
+                d[pop] = [samp]
+            else:
+                d[pop].append(samp)
+    return d
+
+def get_vcf_contigs(vcf: str):
+    """reads the header of a vcf/bcf file and populate `self.contigs` with the contigs (keys) and their lengths (values)"""
+    from pysam import VariantFile
+    with VariantFile(vcf) as _vcf:
+        return list(_vcf.header.contigs.keys())
+
 
 def naibr_extra(argsDict: dict, extra) -> dict:
     if extra:

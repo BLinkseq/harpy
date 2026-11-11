@@ -25,7 +25,7 @@ large_thresh  = PARAMETERS.get("variant-thresholds", {}).get("large", 95)
 dup_thresh    = PARAMETERS.get("variant-thresholds", {}).get("duplicates", 10)
 genomefile    = INPUTS["reference"]
 bamlist       = INPUTS["alignments"]
-grp          = INPUTS.get("groupings") or {}
+grp           = INPUTS.get("groupings") or {}
 if grp:
     groupings = grp.get("processed", [])
     if not os.path.isfile(groupings):
