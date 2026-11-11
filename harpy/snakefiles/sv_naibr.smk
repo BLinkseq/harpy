@@ -27,7 +27,7 @@ grp          = INPUTS.get("groupings") or {}
 if grp:
     groupings = grp.get("processed", [])
     if not os.path.isfile(groupings):
-        groupings.get("source") or []
+        groupings = groupings.get("source", [])
 else:
     groupings = []
 

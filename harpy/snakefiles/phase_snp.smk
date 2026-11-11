@@ -26,7 +26,7 @@ grp               = INPUTS.get("groupings") or {}
 if grp:
     groupings = grp.get("processed", [])
     if not os.path.isfile(groupings):
-        groupings.get("source") or []
+        groupings = groupings.get("source", [])
 else:
     groupings = []
 
@@ -216,6 +216,10 @@ rule annotate_phase:
     shell:
         "bcftools annotate -a {input.phase} -o {output.bcf} {params} {input.orig} 2> {log}"
 
+## if group file provided, merge samples by population
+if grp:
+
+
 rule merge_samples:
     priority: 100
     input: 
@@ -251,7 +255,6 @@ rule summarize_blocks:
             done
         }} 2> {log} | gzip > {output}
         """
-
 
 rule filter_by_population:
     input:
