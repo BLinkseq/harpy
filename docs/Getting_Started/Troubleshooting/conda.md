@@ -82,11 +82,10 @@ to install (you guessed it!) all of them:
 - `align`
 - `assembly`
 - `metassembly`
+- `preprocess`
 - `phase`
 - `qc`
-- `r`
-- `simulations`
-- `stitch`
+- `impute`
 - `variants`
 
 #### deps container
