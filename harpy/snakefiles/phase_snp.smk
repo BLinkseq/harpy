@@ -22,10 +22,19 @@ molecule_distance = PARAMETERS.get("distance-threshold", 100000)
 samples_from_vcf  = PARAMETERS.get("prioritize-vcf-samples", False)
 extra             = PARAMETERS.get("extra", "") 
 variantfile       = INPUTS["vcf"]
-bamlist           = INPUTS["alignments"]
+grp               = INPUTS.get("groupings") or {}
+if grp:
+    groupings = grp.get("processed", [])
+    if not os.path.isfile(groupings):
+        groupings.get("source") or []
+else:
+    groupings = []
 
+bamlist           = INPUTS["alignments"]
 bamdict           = dict(zip(bamlist, bamlist))
 plot_contigs      = ",".join(plot_contigs) if isinstance(plot_contigs, list) else plot_contigs
+
+
 invalid_regex = {
     "haplotagging" : "'{split($4,b,/-/)} b[1] !~ /[ABCD]00/'",
     "stlfr" : "'{split($4,b,/-/)} b[1] !~ /^0_|_0_|_0$/'",
@@ -216,13 +225,15 @@ rule merge_samples:
         "variants.phased.bcf.csi",
         filelist = temp("phased_samples/bcf.list"),
         bcf = "variants.phased.bcf"
+    log:
+        "logs/merge.log"
     threads:
         workflow.cores
     run:
         with open(output.filelist, "w") as f_out:
             for i in input.bcf:
                 f_out.write(i + "\n")
-        shell("bcftools merge --threads {threads} --force-single -l {output.filelist} -Ob -o {output.bcf} --write-index")
+        shell("bcftools merge --threads {threads} --force-single -l {output.filelist} -Ob -o {output.bcf} --write-index 2> {log}")
 
 rule summarize_blocks:
     input:
@@ -240,6 +251,57 @@ rule summarize_blocks:
             done
         }} 2> {log} | gzip > {output}
         """
+
+
+rule filter_by_population:
+    input:
+        "variants.phased.bcf.csi",
+        bcf = "variants.phased.bcf"
+    output:
+        bcf = temp("split_by_pop/{population}.bcf"),
+        csi = temp("split_by_pop/{population}.bcf.csi"),
+        filelist = temp("split_by_pop/{population}.list")
+    log:
+        "logs/split_by_pop/{population}.log"
+    threads:
+        2
+    run:
+        with open(output.filelist, "w") as f_out:
+            for i in popdict[wildcards.population]:
+                f_out.write(i + "\n")
+        shell("bcftools view --threads {threads} -S {output.filelist} -Ob -o {output.bcf} --write-index 2> {log}")
+
+rule statistical_phase:
+    input:
+        "split_by_pop/{population}.bcf.csi",
+        bcf = "split_by_pop/{population}.bcf"
+    output:
+        "statistical_phasing/{population}.{contig}.shapeit4.bcf"
+    log:
+        "statistical_phasing/logs/{population}.{contig}.shapeit4.log"
+    threads: 8
+    params:
+        lambda wc: f"--region {wc.contig}", # UPDATE WITH WILDCARD
+        "--sequencing",
+        "--use-PS 0.0001",
+        f"--map {gmap}" if gmap else "" 
+    conda:
+        "envs/phase.yaml"
+    container:
+        f"ghcr.io/blinkseq/harpy:phase_{VERSION}"
+    shell:
+        "shapeit4 --input {input.bcf} {params} --thread {threads} --log {log} --output {output}"
+
+use rule merge_samples as merge_all with:
+    input:
+        bcf = expand("statistical_phasing/{population}.{contig}.shapeit4.bcf", population = populations, contig = contigs)
+        csi = expand("statistical_phasing/{population}.{contig}.shapeit4.bcf.csi", population = populations, contig = contigs)
+    output:
+        "variants.phased.bcf.csi",
+        filelist = temp("statistical_phasing/bcf.list"),
+        bcf = "variants.phased.bcf"
+    log:
+        "logs/merge.shapeit4.log"
 
 rule phase_report:
     retries: 1

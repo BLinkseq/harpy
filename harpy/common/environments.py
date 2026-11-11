@@ -49,6 +49,7 @@ class HarpyEnvs():
         "phase" : [
             "bioconda::hapcut2",
             "bioconda::samtools",
+            "bioconda::shapeit4=4.2.2"
             "bioconda::whatshap"
         ],
         "qc" : [
