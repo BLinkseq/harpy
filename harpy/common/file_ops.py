@@ -182,11 +182,16 @@ def pop_manifest_simple(groupingfile) -> dict[str,list[str]]:
     return d
 
 def get_vcf_contigs(vcf: str):
-    """reads the header of a vcf/bcf file and populate `self.contigs` with the contigs (keys) and their lengths (values)"""
+    """reads the header of a vcf/bcf file and return a list of the contigs listed therein"""
     from pysam import VariantFile
     with VariantFile(vcf) as _vcf:
         return list(_vcf.header.contigs.keys())
 
+def get_vcf_samples(vcf: str) -> list[str]:
+    """reads the header of a vcf/bcf file and return a list of the samples listed therein"""
+    from pysam import VariantFile
+    with VariantFile(vcf) as _vcf:
+        return list(_vcf.header.samples)
 
 def naibr_extra(argsDict: dict, extra) -> dict:
     if extra:

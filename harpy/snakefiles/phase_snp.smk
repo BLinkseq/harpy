@@ -1,7 +1,7 @@
 import os
 import subprocess
 from pathlib import Path
-from harpy.common.file_ops import get_vcf_contigs, pop_manifest_simple
+from harpy.common.file_ops import get_vcf_contigs, get_vcf_samples, pop_manifest_simple
 
 localrules: all, summarize_blocks
 wildcard_constraints:
@@ -20,7 +20,6 @@ pruning           = PARAMETERS.get("prune", 30)
 map_qual          = PARAMETERS.get("min-map-quality", 20)
 base_qual         = PARAMETERS.get("min-base-quality", 13)
 molecule_distance = PARAMETERS.get("distance-threshold", 100000)
-samples_from_vcf  = PARAMETERS.get("prioritize-vcf-samples", False)
 extra             = PARAMETERS.get("extra", "") 
 variantfile       = INPUTS["vcf"]
 grp               = INPUTS.get("groupings") or {}
@@ -38,6 +37,7 @@ popdict       = pop_manifest_simple(groupings) if groupings else None # {pop: [s
 bamlist       = INPUTS["alignments"]
 bamdict       = dict(zip(bamlist, bamlist))
 plot_contigs  = ",".join(plot_contigs) if isinstance(plot_contigs, list) else plot_contigs
+samplenames   = [Path(i).stem for i in bamlist]
 
 invalid_regex = {
     "haplotagging" : "'{split($4,b,/-/)} b[1] !~ /[ABCD]00/'",
@@ -51,11 +51,6 @@ if bc_type == "none":
 else:
     fragfile =  "link_fragments/{sample}.linked.frags"
     linkarg  = "--10x 1"
-if samples_from_vcf:
-    bcfquery = subprocess.Popen(["bcftools", "query", "-l", variantfile], stdout=subprocess.PIPE)
-    samplenames = bcfquery.stdout.read().decode().split()
-else:
-    samplenames = [Path(i).stem for i in bamlist]
 
 if INPUTS.get("reference", None):
     genomefile = INPUTS["reference"]

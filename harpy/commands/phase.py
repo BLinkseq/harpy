@@ -71,7 +71,6 @@ def bam(vcf, inputs, output, threads, unlinked, vcf_samples, molecule_distance, 
     workflow.input(alignments.files, "alignments")
     workflow.param(molecule_distance, "distance-threshold")
     workflow.param(ploidy, "ploidy")
-    workflow.param(vcf_samples, "prioritize-vcf-samples")
     workflow.param(alignments.lr_type != "none", "use-linked-info")
     if extra_params:
         workflow.param(extra_params, "extra")
@@ -153,7 +152,6 @@ def snp(vcf, inputs, output, threads, unlinked, min_map_quality, min_base_qualit
     workflow.param(min_map_quality, "min-map-quality")
     workflow.param(min_base_quality, "min-base-quality")
     workflow.param(molecule_distance, "distance-threshold")
-    workflow.param(vcf_samples, "prioritize-vcf-samples")
     if extra_params:
         workflow.param(extra_params, "extra")
 
