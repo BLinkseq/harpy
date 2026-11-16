@@ -88,31 +88,6 @@ def get_pop_bcfs(wildcards):
     aln = list(filter(r.match, bamlist))
     return aln[0]
 
-rule isolate_sample:
-    input: 
-        variantfile
-    output:
-        vcf = temp("workflow/input/original/{sample}.bcf", group_jobs = True),
-        csi = temp("workflow/input/original/{sample}.bcf.csi", group_jobs = True)
-    shell:
-        "bcftools view -Ob -W -s {wildcards.sample} -o {output.vcf} {input}"
-
-rule isolate_het_snps:
-    input: 
-        "workflow/input/original/{sample}.bcf"
-    output:
-        temp("workflow/input/heterozygotes/{sample}.het.vcf")
-    shell:
-        "bcftools view -m 2 -M 2 -i 'GT=\"het\"' {input} > {output}"
-
-rule index_alignments:
-    input:
-        lambda wc: bamdict[wc.bam]
-    output:
-        "{bam}.bai"
-    shell:
-        "samtools index {input}"
-
 if indels:
     rule process_reference:
         input:
@@ -129,6 +104,31 @@ if indels:
                 samtools faidx --fai-idx {output.fai} {output.fasta}
             }} 2> {log}
             """
+
+rule isolate_sample:
+    input: 
+        variantfile
+    output:
+        bcf = temp("workflow/input/original/{sample}.bcf", group_jobs = True),
+        csi = temp("workflow/input/original/{sample}.bcf.csi", group_jobs = True),
+        het = temp("workflow/input/heterozygotes/{sample}.het.vcf", group_jobs = True)
+    log:
+        "logs/isolate_het/{sample}.isolate.log"
+    shell:
+        """
+        {{
+            bcftools view -Ob -W -s {wildcards.sample} -o {output.bcf} {input}
+            bcftools view -m 2 -M 2 -i 'GT=\"het\"' {output.vcf} > {output.het}     
+        }} 2> {log}
+        """
+
+rule index_alignments:
+    input:
+        lambda wc: bamdict[wc.bam]
+    output:
+        "{bam}.bai"
+    shell:
+        "samtools index {input}"
 
 rule extract_hairs:
     retries:
@@ -177,23 +177,23 @@ rule link_fragments:
 
 rule phase:
     input:
-        vcf       = "workflow/input/heterozygotes/{sample}.het.vcf",
-        fragments = fragfile
+        vcf   = "workflow/input/heterozygotes/{sample}.het.vcf",
+        frags = fragfile
     output: 
-        blocks    = "phase_blocks/{sample}.blocks",
-        vcf       = temp("phase_blocks/{sample}.blocks.phased.VCF")
+        blocks = "phase_blocks/{sample}.blocks",
+        vcf    = temp("phase_blocks/{sample}.blocks.phased.VCF")
     log:
         "logs/hapcut2/{sample}.blocks.phased.log"
     params: 
-        prune = f"--threshold {pruning}" if pruning > 0 else "--no_prune 1",
-        fixed_params = "--nf 1 --error_analysis_mode 1 --outvcf 1 --call_homozygous 1",
-        extra = extra
+        prune  = f"--threshold {pruning}" if pruning > 0 else "--no_prune 1",
+        static = "--nf 1 --error_analysis_mode 1 --outvcf 1 --call_homozygous 1",
+        extra  = extra
     conda:
         "envs/phase.yaml"
     container:
         f"ghcr.io/blinkseq/harpy:phase_{VERSION}"
     shell:
-        "HAPCUT2 --fragments {input.fragments} --vcf {input.vcf} --out {output.blocks} {params} > {log} 2>&1"
+        "HAPCUT2 --fragments {input.frags} --vcf {input.vcf} --out {output.blocks} {params} > {log} 2>&1"
 
 rule compress_phaseblock:
     input:
@@ -262,6 +262,24 @@ else:
                     f_out.write(i + "\n")
             shell("bcftools merge --threads {threads} --force-single -l {output.filelist} -Ob -o {output.bcf} --write-index 2> {log}")
 
+    rule merge_populations:
+        input:
+            bcf = expand("statistical_phasing/{population}.{contig}.shapeit4.bcf", population = popdict.keys(), contig = contigs)
+            csi = expand("statistical_phasing/{population}.{contig}.shapeit4.bcf.csi", population = popdict.keys(), contig = contigs)
+        output:
+            "variants.phased.bcf.csi",
+            filelist = temp("statistical_phasing/bcf.list"),
+            bcf = "variants.phased.bcf"
+        log:
+            "logs/merge.shapeit4.log"
+        threads:
+            workflow.cores
+        run:
+            with open(output.filelist, "w") as f_out:
+                for i in input.bcf:
+                    f_out.write(i + "\n")
+            shell("bcftools merge --threads {threads} --force-single -l {output.filelist} -Ob -o {output.bcf} --write-index 2> {log}")
+
 rule summarize_blocks:
     input:
         collect("phase_blocks/{sample}.blocks", sample = samplenames)
@@ -299,25 +317,6 @@ rule statistical_phase:
         f"ghcr.io/blinkseq/harpy:phase_{VERSION}"
     shell:
         "shapeit4 --input {input.bcf} {params} --thread {threads} --log {log} --output {output}"
-
-if groupings:
-    rule merge_populations:
-        input:
-            bcf = expand("statistical_phasing/{population}.{contig}.shapeit4.bcf", population = popdict.keys(), contig = contigs)
-            csi = expand("statistical_phasing/{population}.{contig}.shapeit4.bcf.csi", population = popdict.keys(), contig = contigs)
-        output:
-            "variants.phased.bcf.csi",
-            filelist = temp("statistical_phasing/bcf.list"),
-            bcf = "variants.phased.bcf"
-        log:
-            "logs/merge.shapeit4.log"
-        threads:
-            workflow.cores
-        run:
-            with open(output.filelist, "w") as f_out:
-                for i in input.bcf:
-                    f_out.write(i + "\n")
-            shell("bcftools merge --threads {threads} --force-single -l {output.filelist} -Ob -o {output.bcf} --write-index 2> {log}")
 
 rule phase_report:
     retries: 1
