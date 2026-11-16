@@ -118,7 +118,7 @@ rule isolate_sample:
         """
         {{
             bcftools view -Ob -W -s {wildcards.sample} -o {output.bcf} {input}
-            bcftools view -m 2 -M 2 -i 'GT=\"het\"' {output.vcf} > {output.het}     
+            bcftools view -m 2 -M 2 -i 'GT=\"het\"' {output.bcf} > {output.het}     
         }} 2> {log}
         """
 
