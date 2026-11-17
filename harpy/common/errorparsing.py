@@ -518,7 +518,7 @@ class ErrorHandler():
                 self.hp.print("  " + _i, style = 'red')
 
         if rule.env:
-            env_clean = rule.env.split("/")[:-2]
+            env_clean = rule.env.split("/")[-2:]
             self.hp.print(
                 f"[bold default]conda-env:[/] [red]{'/'.join(env_clean)}[/]"
             )
