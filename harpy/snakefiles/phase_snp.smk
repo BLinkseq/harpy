@@ -249,11 +249,11 @@ else:
             lambda wc: collect("phased_samples/{samples}.phased.annot.bcf.csi", samples = popdict[wc.population]),
             bcf = lambda wc: collect("phased_samples/{samples}.phased.annot.bcf", samples = popdict[wc.population]) 
         output:
-            bcf = temp("split_by_pop/{population}.bcf"),
             temp("split_by_pop/{population}.bcf.csi"),
+            bcf = temp("split_by_pop/{population}.bcf"),
             filelist = temp("split_by_pop/{population}.list")
         log:
-            "logs/merge.log"
+            "logs/{population}.merge.log"
         threads:
             workflow.cores
         run:
@@ -264,7 +264,7 @@ else:
 
     rule merge_populations:
         input:
-            bcf = expand("statistical_phasing/{population}.{contig}.shapeit4.bcf", population = popdict.keys(), contig = contigs)
+            bcf = expand("statistical_phasing/{population}.{contig}.shapeit4.bcf", population = popdict.keys(), contig = contigs),
             csi = expand("statistical_phasing/{population}.{contig}.shapeit4.bcf.csi", population = popdict.keys(), contig = contigs)
         output:
             "variants.phased.bcf.csi",
@@ -302,7 +302,8 @@ rule statistical_phase:
         "split_by_pop/{population}.bcf.csi",
         bcf = "split_by_pop/{population}.bcf"
     output:
-        "statistical_phasing/{population}.{contig}.shapeit4.bcf"
+        "statistical_phasing/{population}.{contig}.shapeit4.bcf.csi",
+        bcf = "statistical_phasing/{population}.{contig}.shapeit4.bcf"
     log:
         "statistical_phasing/logs/{population}.{contig}.shapeit4.log"
     threads: 8
@@ -310,13 +311,18 @@ rule statistical_phase:
         lambda wc: f"--region {wc.contig}",
         "--sequencing",
         "--use-PS 0.0001",
-        f"--map {gmap}" if gmap else "" 
+        f"--map {groupings}" if groupings else "" 
     conda:
         "envs/phase.yaml"
     container:
         f"ghcr.io/blinkseq/harpy:phase_{VERSION}"
     shell:
-        "shapeit4 --input {input.bcf} {params} --thread {threads} --log {log} --output {output}"
+        """
+        {{
+            shapeit4 --input {input.bcf} {params} --thread {threads} --log {log} --output {output.bcf}
+            bcftools index {output.bcf}
+        }} 2>> {log}
+        """
 
 rule phase_report:
     retries: 1

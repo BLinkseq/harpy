@@ -90,7 +90,7 @@ def bam(vcf, inputs, output, threads, unlinked, vcf_samples, molecule_distance, 
 @click.option('-m', '--min-base-quality', panel = "Parameters", default = 13, show_default = True, type = click.IntRange(0, 100, clamp = True), help = 'Minimum base quality for phasing')
 @click.option('-q', '--min-map-quality', panel = "Parameters", default = 20, show_default = True, type = click.IntRange(0, 40, clamp = True), help = 'Minimum mapping quality for phasing')
 @click.option('-d', '--molecule-distance', panel = "Parameters", default = 100000, show_default = True, type = click.IntRange(min = 100), help = 'Distance cutoff to split molecules (bp)')
-@click.option('-p', '--populations', panel = "Parameters", type=click.Path(exists = True, dir_okay=False, readable=True, resolve_path=True), help = 'File of `sample`_\\<TAB\\>_`population` for secondary phasing')
+@click.option('-p', '--populations', panel = "Parameters", type=click.Path(exists = True, dir_okay=False, readable=True, resolve_path=True), help = 'Population grouping file for secondary phasing')
 @click.option('-t', '--prune-threshold', panel = "Parameters", default = 30, show_default = True, type = click.IntRange(0,100, clamp = True), help = 'PHRED-scale threshold (%) for pruning low-confidence SNPs (larger prunes more.)')
 @click.option('-r', '--reference', panel = "Parameters", type=FASTAfile(), help = 'Path to reference genome if wanting to also extract reads spanning indels')
 @click.option('-U', '--unlinked', panel = "Parameters", is_flag = True, default = False, help = "Treat input data as not linked reads")
@@ -118,8 +118,9 @@ def snp(vcf, inputs, output, threads, unlinked, min_map_quality, min_base_qualit
 
     Presence and type of linked-read data is auto-detected, but you may choose to omit barcode
     information with `-U`. Use `--vcf-samples` to phase only the samples present in your input
-    `VCF` file rather than all the samples present in the `INPUTS` alignments. Optionally specify
-    `--populations` for a second round of statistical phasing by population.
+    `VCF` file rather than all the samples present in the `INPUTS` alignments. Optionally provide
+    file of `sample`_\\<TAB\\>_`population` to `--populations` for a second round of statistical
+    phasing by population.
     """
     workflow = Workflow("phase_snp", "phase_snp.smk", output, container, clean, quiet)
     workflow.setup_snakemake(threads, hpc, snakemake, no_temp)
