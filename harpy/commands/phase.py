@@ -145,6 +145,7 @@ def snp(vcf, inputs, output, threads, unlinked, min_map_quality, min_base_qualit
         workflow.input(fasta.file, "reference")
     if populations:
         popfile = Populations(populations, alignments.files, quiet)
+        popfile.shapeit_validation()
         popfile.copy_to_workflow(output)
         workflow.input(popfile.file, "groupings:source")
         workflow.input("workflow/sample.groups", "groupings:processed")
