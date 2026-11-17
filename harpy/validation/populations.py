@@ -78,7 +78,9 @@ class Populations():
             self.print.error(
                 "too few samples per population",
                 f"Some populations have fewer than 20 samples, which is the minimum required for shapeit4.",
-                f"Please omit those populations, or consider omitting [green]--populations[/] and doing statistical phasing afterward, separately.",
+                f"Please omit those populations, "
+                "consolidate the groups in biologically meaningful ways (if possible), "
+                "or consider omitting [green]--populations[/] and doing statistical phasing separately.",
                 "The populations causing this error are",
                 issues
             )
