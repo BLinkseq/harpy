@@ -2,9 +2,9 @@
 
 import glob
 import os
-import yaml
 
 import rich_click as click
+import yaml
 from rich.tree import Tree
 
 from harpy.common.file_ops import choose_logfile, parse_error, parse_file
@@ -96,7 +96,7 @@ def envs(program):
             deps: list[str] = yaml.safe_load(file)['dependencies']
             for idx in range(len(deps)):
                 deps[idx] = deps[idx].split('::', 1)[-1]
-        if not program or any([program in j for j in deps]):
+        if not program or any(program in j for j in deps):
             _subtree = tree.add("[bold]" + i.removesuffix('.yaml'), style = "blue")
             for d in deps:
                 if program:

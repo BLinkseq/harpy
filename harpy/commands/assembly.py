@@ -10,6 +10,7 @@ from harpy.common.system_ops import container_ok
 from harpy.runtime.workflow import Workflow
 from harpy.validation.fastq import FASTQ
 
+
 @click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/assembly")
 # SPADES
 @click.option('-k', '--kmer-length', panel = "Assembly Parameters", type = KParam(), show_default = True, default = "auto", help = 'K values to use for assembly (`odd` and `<128`)')

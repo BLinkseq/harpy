@@ -9,6 +9,7 @@ import yaml
 from harpy.common.file_ops import safe_read
 from harpy.common.printing import HarpyPrint
 
+
 @click.group(options_metavar='')
 @click.help_option('--help', hidden = True)
 def diagnose():
@@ -79,7 +80,7 @@ def stall(directory):
                     hp.print(output, end="", style = "yellow", overflow = "ignore", no_wrap = True)
     except Exception as e:
         hp.print("")
-        hp.rule("[bold]End of diagnosis", style = "yellow", overflow = "ignore", no_wrap = True)
+        hp.rule("[bold]End of diagnosis", style = "yellow")
         process.terminate()
         process.wait()
         sys.exit(1)

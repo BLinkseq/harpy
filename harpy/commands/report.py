@@ -9,12 +9,12 @@ import rich_click as click
 from rich.live import Live
 from rich.panel import Panel
 
-
+from harpy.common.cli_filetypes import IPYNBfile
 from harpy.common.printing import HarpyPrint
 from harpy.common.progress import PanelProgress
 from harpy.report.render import ReportRender
 from harpy.report.static import ReportStatic
-from harpy.common.cli_filetypes import IPYNBfile
+
 
 @click.group(options_metavar='')
 @click.command_panel("Commands", panel_styles={"border_style": "blue"})
@@ -24,7 +24,7 @@ def report():
     Render ipynb reports
 
     Provide an additional subcommand `live` or `static` to get more information on those
-    two options. 
+    two options.
     """
 
 @click.command(epilog = "Documentation: https://blinkseq.github.io/harpy/reports/")

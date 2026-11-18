@@ -62,7 +62,7 @@ def groupings(inputdir):
                 f"No [bold]FASTQ[/] or [bold]BAM[/] files were detected in [blue]{inputdir}[/]",
                 "Check that [bold]FASTQ[/] file endings conform to [green].[/][[green]F[/][dim]|[/dim][green]R1[/]][green].[/][[green]fastq[/][dim]|[/dim][green]fq[/]][green].gz[/]\nCheck that [bold]BAM[/] files end in [green].bam[/]\nRead the documentation for details: https://blinkseq.github.io/harpy/haplotagdata/#naming-conventions"
            )
-       samplenames = set([re.sub(bn_r, "", i, flags = re.IGNORECASE) for i in fqlist])
+       samplenames = {re.sub(bn_r, "", i, flags = re.IGNORECASE) for i in fqlist}
 
     hp.print(f"\n[bold]{len(samplenames)}[/] samples detected in [blue]{inputdir}[/]\n")
     for i in samplenames:
@@ -86,8 +86,7 @@ def report(update, action):
     git_dir = ""
     git_dir_err = ""
     if os.path.isdir(".git"):
-        git_dir = os.getcwd() # or "."
-        pass
+        git_dir = os.getcwd()
     else:
         if action:
             if not shutil.which("git"):
@@ -96,7 +95,7 @@ def report(update, action):
                     "The [green]git[/] software was not found to identify the root directory of this project, therefore this is not considered to be a git-managed project."
                 )
             else:
-                git_dir_proc = subprocess.Popen("git rev-parse --show-toplevel".split(), text = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+                git_dir_proc = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'], text = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
                 git_dir = git_dir_proc.stdout.readline().strip()
                 git_dir_err = git_dir_proc.stderr.readline().strip()
                 if "not a git repository" in git_dir_err and action:
@@ -108,10 +107,8 @@ def report(update, action):
     if action:
         fetch_template("buildreports.yml", os.path.join(git_dir, ".github", "workflows", "buildreports.yml"))
         hp.notice(
-            (
-                "You will need to configure your GitHub repository to deploy Pages via GitHub Actions. To do that, navigate to the repository [blue]Settings[/] on GitHub, "
-                "go to the [blue]Pages[/] section (via left sidebar) and set [blue]Build and deployment>Source[/] to [green]GitHub Actions[/]."
-            )
+            "You will need to configure your GitHub repository to deploy Pages via GitHub Actions. To do that, navigate to the repository [blue]Settings[/] on GitHub, "
+            "go to the [blue]Pages[/] section (via left sidebar) and set [blue]Build and deployment>Source[/] to [green]GitHub Actions[/]."
         )
         dependabot_entry = {
             "package-ecosystem": "github-actions",

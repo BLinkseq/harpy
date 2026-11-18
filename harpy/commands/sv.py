@@ -1,13 +1,16 @@
 """Harpy workflows to detect structural variants"""
 
-from harpy.validation.vcf import VCF
-from harpy.common.cli_filetypes import VCFfile
-from harpy.common.cli_filetypes import FASTQfile
 import os
 
 import rich_click as click
 
-from harpy.common.cli_filetypes import FASTAfile, FASTQfile, HPCProfile, SAMfile
+from harpy.common.cli_filetypes import (
+    FASTAfile,
+    FASTQfile,
+    HPCProfile,
+    SAMfile,
+    VCFfile,
+)
 from harpy.common.cli_params import (
     ContigList,
     LeviathanParams,
@@ -20,7 +23,9 @@ from harpy.runtime.workflow import Workflow
 from harpy.validation.fasta import FASTA
 from harpy.validation.fastq import FASTQ
 from harpy.validation.populations import Populations
+from harpy.validation.vcf import VCF
 from harpy.validation.xam import XAM
+
 
 @click.group()
 @click.help_option('--help', hidden = True)
@@ -209,7 +214,7 @@ def genotype(vcf, reference, inputs, output, region_size, inaccuracy, min_diff, 
     SVJedi-Tag does not identify structural variants-- it genotypes previously called ones, such as the output of LEVIATHAN or NAIBR.
     Provide the vcf of SVs and reference fasta, followed by one or more paired-end FASTQ files at the end of the command.
     If setting custom probability error rates, you must put in 4 values (small med large xl) e.g., `-e 0.2 0.1 0.02 0.008`, where the values correspond to different SV sizes,
-    given by: small: <25kb, medium 25kb-50kb, large 50kb-100kb, xl >=100kb. 
+    given by: small: <25kb, medium 25kb-50kb, large 50kb-100kb, xl >=100kb.
     """
     workflow = Workflow("sv_genotype", "sv_genotype.smk", output, container, clean, quiet)
     workflow.setup_snakemake(threads, hpc, snakemake, no_temp)

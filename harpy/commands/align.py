@@ -5,11 +5,17 @@ import os
 import rich_click as click
 
 from harpy.common.cli_filetypes import BEDfile, FASTAfile, FASTQfile, HPCProfile
-from harpy.common.cli_params import BwaParams, MinimapParams, SnakemakeParams, StrobeAlignParams
+from harpy.common.cli_params import (
+    BwaParams,
+    MinimapParams,
+    SnakemakeParams,
+    StrobeAlignParams,
+)
 from harpy.common.system_ops import container_ok
 from harpy.runtime.workflow import Workflow
 from harpy.validation.fasta import FASTA
 from harpy.validation.fastq import FASTQ
+
 
 @click.group()
 @click.help_option('--help', hidden = True)
@@ -244,7 +250,7 @@ def arachne(reference, inputs, output, depth_window, threads, keep_unmapped, ten
     files/folders, using shell wildcards (e.g. `data/echidna*.fastq.gz`), or both.
 
     Defaults to the EM algorithm from EMA, but can revert to the RFA algorithm from Lariat with `--rfa`. Providing an optional
-    BED file of centromere locations will set MAPQ to 0 for alignments falling into centromeric regions. 
+    BED file of centromere locations will set MAPQ to 0 for alignments falling into centromeric regions.
     Setting `--molecule-distance` to `>0` activates alignment-distance based barcode deconvolution for reporting only (the barcodes remain unmodified).
     """
     workflow = Workflow("align_arachne", "align.smk", output, container, clean, quiet)

@@ -32,13 +32,12 @@ def config_extract(d: dict, section:str, key: str = "", allow_missing: bool = Fa
     elif key:
         val = val.get(key, {})
 
-    if not val:
-        if not allow_missing:
-            hp.error(
-                "incorrect workflow.yaml",
-                "The [blue]workflow.yaml[/] file is missing one or more the necessary/expected keys.",
-                f"Please verify that [blue]workflow/workflow.yaml[/] is not missing the [green]{key}[/] key (and it is not empty) under the [green]{section}[/] section."
-            )
+    if not val and not allow_missing:
+        hp.error(
+            "incorrect workflow.yaml",
+            "The [blue]workflow.yaml[/] file is missing one or more the necessary/expected keys.",
+            f"Please verify that [blue]workflow/workflow.yaml[/] is not missing the [green]{key}[/] key (and it is not empty) under the [green]{section}[/] section."
+        )
     return val
 
 def snakemake_profile_extract(d: dict, key: str):
@@ -62,7 +61,7 @@ def snakemake_profile_extract(d: dict, key: str):
 @click.argument('directory', required=True, type=click.Path(exists=True, file_okay=False, readable=True, resolve_path=True), nargs=1)
 def resume(directory, absolute, direct, threads, clean, quiet):
     """
-    Continue an incomplete Harpy workflow
+    Continue an incomplete Harpy process
 
     In the event you need to run the Snakemake workflow present in a Harpy output directory
     (e.g. `Align/bwa`) without redoing validations and writing new configuration files (config files get updated with new thread count and log file name),
@@ -145,7 +144,7 @@ def resume(directory, absolute, direct, threads, clean, quiet):
 
     # doesn't matter what it says, just needs to be something or None
     # keeps consistent parsing of error messages at the end
-    workflow.hpc = snakemake_profile.get("executor", None)
+    workflow.hpc = snakemake_profile.get("executor", {})
 
     workflow.info = {
         #"Workflow" : "harpy " + workflow.name.replace("_", " "),

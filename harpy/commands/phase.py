@@ -5,13 +5,19 @@ import os
 import rich_click as click
 
 from harpy.common.cli_filetypes import FASTAfile, HPCProfile, SAMfile, VCFfile
-from harpy.common.cli_params import ContigList, HapCutParams, WhatshapParams, SnakemakeParams
+from harpy.common.cli_params import (
+    ContigList,
+    HapCutParams,
+    SnakemakeParams,
+    WhatshapParams,
+)
 from harpy.common.system_ops import container_ok
 from harpy.runtime.workflow import Workflow
 from harpy.validation.fasta import FASTA
 from harpy.validation.populations import Populations
 from harpy.validation.vcf import VCF
 from harpy.validation.xam import XAM
+
 
 @click.group()
 @click.help_option('--help', hidden = True)

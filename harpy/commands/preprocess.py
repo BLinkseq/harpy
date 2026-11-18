@@ -6,11 +6,11 @@ import rich_click as click
 
 from harpy.common.cli_filetypes import DemuxSchema, FASTQfile, HPCProfile
 from harpy.common.cli_params import SnakemakeParams
-from harpy.common.file_ops import fetch_template
 from harpy.common.system_ops import container_ok
 from harpy.runtime.workflow import Workflow
-from harpy.validation.fastq import FASTQ
 from harpy.validation.demux import pheniqsSchema
+from harpy.validation.fastq import FASTQ
+
 
 @click.group(options_metavar='')
 @click.help_option('--help', hidden = True)
@@ -123,7 +123,7 @@ def gih(inputs, output, me_seq, mismatch, threads, snakemake, skip_reports, sche
     ## checks and validations ##
     fastq = FASTQ(inputs, detect_bc = False, quiet= True)
     if schema:
-        pheniqsSchema(schema, quiet)
+        pheniqsSchema(schema)
 
     workflow.notebooks["skip"] = skip_reports
     workflow.param(qx_rx, "qx-rx")

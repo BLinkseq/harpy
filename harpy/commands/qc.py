@@ -10,6 +10,7 @@ from harpy.common.system_ops import container_ok
 from harpy.runtime.workflow import Workflow
 from harpy.validation.fastq import FASTQ
 
+
 @click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/qc")
 @click.option('-d', '--deduplicate', panel = "Parameters", is_flag = True, default = False, help = 'Identify and remove PCR duplicates')
 @click.option('-x', '--extra-params', panel = "Parameters", type = FastpParams(), help = 'Additional Fastp parameters, in quotes')
@@ -75,5 +76,5 @@ def qc(inputs, output, unlinked,length, trim_adapters, deduplicate, extra_params
         **({"Treatment" : ", ".join(treatment)} if treatment else {"Treatment": "None"}),
         "Output Folder": os.path.relpath(output) + "/",
     }
-    
+
     workflow.initialize(setup)
