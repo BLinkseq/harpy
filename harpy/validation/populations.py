@@ -1,5 +1,5 @@
-from collections import Counter
 import os
+from collections import Counter
 from pathlib import Path
 
 from harpy.common.printing import HarpyPrint
@@ -69,7 +69,7 @@ class Populations():
         lessThan20 = Counter()
         for i,j in popcounts.items():
             if j < 20:
-                lessThan20[i] = j 
+                lessThan20[i] = j
         if lessThan20:
             issues = ""
             for i,j in lessThan20.items():
@@ -77,8 +77,8 @@ class Populations():
             self.print.validation(False)
             self.print.error(
                 "too few samples per population",
-                f"Some populations have fewer than 20 samples, which is the minimum required for shapeit4.",
-                f"Please omit those populations, "
+                "Some populations have fewer than 20 samples, which is the minimum required for shapeit4.",
+                "Please omit those populations, "
                 "consolidate the groups in biologically meaningful ways (if possible), "
                 "or consider omitting [green]--populations[/] and doing statistical phasing separately.",
                 "The populations causing this error are",

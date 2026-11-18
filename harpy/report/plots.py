@@ -39,7 +39,7 @@ def piechart(df: pl.DataFrame, title: str = "", goodval: str | None = None, lgti
     )
 
     if goodval:
-        badval = [i for i in _n if i != goodval][0]
+        badval = next(i for i in _n if i != goodval)
         _color = _color.scale(
             domain=[goodval, badval],
             range=["#68ae6b", "#C9C9C9"],

@@ -4,12 +4,13 @@ import subprocess
 from pathlib import Path
 from shutil import which
 
-from pysam import VariantFile
 import pysam.bcftools
+from pysam import VariantFile
 
 from harpy.common.printing import HarpyPrint
 
-class VCF():
+
+class VCF:
     'A class to contain and validate a VCF input file.'
     def __init__(self, filename:str, workdir:str, quiet:int = 0, threads: int = 2):
         os.makedirs(workdir, exist_ok = True)
@@ -188,7 +189,7 @@ class VCF():
         '''return the list of sample names from the vcf file'''
         with VariantFile(self.file) as _vcf:
             return list(_vcf.header.samples)
-    
+
     def is_sv_fmt(self):
         '''
         Checks for conformity with SV-style VCF file, meaning it has INFO/SVTYPE and INFO/END.
@@ -205,4 +206,3 @@ class VCF():
                 "Provide a structural-variant VCF (e.g., LEVIATHAN or NAIBR output) that declares INFO/SVTYPE and INFO/END in its header."
             )
         self.print.validation(True)
-

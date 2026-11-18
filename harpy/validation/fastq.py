@@ -12,7 +12,7 @@ STLFR_RX = re.compile(r'#([0-9]+_[0-9]+_[0-9]+)(?:-\S+)?(?:\s|$)')
 TELLSEQ_RX = re.compile(r':([ATCGN]+)(?:-\S+)?(?:\s|$)')
 STANDARD_RX = re.compile(r'(?=.*\b(BX:Z:\S+)\b)(?=.*\b(VX:i:[01])\b)')
 
-class FASTQ():
+class FASTQ:
     '''
     A class to contain and validate FASTQ input files. If detect_bc is True, will scan the first 100
     records of the first [up to] 5 forward-read files to determine barcode type, stopping at the first

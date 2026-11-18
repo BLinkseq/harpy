@@ -34,7 +34,7 @@ class StatsBox:
             '</div>'
         )
 
-    def add(self, value, label, plus_minus: str|int|float = '', textcol=None, units=None):
+    def add(self, value, label, plus_minus: str|float = '', textcol=None, units=None):
         '''
         Return the html of a colored box object with `value` and `label`. Units get added to the plusminus text if they are present,
         otherwise added to the main value.
@@ -61,7 +61,7 @@ class StatsBox:
         #)
         return self
 
-    def conditional(self, value, label, cutoff: int|float, lower_bad: bool = True, as_percent:bool = False, plus_minus: str|int|float = '', add_percent:bool = False, digits = None):
+    def conditional(self, value, label, cutoff: float, lower_bad: bool = True, as_percent:bool = False, plus_minus: str|float = '', add_percent:bool = False, digits = None):
         '''
         Return the html of a colored box object with `value` and `label`. Use `as_percent` to multiply
         the value by 100 for printing purposes. Use `digits` as a stand-in for rounding. Using `add_percent` to add `%`

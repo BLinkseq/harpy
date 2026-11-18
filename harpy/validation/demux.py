@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Validate a pheniqs-style schema JSON for the demuxolotl decoder.
 
 Mirrors the checks in demux/decoder.go (loadConfig) and also flags inputs that
@@ -9,7 +8,9 @@ Exit status: 0 = no errors (warnings allowed), 1 = errors, 2 = unreadable file.
 import json
 import math
 import re
+from itertools import pairwise
 from pathlib import Path
+
 from harpy.common.printing import HarpyPrint
 
 MAX_SEGMENT = 64  # decoder.sc is [64][4]float64
@@ -175,19 +176,19 @@ def validate(cfg):
 
     # segments in a padded read must not collide
     segments.sort(key=lambda s: s[1])
-    for (n1, s1, e1), (n2, s2, e2) in zip(segments, segments[1:]):
+    for (n1, s1, e1), (n2, s2, e2) in pairwise(segments):
         if s2 < e1:
             warn(f"{n1} [{s1}:{e1}) overlaps {n2} [{s2}:{e2})")
     return errors, warnings
 
 def pheniqsSchema(path: str):
-    path = Path(path)
+    _path = Path(path)
     try:
-        cfg = json.loads(path.read_text(), object_pairs_hook=_no_dup_keys)
+        cfg = json.loads(_path.read_text(), object_pairs_hook=_no_dup_keys)
     except (OSError, ValueError) as e:
         hp.error(
             'Failed to read decoder schema',
-            f"{path.name}: {e}"
+            f"{_path.name}: {e}"
         )
     errors, warnings = validate(cfg)
     if warnings:
@@ -198,9 +199,8 @@ def pheniqsSchema(path: str):
     if errors:
         hp.error(
             "Deconder schema failed validation",
-            f"There were {len(errors)} errors detected in [yellow]{path.name}[/], the decoder will fail to run or give unreliable output until fixed.",
+            f"There were {len(errors)} errors detected in [yellow]{_path.name}[/], the decoder will fail to run or give unreliable output until fixed.",
             "Please fix the error(s) describes below and try again.",
             "Errors in schema file",
             '- ' + "\n- ".join(errors)
         )
-

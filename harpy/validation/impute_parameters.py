@@ -7,7 +7,7 @@ from rich.table import Table
 from harpy.common.printing import HarpyPrint
 
 
-class ImputeParams():
+class ImputeParams:
     '''
     A class to contain and validate a STITCH imputation parameter file.
     Validation checks the STITCH parameter file for column names, order, types, missing values, etc.

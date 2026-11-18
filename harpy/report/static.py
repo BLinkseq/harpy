@@ -113,7 +113,7 @@ def has_nbconvert():
         hp.error(
             "Missing dependency",
             "jupyter nbconvert is not found on the PATH and is required to proceed.",
-            Group("It can be installed using one of these methods:", _table)   
+            Group("It can be installed using one of these methods:", _table)
         )
 
 def has_monolith():
@@ -127,11 +127,11 @@ def has_monolith():
         hp.error(
             "Missing dependency",
             "Monolith is required to flatten an HTML notebook but was not found on the PATH.",
-            Group("Harpy does not provide it, but it can be installed using:", _table)   
+            Group("Harpy does not provide it, but it can be installed using:", _table)
         )
 
 
-class ReportStatic():
+class ReportStatic:
     def __init__(self, quiet: bool, self_contained: bool):
         self.quiet: bool = quiet
         self.contained: bool = self_contained
@@ -218,7 +218,7 @@ class ReportStatic():
         nb_path: Path = Path(notebook).absolute()
         nb_name = nb_path.stem
         out_path: Path = nb_path.with_name(f"{nb_name}.html")
-            
+
         # Transformed notebook copy lives NEXT TO the original
         # It's cleaned up in `finally` and the original file is never modified.
         tmp_nb_path = nb_path.with_name(f".{nb_name}-tmp.ipynb")
@@ -288,4 +288,3 @@ class ReportStatic():
 
         if not self.quiet:
             self.hp.log(f"Done: {out_path}")
-

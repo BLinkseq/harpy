@@ -11,7 +11,7 @@ HAPLOTAGGING_RX = re.compile(r"^A\d{2}C\d{2}B\d{2}D\d{2}(?:-\S+)?$")
 STLFR_RX = re.compile(r"^\d+_\d+_\d+(?:-\S+)?$")
 TELLSEQ_RX = re.compile(r"^[ATCGN]+(?:-\S+)?$")
 
-class XAM():
+class XAM:
     """
     A class to contain and validate BAM/SAM input files. If detect_bc is True, will scan the first `maxrec`
     records of the first [up to] 5 files to determine barcode type, stopping at the first detection of a
@@ -164,6 +164,3 @@ class XAM():
                 tmp.append(i)
         self.files = tmp
         self.count = len(tmp)
-
-
-            

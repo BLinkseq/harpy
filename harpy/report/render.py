@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import uuid
 from importlib import resources
+from itertools import pairwise
 from pathlib import Path
 
 import yaml
@@ -16,7 +17,7 @@ from harpy import __version__
 from harpy.common.printing import HarpyPrint
 
 
-class ReportRender():
+class ReportRender:
     def __init__(self, root: str = "", markdown: bool = False):
         self.root = root
         self.configfile = os.path.join(root, "myst.yml")
@@ -83,12 +84,12 @@ class ReportRender():
         and converts that list of file paths into a nested dictionary tree structure stored as `self.filetree`. Also searches
         for `.md` if `self.markdown=True`.
         """
-        _ipynb = set(i for i in glob.iglob("**/*.ipynb", root_dir = self.root, recursive = True) if "_build" not in i and "workflow/" not in i)
+        _ipynb = {i for i in glob.iglob("**/*.ipynb", root_dir = self.root, recursive = True) if "_build" not in i and "workflow/" not in i}
         if self.markdown:
-            _md = set(i for i in glob.iglob("**/*.md", root_dir = self.root, recursive = True) if "_build" not in i and "workflow/" not in i)
+            _md = {i for i in glob.iglob("**/*.md", root_dir = self.root, recursive = True) if "_build" not in i and "workflow/" not in i}
             _ipynb = _ipynb.union(_md)
         # filter out ""
-        _dirs = set(d for d in (os.path.dirname(i) for i in _ipynb) if d)
+        _dirs = {d for d in (os.path.dirname(i) for i in _ipynb) if d}
         for path in _dirs:
             parts = Path(path).parts
             current = self.filetree
@@ -148,7 +149,7 @@ class ReportRender():
                             should_remove = True
 
                     if should_remove:
-                        self.print.print(f"[removed - no md/ipynb files] " + os.path.relpath(full_path), style = "dim", markup = False, soft_wrap = True)
+                        self.print.print("[removed - no md/ipynb files] " + os.path.relpath(full_path), style = "dim", markup = False, soft_wrap = True)
                         items_to_remove.add(item)
 
                 # Remove invalid items
@@ -308,7 +309,7 @@ def rand_id() -> str:
     """
     uid = uuid.uuid4().hex
     indices = [0, 8, 12, 16, 20, 32]
-    return "-".join(uid[i:j] for i,j in zip(indices, indices[1:]))
+    return "-".join(uid[i:j] for i,j in pairwise(indices))
 
 def myst_yaml() -> dict:
     """

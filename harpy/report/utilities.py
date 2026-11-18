@@ -1,12 +1,13 @@
-from typing import Literal
+import json
+import os
 from io import StringIO
+from typing import Literal
 
 import numpy as np
 import polars as pl
-import os
-import json
 
 from harpy.common.file_ops import safe_read
+
 
 class StopExecution(Exception):
     '''An exception type to prematurely end a notebook without it being considered an error'''
@@ -115,7 +116,7 @@ def human_format(num):
         case _:
             return str(num)
 
-class FastpResults():
+class FastpResults:
     def __init__(self, report_dir):
         '''Collect all JSON report files'''
         stats = {
@@ -149,7 +150,7 @@ class FastpResults():
                 summary = data.get('summary', {})
                 before = summary.get('before_filtering', {})
                 after = summary.get('after_filtering', {})
-                
+
                 # Extract quality and GC curves for read1
                 qual_curve_before = data.get('read1_before_filtering', {}).get('quality_curves', {}).get('mean', [])
                 qual_curve_after = data.get('read1_after_filtering', {}).get('quality_curves', {}).get('mean', [])
@@ -188,7 +189,7 @@ class FastpResults():
                     stats["% Q30 (After)"].append(round(after.get('q30_rate', 0) * 100, 2))
                     stats["% GC (Before)"].append(round(before.get('gc_content', 0) * 100, 2))
                     stats["% GC (After)"].append(round(after.get('gc_content', 0) * 100, 2))
-        
+
         self.stats =  pl.DataFrame(stats)
         self.qual_curves = pl.DataFrame(mean_qual_curves["before"])
         self.qual_curves_after = pl.DataFrame(mean_qual_curves["after"])
@@ -198,4 +199,3 @@ class FastpResults():
         self.gc_curves_after = pl.DataFrame(gc_curves["after"])
         self.gc_curves_r2 = pl.DataFrame(gc_curves_r2["before"])
         self.gc_curves_r2_after = pl.DataFrame(gc_curves_r2["after"])
- 

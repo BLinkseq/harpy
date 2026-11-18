@@ -9,7 +9,7 @@ from harpy.common.printing import HarpyPrint
 alphanum = re.compile(r'^[a-zA-Z0-9_\-\|]+$')
 nuc = re.compile(r'[ACGTURYKMSWBDHVN\-]+$', flags = re.IGNORECASE)
 
-class FASTA():
+class FASTA:
     '''
     A class to contain and validate a FASTA input file.
     '''
@@ -19,7 +19,7 @@ class FASTA():
         self.print = HarpyPrint(quiet)
         self.print.log("Validating input FASTA file", newline=False)
         try:
-            with pysam.FastxFile(self.file, persist=False) as fa:
+            with pysam.FastxFile(self.file, persist=False):
                 pass
         except Exception as e:
             self.print.validation(False)
