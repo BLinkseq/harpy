@@ -23,6 +23,7 @@
   - not technically invalid, but the key absence/mismatch will default to all optional features turned off, which may be unintended
 - fastq validation is now limited to 100 records, which should see a significant validation speedup
 - `bx-stats-sam` correctly names the column `fragments`, was formerly `reads`
+- `phase` commands have `--molecule-distance` default to 50kb, making it consistent with the rest of harpy
 - `phase snp`: `--prune-threshold` short name changed to `-t` from `-p`
   - accommodates new `--populations` option for shapeit4 statistical phasing
 - workflows that typically output many files now output them into a subdirectory for neatness. This should make it much easier to interrogate output directories without being hit with a wall of filenames
@@ -38,6 +39,7 @@
 - `djinn` dependency got complete Go rewrite
   - all things that called djinn are much faster
   - barcode stats for SAM and FASTQ files moved to djinn (breaking: removed from `harpy-utils`)
+
 
 # Fixes
 - `harpy view envs`: simpler logic and print diagnostic text if empty

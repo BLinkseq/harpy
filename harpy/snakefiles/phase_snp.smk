@@ -19,7 +19,7 @@ plot_contigs      = REPORTS.get("plot-contigs", 'default')
 pruning           = PARAMETERS.get("prune", 30)
 map_qual          = PARAMETERS.get("min-map-quality", 20)
 base_qual         = PARAMETERS.get("min-base-quality", 13)
-molecule_distance = PARAMETERS.get("distance-threshold", 100000)
+molecule_distance = PARAMETERS.get("distance-threshold", 50000)
 extra             = PARAMETERS.get("extra", "") 
 variantfile       = INPUTS["vcf"]
 grp               = INPUTS.get("groupings") or {}
@@ -28,7 +28,6 @@ if grp:
     if not os.path.isfile(groupings):
         groupings = groupings.get("source", [])
     contigs: list[str] = get_vcf_contigs(variantfile)
-
 else:
     groupings = []
     contigs = []
