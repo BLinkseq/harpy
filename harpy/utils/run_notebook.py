@@ -4,10 +4,10 @@ import string
 import sys
 import tempfile
 from datetime import datetime
-from papermill.cli import _resolve_type
 
 import click
 import papermill as pm
+from papermill.cli import _resolve_type
 from traitlets.config import Config
 
 
