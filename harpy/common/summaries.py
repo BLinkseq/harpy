@@ -93,7 +93,7 @@ If linked reads, barcodes were standardized to BX + VX format in the aligments u
         ignore_bx = self.WORKFLOW.get("linkedreads", {}).get("type", 'none') == "none"
         bx_tag = self.WORKFLOW.get("linkedreads", {}).get("standardized", {}).get("BX", False)
         vx_tag = self.WORKFLOW.get("linkedreads", {}).get("standardized", {}).get("VX", False)
-        tech = self.PARAMETERS.get("aligner-technology", "sr") 
+        tech = self.PARAMETERS.get("aligner-technology", "sr")
         is_standardized = bx_tag and vx_tag
         keep_unmapped = self.PARAMETERS.get("keep-unmapped", False)
         extra 		= self.PARAMETERS.get("extra", "")
@@ -125,12 +125,10 @@ If linked reads, barcodes were standardized to BX + VX format in the aligments u
 
     def align_arachne(self):
         keep_unmapped = self.PARAMETERS.get("keep-unmapped", False)
-        extra 		= self.PARAMETERS.get("extra", "")
+        #extra 		= self.PARAMETERS.get("extra", "")
         genomefile 	= self.INPUTS["reference"]
         quality = self.PARAMETERS.get("min-map-quality", 30)
-
         unmapped = "" if keep_unmapped else "-F 4"
-        extra = self.PARAMETERS.get("extra", "")
 
         self.summary = f'''The harpy align arachne workflow ran using these parameters:
 The provided genome: {genomefile}
@@ -142,15 +140,14 @@ FASTQ files were aligned with arachne:
     arachne align -s samplename {genomefile} reads.valid.F.fq reads.valid.R.fq |
     samtools sort -u > arachne.bam
 
-Duplicates in the minibwa alignments were marked following:
+Duplicates in the invalid-barcoded alignments were marked following:
     samtools collate |
     samtools fixmate |
     samtools sort -T SAMPLE --reference {genomefile} -m 2000M |
     samtools markdup -S -d 100   #(2500 for novaseq)
 
-Processed arachne and minibwa alignments were concatenated and sorted:
-    samtools cat --output-fmt-option level=0 arachne.bam minibwa.bam |
-    samtools sort -O BAM > final.bam
+Alignments were post-processed with:
+    samtools view -h {unmapped} -q {quality}
 '''
 
     def assembly(self):
@@ -230,7 +227,8 @@ The interleaved output was split back into forward and reverse reads with seqtk:
         gridparam = ""
         if self.PARAMETERS.get("grid-size", 1) > 1:
             gridparam = f"\n\t\tgridWindowSize = {self.PARAMETERS.get('grid-size', 1)},"
-        paramfiletext = "\t".join(open(self.INPUTS["parameters"], "r").readlines())
+        with open(self.INPUTS["parameters"], "r") as f:
+            paramfiletext = "\t".join(f.readlines())
         self.summary = f'''The harpy impute workflow ran using these parameters:
 
 The provided variant file: {self.INPUTS['vcf']}
@@ -241,7 +239,7 @@ Preprocessing was performed with:
 
 The STITCH parameter file: {self.INPUTS['parameters']}
     {paramfiletext}"
-    
+
 Within R, STITCH was invoked with the following parameters:
     STITCH(
         method = model,
@@ -286,7 +284,7 @@ FASTQ inputs were sorted by their linked-read barcodes and had '-1' appended to 
 
 If the data were linked-reads, reads were assembled using cloudspades:
     spades.py -t THREADS -m {max_mem} --gemcode1-1 FQ1 --gemcode1-2 FQ2 --meta -k {k_param} {extra}
-    
+
 Otheriwse, they were assembled using spades:
     metaspades.py -t THREADS -m {max_mem} -k {k_param} {extra} -1 FQ_1 -2 FQ2 -o {spadesdir}
 
@@ -295,7 +293,7 @@ Original input FASTQ files were aligned to the metagenome using BWA:
 
 Barcode-sorted Athena-compliant sequences were interleaved with seqtk:
     seqtk mergepe FQ1 FQ2 > INTERLEAVED.FQ
-    
+
 Athena ran with the config file Harpy built from the files created from the previous steps:
     athena-meta {force} --config athena.config
 '''
@@ -327,15 +325,15 @@ The variant file was split by sample and filtered for heterozygous sites using:
 
 Phasing was performed using the components of HapCut2:
     extractHAIRS {hairs_params} --bam sample.bam --VCF sample.vcf --out sample.unlinked.frags
-    
+
 If the data were linked-reads, invalid barcodes were filtered out:
     awk {invalid_regex.get(bc_type, "'{split($4,b,/-/)} b[1] !~ /N/'")} sample.unlinked.frags > sample.frags.filt
     LinkFragments.py --bam sample.bam --VCF sample.vcf --fragments sample.frags.filt --out sample.linked.frags -d {molecule_distance}
     HAPCUT2 --fragments sample.linked.frags --vcf sample.vcf --out sample.blocks --nf 1 --error_analysis_mode 1 --call_homozygous 1 --outvcf 1 {prune} {extra}
-    
+
 If the data were not linked reads, HapCut2 ran ignoring linked-read specific information:
     HAPCUT2 --fragments sample.unlinked.frags --vcf sample.vcf --out sample.blocks --nf 1 --error_analysis_mode 1 --call_homozygous 1 --outvcf 1 {prune} {extra}
-    
+
 Variant annotation was performed using:
     bcftools annotate -a sample.phased.vcf -c CHROM,POS,FMT/GT,FMT/PS,FMT/PQ,FMT/PD -m +HAPCUT
     bcftools merge --output-type b samples.annot.bcf
@@ -345,7 +343,7 @@ Variant annotation was performed using:
         mol_dist    = self.PARAMETERS.get("distance-threshold", 100000)
         extra       = self.PARAMETERS.get("extra", "")
         ploidy      = self.PARAMETERS.get("ploidy", 2)
-        linked      = self.PARAMETERS.get("use-linked-info", True)
+        #linked      = self.PARAMETERS.get("use-linked-info", True)
         variantfile = self.INPUTS["vcf"]
         params = [
             f"--ploidy {ploidy}",
@@ -400,7 +398,7 @@ Sample demultiplexing schema: {schemafile}
 
 Samples were demultiplexed using:
     dmox --R1 --R2 --I1 --I2 {outdir} {qxrx} {unknown_barcodes} {unknown_samples}
- 
+
 QC checks were performed on demultiplexed FASTQ files using:
     falco -skip-report -skip-summary -data-filename output input.fq.gz
 '''
@@ -420,7 +418,7 @@ The resulting interleaved unaligned SAM file was then piped into the Pheniqs for
 
 Finally, the nucleotides were converted into standardized haplotagging ACBD format and FASTQ format:
     gih-convert input.sam fq1 fq2 > output.stats
-    
+
 QC checks were performed on demultiplexed FASTQ files using:
     falco -skip-report -skip-summary -data-filename output input.fq.gz
 
@@ -494,10 +492,10 @@ The variants were normalized using:
 The provided reference genome: {genomefile}
 
 Genomic positions for which variants were called: {region_input}
-   
+
 The mpileup parameters:
     bcftools mpileup --fasta-ref REFERENCE --region REGION --bam-list BAMS --annotate AD --output-type b {mp_extra}
-    
+
 The bcftools call parameters:
     bcftools call --multiallelic-caller {params} --variants-only --output-type b |
     bcftools sort -
@@ -554,6 +552,10 @@ Leviathan was called using:
         min_barcodes = self.PARAMETERS.get("min-barcodes", 2)
         min_quality  = self.PARAMETERS.get("min-map-quality", 30)
         mol_dist     = self.PARAMETERS.get("molecule-distance", 100000)
+        if groupfile:
+            grp = f"The provided populations grouping file: {groupfile}\n\n" "The alignments were concatenated using:\n\tdjinn sam concat samples.bam... > group.bam\n\n"
+        else:
+            grp = ""
 
         argdict = naibr_extra(
             {"min_mapq" : min_quality, "d" : mol_dist, "min_sv" : min_size, "k": min_barcodes},
@@ -564,14 +566,14 @@ Leviathan was called using:
         self.summary = f'''The harpy sv naibr workflow ran using these parameters:
 The provided reference genome: {genomefile}
 
-naibr variant calling ran using these configurations:
+{grp}naibr variant calling ran using these configurations:
     bam_file=BAMFILE
     prefix=PREFIX
     outdir=Variants/naibr/PREFIX
     {_txt}
 '''
 
-    def validate_bam(self) -> str:
+    def validate_bam(self):
         lr_platform = self.WORKFLOW.get("linkedreads", {}).get("type", 'none')
         self.summary = f'''The harpy validate bam workflow ran using these parameters:
 Validations were performed with:

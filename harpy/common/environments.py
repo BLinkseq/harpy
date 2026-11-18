@@ -15,7 +15,7 @@ from harpy import __version__
 from .printing import HarpyPrint
 
 
-class HarpyEnvs():
+class HarpyEnvs:
     '''The class that holds conda and pixi environments and means to create container dockerfiles'''
     def __init__(self):
         self.__environments__: dict = {
@@ -155,34 +155,36 @@ rm -r SPAdes-4.1.0-Linux
         if env != "all":
             environ = {env: environ.get(env)}
 
-        for env,deps in environ.items():
-            shutil.rmtree(f"container/{env}", ignore_errors=True)
-            os.makedirs(f"container/{env}", exist_ok=True)
-            with open(f"container/{env}/Dockerfile", "w") as dockerfile:
+        for _env,deps in environ.items():
+            shutil.rmtree(f"container/{_env}", ignore_errors=True)
+            os.makedirs(f"container/{_env}", exist_ok=True)
+            with open(f"container/{_env}/Dockerfile", "w") as dockerfile:
                 dockerfile.write(self.dockerfile)
             if env == "report":
                 subprocess.run(
-                    f"pixi init container/{env} -c conda-forge -c r".split(),
+                    f"pixi init container/{_env} -c conda-forge -c r".split(),
                     check = True
                 )
             else:
                 subprocess.run(
-                    f"pixi init container/{env} -c conda-forge -c bioconda".split(),
+                    f"pixi init container/{_env} -c conda-forge -c bioconda".split(),
                     check = True
                 )
 
-            with open(f"container/{env}/pixi.toml", "r") as toml:
-                with open(f"container/{env}/pixi.fix.toml", "w") as out:
+            with (
+                open(f"container/{_env}/pixi.toml", "r") as toml,
+                open(f"container/{_env}/pixi.fix.toml", "w") as out
+            ):
                     for line in toml:
                         if line.startswith("version"):
                             line = f"version = \"{__version__}\"\n"
                         out.write(line)
 
-            os.remove(f"container/{env}/pixi.toml")
-            shutil.move(f"container/{env}/pixi.fix.toml", f"container/{env}/pixi.toml")
+            os.remove(f"container/{_env}/pixi.toml")
+            shutil.move(f"container/{_env}/pixi.fix.toml", f"container/{env}/pixi.toml")
 
             subprocess.run(
-                ["pixi", "add", "--no-progress", "--manifest-path", f"container/{env}/pixi.toml", *deps],
+                ["pixi", "add", "--no-progress", "--manifest-path", f"container/{_env}/pixi.toml", *deps],
                 check = True
             )
 

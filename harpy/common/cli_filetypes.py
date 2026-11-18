@@ -1,6 +1,5 @@
 """Module with python-click types for command-line level validations of inputs"""
 
-from traitlets import ValidateHandler
 import os
 import re
 from pathlib import Path
@@ -8,7 +7,7 @@ from pathlib import Path
 import click
 from click.shell_completion import CompletionItem
 
-from harpy.common.file_ops import is_gzip, filepath
+from harpy.common.file_ops import filepath, is_gzip
 from harpy.common.printing import HarpyPrint
 from harpy.common.system_ops import check_snakemake_hpc
 
@@ -307,7 +306,7 @@ class DemuxSchema(FileCompletion):
                 hp.error(
                     "incorrect schema format",
                     f"Schema file [blue]{os.path.basename(value)}[/] has no valid rows. Under default workflows, the rows should have two columns in the format sample<tab>segment, e.g. [green]sample_01[/][dim]<tab>[/][green]C75[/]. "
-                    "If using base-stitching, then a 3-column format is expected: e.g., [green]sample_01[/][dim]<tab>[/][green]C75[/][dim]<tab>[/][green]A[/]."    
+                    "If using base-stitching, then a 3-column format is expected: e.g., [green]sample_01[/][dim]<tab>[/][green]C75[/][dim]<tab>[/][green]A[/]."
                 )
         with open(filepath, 'r') as file:
             for line in file:

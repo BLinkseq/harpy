@@ -3,12 +3,12 @@
 import curses
 import glob
 import gzip
-import importlib.resources as resources
 import os
 import re
 import shutil
 import sys
 from datetime import datetime
+from importlib import resources
 from pathlib import Path
 
 from click import echo_via_pager
@@ -113,7 +113,7 @@ def is_bgzipped(file_path: str) -> bool:
             # BGZF EOF marker signature
             bgzf_eof = b"\x1f\x8b\x08\x04\x00\x00\x00\x00\x00\xff\x06\x00\x42\x43\x02\x00\x1b\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00"
             return eof_block == bgzf_eof
-    except (IOError, OSError):
+    except OSError:
         return False
 
 def is_plaintext(file_path: str) -> bool:
@@ -137,8 +137,8 @@ def pop_manifest(groupingfile, filelist) -> dict[str,list[str]]:
             if samp.lstrip().startswith("#"):
                 continue
             r = re.compile(fr".*/({samp.lstrip()})\.(bam|sam)$", flags = re.IGNORECASE)
-            sampl = list(filter(r.match, filelist))[0]
-            if pop not in d.keys():
+            sampl = next(filter(r.match, filelist))
+            if pop not in d:
                 d[pop] = [sampl]
             else:
                 d[pop].append(sampl)
@@ -351,7 +351,7 @@ def choose_logfile(directory: str, choose:bool) -> str:
         console.print(_tb)
         selection = Prompt.ask(
             "\n[bold blue]Select a log file by number ([bold green]#[/])[/]",
-            choices=list(str(i) for i in range(1,len(files) + 1)),
+            choices=[str(i) for i in range(1,len(files) + 1)],
             show_choices=False
         )
 

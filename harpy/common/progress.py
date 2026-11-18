@@ -1,14 +1,18 @@
 """progress.py"""
-from rich.table import Column
-from rich.text import Text
 import time
-from rich.progress import TimeElapsedColumn
-from rich.progress import BarColumn
-from rich.progress import TaskProgressColumn
-from rich.progress import TextColumn
+
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import Progress
+from rich.progress import (
+    BarColumn,
+    Progress,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
+from rich.table import Column
+from rich.text import Text
+
 
 class PanelProgress(Progress):
     def __init__(self, console: Console, quiet: int, title: str | None = None, border_style: str = "dim", transient: bool = False):

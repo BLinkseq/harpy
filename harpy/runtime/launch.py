@@ -37,7 +37,7 @@ class Rule:
     def active(self) -> int:
         return len(self.ids)
 
-class LaunchSnakemake():
+class LaunchSnakemake:
     """launch snakemake with the given commands and monitor its progress"""
     def __init__(self, sm_args, outdir, quiet, printer: HarpyPrint):
         self.exitcode = -1
@@ -128,9 +128,7 @@ class LaunchSnakemake():
 
     def is_done(self) -> bool:
         '''check if self.exitcode > -1 or a value exists for self.process.poll()'''
-        if self.exitcode > -1 or self.process.poll():
-            return True
-        return False
+        return bool(self.exitcode > -1 or self.process.poll())
 
     def update_total_active(self):
         '''update self.total_active with the sum of all the active jobs in self.rule_inventory'''

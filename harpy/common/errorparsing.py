@@ -1,11 +1,11 @@
 
-from harpy.common.printing import HarpyPrint
-from dataclasses import dataclass, field
 import os
 import re
-import sys
+from dataclasses import dataclass, field
 
 from rich.markup import escape
+
+from harpy.common.printing import HarpyPrint
 
 
 @dataclass
@@ -151,7 +151,7 @@ class _Pushback:
     Wraps a single-pass line iterator with one-line lookahead/pushback.
     This is used for processing snakemake output for error handling.
     '''
-    __slots__ = ('_it', '_buf')
+    __slots__ = ('_buf', '_it')
     def __init__(self, it):
         self._it = it
         self._buf = []
@@ -208,7 +208,7 @@ def fmt_shell_cmd(text: str, indent: str = "    ") -> str:
     return '\n'.join(out)
 
 
-class ErrorHandler():
+class ErrorHandler:
     def __init__(self, err):
         self.errortext = _Pushback(iter(err))
         self.rules: list[SnakeRule] = []
@@ -311,15 +311,13 @@ class ErrorHandler():
                     self._skip_group_block()
                     continue
 
-            elif i.startswith('Complete log'):
-                break
-            elif i.startswith('WorkflowError'):
+            elif i.startswith(('Complete log','WorkflowError')):
                 break
 
         if self.missingoutput:
             self.hp.print('\n[bold dim]──── ⚠ Error Reported by Snakemake')
             self.hp.print(fmt_missing_block(self.missingoutput[0]), style = 'red')
-        
+
         elif len(self.rules) > 1:
             grp = ' → '.join(rule.name for rule in self.rules)
             self.hp.rule(
@@ -532,7 +530,7 @@ class ErrorHandler():
             self.hp.print(rule.message, style = 'red')
 
         if rule.cmd:
-            
+
             self.hp.print('')
             self.hp.print("[bold dim]──── ❯ Command Invoked")
             if rule.apptainerprefix:
@@ -545,4 +543,3 @@ class ErrorHandler():
         for i in rule.logs:
             self.hp.print(f"──── 🗎 {i}", style = 'bold dim')
             self.hp.print(rule.log_contents.get(i, "(empty file)"), style = 'red')
-

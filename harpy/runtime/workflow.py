@@ -1,23 +1,23 @@
 """Contains the WorkFlow class"""
 
-from harpy.common.errorparsing import ErrorHandler
-import importlib.resources as resources
 import os
 import shutil
 import sys
 from datetime import datetime
+from importlib import resources
 
 import yaml
 
 from harpy import __version__
 from harpy.common.environments import HarpyEnvs
+from harpy.common.errorparsing import ErrorHandler
 from harpy.common.file_ops import filepath, last_sm_log, purge_empty_logs
-from harpy.runtime.launch import LaunchSnakemake
 from harpy.common.printing import HarpyPrint
 from harpy.common.summaries import Summary
+from harpy.runtime.launch import LaunchSnakemake
 
 
-class Workflow():
+class Workflow:
     '''
     The container for workflow parameters. Set inputdir = True to create a workflow/input directory
     '''
@@ -338,7 +338,7 @@ class Workflow():
     def launch(self, absolute: bool = False, summary: bool = True):
         """
         Launch Snakemake as a monitored subprocess. The `absolute` option calls snakemake with absolute paths.
-        The `summary` option ensures a plaintext summary file is provided at the end of a workflow. 
+        The `summary` option ensures a plaintext summary file is provided at the end of a workflow.
         """
         cmd = self.snakemake_cmd_absolute if absolute else self.snakemake_cmd_relative
         sm = LaunchSnakemake(cmd, self.output_directory, self.quiet, self.print)

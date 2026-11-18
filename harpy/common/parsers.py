@@ -1,5 +1,6 @@
 import re
 
+
 class LRparser:
     """Base class for FASTQ/SAM parsing"""
 
@@ -39,7 +40,7 @@ class Tellseq(LRparser):
     def __init__(self):
         self.patternFQ = re.compile(r':([ATCGN]+)')
         self.patternBC = re.compile(r"^[ATCGN]+(?:-\S+)?$")
-        self.invalidDict: dict[str, int] = dict()
+        self.invalidDict: dict[str, int] = {}
         for i in range(1,19):
             self.invalidDict[str(i)] = 0
         self.patternInvalid = re.compile('N', flags=re.IGNORECASE)

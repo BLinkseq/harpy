@@ -14,7 +14,7 @@ from rich.theme import Theme
 from harpy import __version__
 
 
-class HarpyPrint():
+class HarpyPrint:
     def __init__(self, quiet: int = 0):
         '''Instantiate a `HarpyPrint` object configured with a `quiet` setting that applies to printing logs and validations'''
         self.console = Console(
@@ -190,4 +190,3 @@ class HarpyPrint():
         _now =  time.strftime(r'[dim magenta]\[%H:%M:%S][/]')
         if self.quiet == 0:
             self.print(_now, text, highlight=False, end = "\n" if newline else " ")
-
