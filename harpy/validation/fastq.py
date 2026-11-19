@@ -90,7 +90,7 @@ class FASTQ:
         self.count = len({re.sub(bn_r, "", i, flags = re.IGNORECASE) for i in uniqs})
         self.detect_illumina_format()
         if detect_bc:
-            self.print.log("Detecting linked-read barcode format", newline=False)
+            self.print.log("Checking linked-read format", newline=False)
             scanned = []
             for i,fq in enumerate(self.files, 1):
                 if i > 10:
