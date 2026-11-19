@@ -6,13 +6,6 @@ sidebar:
 import { Aside, Badge, FileTree, Tabs, TabItem } from '@astrojs/starlight/components';
 import Accordion from '@/components/Accordion.astro';
 
-Once sequences have been trimmed and passed through other QC filters, they will need to
-be aligned to a reference genome. Arachne is the successor to lariat and EMA, the linked-read aware aligners
-developed by 10X Genomics and [Shajii _et al._](https://www.biorxiv.org/content/10.1101/220236v1),
-respectively. It incorporates linked-read information to better place alignments, which tends to show
-improvement when aligning over repetitive regions.
-
-
 <Accordion title="📝 You will need">
 - at least 4 cores/threads available
 - a genome assembly in FASTA format: <Badge variant="success" text=".fasta"/> <Badge variant="success" text=".fa"/> <Badge variant="success" text=".fasta.gz"/> <Badge variant="success" text=".fa.gz"/> <Badge text="case insensitive"/>
@@ -24,6 +17,7 @@ improvement when aligning over repetitive regions.
   - supported technologies: haplotagging, BLink-seq, TELL-seq, stLFR, anything in [standard format](https://blinkseq.github.io/lastq/)
 </Accordion>
 <Accordion title="Linked-reads improve mapping in repetitive regions">
+
 Arachne defaults to using an improved version of the EM algorithm from [EMA](https://www.biorxiv.org/content/10.1101/220236v1),
 but can use the RFA algorithm from Lariat with the `--rfa` flag. Regardless of which algorithm you choose, incorporating linked-read
 information during mapping improves accuracy over barcode-naive alignment, as shown in [Shajii _et al._, 2017](https://www.biorxiv.org/content/10.1101/220236v1) :
@@ -31,7 +25,11 @@ information during mapping improves accuracy over barcode-naive alignment, as sh
 ![EMA Publication figure 3](../../..//assets/ema.fig3.jpg)
 </Accordion>
 
-You can map linked reads onto a genome assembly with harpy using the `align arachne` command:
+Once sequences have been trimmed and passed through other QC filters, they will need to
+be aligned to a reference genome. Arachne is the successor to lariat and EMA, the linked-read aware aligners
+developed by 10X Genomics and [Shajii _et al._](https://www.biorxiv.org/content/10.1101/220236v1),
+respectively. It incorporates linked-read information to better place alignments, which tends to show
+improvement when aligning over repetitive regions. You can map linked reads onto a genome assembly with harpy using the `align arachne` command:
 
 ```bash title="Usage"
 harpy align arachne OPTIONS... REFERENCE INPUTS...
@@ -48,18 +46,42 @@ largely borrows the same form as the `align` commands and is configured using th
 | :------------------------- | :-----: | :------------------------------------------------------------------------------------------------------------------------------------------ |
 | `REFERENCE`                |         | Reference assembly for read mapping <Badge variant="tip" text="required"/>                                                                  |
 | `INPUTS`                   |         | Files or directories containing [input FASTQ files](/getting-started/common-options#input-arguments) <Badge variant="tip" text="required"/> |
-| `--10x`                    |  false  | Input FASTQ are 10X data with inline barcodes                                                                                               |
-| `-depth-window` `-w`       | `50000` | Interval size (in bp) for depth stats                                                                                                       |
+| `--10x`                    |  false  | Input FASTQ are 10X data with 16bp inline barcodes                                                                                          |
+| `--centromeres` `-c`       |         | BED-format file of known centromeres                                                                                                        |
+| `--depth-window` `-w`      | `50000` | Interval size (in bp) for depth stats                                                                                                       |
 | `--keep-unmapped` `-u`     |  false  | Output unmapped sequences too                                                                                                               |
 | `--molecule-distance` `-d` |   `0`   | Base-pair distance threshold to separate molecules given as base pairs, disabled with `0`                                                   |
 | `--min-quality` `-q`       |  `30`   | Minimum `MQ` (SAM mapping quality) to pass filtering                                                                                        |
 | `--rfa`                    |  false  | Use the Lariat RFA algorithm instead of the EM from EMA                                                                                     |
 
-## 10X input data
-The `arachne prep` step can convert 10X data into standard format using an embedded `4M-with-alts-february-2016.txt`,
-which is the official 10X barcode whitelist. Here, "10X data" refers to FASTQ files where the barcodes are still at the
-beginning of the R1 sequence:
+## Input data types
+Arachne expects [standard linked-read FASTQ format](https://blinkseq.github.io/lastq/) that is **sorted by barcode** as input.
+Most linked-read FASTQ files aren't natively in this format, so arachne also includes a converter 
+([the one from djinn!](https://blinkseq.github.io/djinn/fastq/sort/)) that can take 10X, TELL-seq, stLFR, or Haplotagging
+data and process it into sorted-standard data. The `align arachne` command does this automatically, but your data _will_ need
+to be recognizable as 10X, TELL-seq, stLFR, or Haplotagging.
+
+### 10X input data
+The `arachne prep` converter uses an embedded official 10X barcode whitelist `4M-with-alts-february-2016.txt`. If
+that isn't suitable, please use `djinn fastq sort` for more flexible parsing. Here, "10X data" refers to FASTQ
+files where the barcodes are still the first 16bp of the R1 sequence:
 ![10X Data](https://blinkseq.github.io/_astro/lr_10X.B2VtTBhp_yNTBo.webp)
+
+## Centromeres
+By providing an optional BED file of centromere regions, any sequences that map within those positions
+will have their mapping qualities (MAPQ) dropped to 0, because alignments to centromeric regions are unreliable.
+BED files are tab-delimited and the first three columns must be 1) the chromosome/contig name, 2) the start position,
+3) the end position. All other columns are skipped. Empty lines, or lines that start with `#`, `track`, or `browser` are skipped.
+
+```
+<chrname> <start> <stop>
+```
+
+```text title = "centromeres.bed"
+
+Poccidentalis_chr1 0 180000
+Poccidentalis_chr2 0 220000
+```
 
 ## RFA vs EM
 Internal benchmarks on synthetic data show a marginal improvement in correct read placement in repetitive regions
@@ -103,11 +125,11 @@ The default output directory is `Align/aligner` with the folder structure below.
 - Align/aligner
   - aligned
     - Sample1.bam
-  - logs
+  - logs/
   - reports
     - data
-      - lrsats
-      - coverage
+      - lrsats/
+      - coverage/
     - linkedreads.summary.ipynb
     - aligner.summary.ipynb
     - Sample1.ipynb

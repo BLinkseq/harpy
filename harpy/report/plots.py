@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 
 import altair as alt
+import numpy as np
 import polars as pl
 
 from harpy.report.theme import sv_colors
@@ -292,6 +293,28 @@ def depthplot(df: pl.DataFrame, title):
 
     return res.interactive(bind_y=False)
 
+def static_kneeplot(hist: pl.DataFrame, title: str, output_path: str):
+    counts = hist["count"].to_numpy()         # distinct values, descending
+    cum = hist["len"].cum_sum().to_numpy()    # last 1-based rank of each value
+    n = int(cum[-1])
+
+    indices = np.unique(np.geomspace(1, n, num=min(5000, n)).astype(int) - 1)
+    # count at 0-based rank i = first bin whose cumulative size >= i+1
+    pos = np.searchsorted(cum, indices + 1, side="left")
+
+    df = pl.DataFrame({"index": indices, "count": counts[pos]})
+
+    chart = (
+        alt.Chart(df)
+        .mark_point(size=4)
+        .encode(
+            x=alt.X("index:Q", title="Barcode"),
+            y=alt.Y("count:Q", title="Read Count").scale(type="log"),
+            color=alt.Color("count:Q").scale(scheme="plasma", reverse=True).legend(None),
+        )
+        .properties(width=650, height=300, title=title)
+    )
+    chart.save(output_path, format="png", ppi=200)
 
 def sv_by_chromosome(
     variants: pl.DataFrame,

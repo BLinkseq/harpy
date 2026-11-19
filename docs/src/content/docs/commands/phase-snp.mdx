@@ -46,7 +46,8 @@ In addition to the [common runtime options](../../getting-started/common-options
 | `--min-map-qual` `-q`      |   `20`   | Minimum mapping quality score to be considered for phasing                                                                   |
 | `--min-map-qual` `-m`      |   `13`   | Minimum base quality score to be considered for haplotype fragment inclusion                                                 |
 | `--molecule-distance` `-d` | `100000` | Base-pair distance threshold to separate molecules                                                                           |
-| `--prune-threshold` `-p`   |   `30`   | PHRED-scale (%) threshold for pruning low-confidence SNPs                                                                    |
+| `--populations` `-p`       |          | Tab-delimited file of sample\<*tab*\>group to optionally do population-aware statistical phasing                             |
+| `--prune-threshold` `-t`   |   `30`   | PHRED-scale (%) threshold for pruning low-confidence SNPs                                                                    |
 | `--vcf-samples`, `-V`      |          | [Use samples present in vcf file](#prioritize-the-vcf-file) for phasing rather than those found the directory                |
 
 ### Prioritize the vcf file
@@ -71,10 +72,17 @@ but Harpy's default is more lenient with `100000` (100kbp). Unless you have stro
 in favor of it, a distance above `250000` (250kbp) would probably do more harm than good.
 See [Barcode Thresholds](https://blinkseq.github.io/linkedreads/clashing/#barcode-thresholds) for a more thorough explanation.
 
+
 ### Pruning threshold
 The pruning threshold refers to a PHRED-scale value between 0-1 (a percentage) for removing
 low-confidence SNPs from consideration. With Harpy, you configure this value as an integer 
 between 0-100, (_i.e._ `-p 30` is equivalent to a 0.30 threshold, aka 30%).
+
+## Statistical Phasing
+We have found phasing improved when doing a second round of statistical phasing using `shapeit4`.
+The best performance we have observed with it is to do statistical phasing on all samples of
+a biologically meaningful population, which is why this feature is activated by including a
+`--populations` file.
 
 ## Phasing Workflow
 <Tabs>
@@ -88,19 +96,19 @@ graph LR
     subgraph Inputs
         Z([sample alignments]):::clean---gen["genome (optional)"]:::clean
     end
-    Inputs--->A([isolate heterozygotes]):::clean
+    Inputs--->A([isolate heterozygote loci]):::clean
     A ---> B([extractHAIRS]):::clean
     B-->C([LinkFragments]):::clean
     C-->D([phase blocks]):::clean
     B-->D
     A-->D
     D-->E([annotate BCFs]):::clean
-    E-->F([index annotations]):::clean
-    F-->G([merge annotations]):::clean
-    E-->G
-    A-->G
-    D-->G
-    G-->I([merge phased samples]):::clean
+    E-->I([merge phased samples]):::clean
+    subgraph stats[With --populations]
+        H([merge phased samples into populations]):::clean-->J([phase by chromosome]):::clean
+        J-->K([merge phased populations and chromosomes]):::clean
+    end
+    E-->stats
     style Inputs fill:#f0f0f0,stroke:#e8e8e8,stroke-width:2px,rx:10px,ry:10px
     classDef clean fill:#f5f6f9,stroke:#b7c9ef,stroke-width:2px
 ```

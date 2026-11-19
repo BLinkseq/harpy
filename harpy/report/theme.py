@@ -65,10 +65,10 @@ def palette(n_colors: int, palette: list[str]=[]):
 def sv_colors(name) -> str:
     '''Return a color from that okabe palette that's mapped to a type of structural variant'''
     d = {
-        'INV': '#56B4E9'None,
-        'DEL': '#E69F00'None,
-        'DUP': '#009E73'None,
-        'BND': '#CC79A7'None
+        'INV': '#56B4E9',
+        'DEL': '#E69F00',
+        'DUP': '#009E73',
+        'BND': '#CC79A7'
     }
     return d.get(name, '#CC79A7')
 

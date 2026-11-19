@@ -1,6 +1,5 @@
 ---
 title: View workflow components
-icon: eye
 ---
 
 The lifetime of a harpy command like `snp mpileup` will generate a `workflow/` directory with

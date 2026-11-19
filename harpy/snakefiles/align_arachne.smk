@@ -7,24 +7,24 @@ wildcard_constraints:
 
 WORKFLOW    = config.get('Workflow') or {}
 PARAMETERS = config.get('Parameters') or {}
-REPORTS    = WORKFLOW.get("reports") or {} 
+REPORTS    = WORKFLOW.get("reports") or {}
 INPUTS     = config['Inputs']
 VERSION    = WORKFLOW.get('harpy-version', 'latest')
 
 molecule_distance = PARAMETERS.get("distance-threshold", 0)
 fqlist            = INPUTS["fastq"]
 genomefile 	      = INPUTS["reference"]
-centromeres 	  = INPUTS.get("centromeres", None)
+centromeres 	  = INPUTS.get("centromeres", [])
 is10X             = WORKFLOW.get("linkedreads", {}).get("type", "standard") == "10x"
 useRFA            = WORKFLOW.get('use-rfa', False)
 
 # overwrite what's in align.smk
-bx_tag            = True 
+bx_tag            = True
 vx_tag            = True
 ignore_bx         = False
 
-bn 			  = os.path.basename(genomefile)
-bn_r          = r"([_\.][12]|[_\.][FR]|[_\.]R[12](?:\_00[0-9])*)?\.((fastq|fq)(\.gz)?)$"
+bn 	  = os.path.basename(genomefile)
+bn_r  = r"([_\.][12]|[_\.][FR]|[_\.]R[12](?:\_00[0-9])*)?\.((fastq|fq)(\.gz)?)$"
 bn_re = re.compile(bn_r, flags=re.IGNORECASE)
 fq_by_sample = {}
 for f in fqlist:
@@ -40,7 +40,7 @@ def get_fq(wildcards):
 rule process_reference:
     input:
         genomefile
-    output: 
+    output:
         multiext("workflow/reference/ref.fa.gz", '.l2b', '.mbw'),
         geno = "workflow/reference/ref.fa.gz",
         fai = "workflow/reference/ref.fa.gz.fai",
@@ -51,7 +51,7 @@ rule process_reference:
         "envs/align.yaml"
     container:
         f"ghcr.io/blinkseq/harpy:align_{VERSION}"
-    shell: 
+    shell:
         """
         {{
             seqtk seq {input} | bgzip -c > {output.geno}
@@ -64,8 +64,8 @@ rule arachne_prep:
     input:
         get_fq
     output:
-        R1 = temp("prep/{sample}.arachne.R1.fq.gz"),
-        R2 = temp("prep/{sample}.arachne.R2.fq.gz"),
+        R1 = temp("prep/{sample}.R1.fq.gz"),
+        R2 = temp("prep/{sample}.R2.fq.gz"),
     threads:
         4
     log:
@@ -77,24 +77,21 @@ rule arachne_prep:
     container:
         f"ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
-        """
-        arachne prep -t {threads} prep/{wildcards.sample} {input} 2> {log}
-        #mv arachne-prep/{wildcards.sample}.arachne.R1.fq.gz {output.R1}
-        #mv arachne-prep/{wildcards.sample}.arachne.R2.fq.gz {output.R2}
-        """
+        "arachne prep -t {threads} prep/{wildcards.sample} {input} 2> {log}"
 
 rule align:
     input:
         multiext('workflow/reference/ref.fa.gz', '.l2b', '.mbw'),
-        ref   = 'workflow/reference/ref.fa.gz',
-        R1 = 'prep/{sample}.arachne.R1.fq.gz',
-        R2 = 'prep/{sample}.arachne.R2.fq.gz',
-        centromeres = centromeres if centromeres else []
+        ref = 'workflow/reference/ref.fa.gz',
+        R1  = 'prep/{sample}.R1.fq.gz',
+        R2  = 'prep/{sample}.R2.fq.gz',
+        cen = centromeres
     output:
         temp("arachne/{sample}.arachne.bam")
     log:
         "logs/arachne/{sample}.arachne.log"
     params:
+        f"-c {centromeres}" if centromeres else "",
         f"-d {molecule_distance}",
         lambda wc: "-s " + wc.get("sample")
     threads:
@@ -110,6 +107,6 @@ rule align:
         {{
             mkdir -p {resources.tmpdir}; trap "rm -rf {resources.tmpdir}" 0
             arachne align -t {threads} {params} {input.ref} {input.R1} {input.R2} |
-            samtools collate -T {resources.tmpdir}/{wildcards.sample} -O -u - 
+            samtools collate -T {resources.tmpdir}/{wildcards.sample} -O -u -
         }} > {output} 2> {log}
         """

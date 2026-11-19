@@ -65,8 +65,10 @@ The easiest way to locally install the development build is to use [pixi](https:
 Harpy runs in two stages:
 <Steps>
 1. Parse command line
+    
     It recieves command line inputs and parses them
 2. Configure and run workflow
+    
     The parsed inputs configure workflows and output directories, then execute a Snakemake workflow
 </Steps>
 
@@ -101,14 +103,19 @@ a release. All meaningful changes to the code occur on branches based on `main`,
 The dev workflow is reasonably standard:
 <Steps>
 1. Fork Harpy
+    
     [create a fork](https://github.com/blinkseq/harpy/fork) of Harpy, usually from the `main` branch
 
 2. Create new development branch
+    
     Within your fork, create a new branch, name it something relevant to what you intend to do (_e.g._, `naibr_bugfix`, `add_deepvariant`)
 
 3. Make code changes
+    
     Add and modify code with your typical coding workflow, pushing your changes to your Harpy fork
+
 4. Create pull request
+    
     When it's ready for inclusion into Harpy (and testing), create a Pull Request to merge your changes into the Harpy `main` branch (unless specified otherwise)
 </Steps>
 
