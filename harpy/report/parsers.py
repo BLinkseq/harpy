@@ -303,18 +303,23 @@ def parse_naibr_leviathan_SVs(infiles: list[str]):
         schema_overrides=_sv_coltypes,
         infer_schema_length=None,
     ).collect()
-    # standardize the column names btwn Leviathan and Naibr
+    # standardize the column names btwn Naibr (top) or LEVIATHAN (bottom)
     if "Break1" in sv.columns:
         sv = sv.drop("Chr2")
         sv.columns = ["Sample", "Contig", "Start", "End", 'Split Mol', 'Discordant', 'Orientation', 'Haplotype', 'Score', 'Filter', 'Type']
         sv = sv.select(['Sample', 'Contig', 'Start', 'End', 'Type', 'Split Mol', 'Discordant', 'Orientation', 'Haplotype', 'Score', 'Filter'])
         sv = sv.with_columns(pl.col('Type').str.to_lowercase().str.to_titlecase())
+        sv = sv.with_columns(pl.col('Start', 'End').cast(pl.Int64))
+        sv = sv.with_columns(pl.col('Score').cast(pl.Float64))
+        sv = sv.with_columns(Length=pl.col('End') - pl.col('Start'))  
     else:
+        # add length column
         sv.columns = [i.replace("position_", "").replace("_", " ").title() for i in sv.columns]
         sv = sv.with_columns(pl.col('Type').replace_strict(_sv_types))
-    
-    sv = sv.with_columns(pl.col("Length").replace(".", "0"))
-    return sv.with_columns(pl.all().exclude('Sample', 'Contig', 'Type').cast(pl.Int64))
+        sv = sv.with_columns(pl.col("Length").replace(".", "0"))
+        sv = sv.with_columns(pl.all().exclude('Sample', 'Contig', 'Type').cast(pl.Int64))
+
+    return sv
 
 def process_variants(df: pl.DataFrame, bin_size: int = 50) -> pl.DataFrame:
     """Group variants by binning positions into windows"""
