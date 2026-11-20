@@ -289,7 +289,7 @@ def read_count_hist(infile: str) -> pl.DataFrame:
 
 ## SV output parsers ------------------
 #for i in infiles:
-_sv_coltypes = {'contig': pl.String, 'Chr1': pl.String, 'Chr2' : pl.String}
+_sv_coltypes = {'contig': pl.String, 'Chr1': pl.String, 'Chr2' : pl.String, 'Start': pl.Int64, 'End': pl.Int64, 'End1': pl.Int64}
 _sv_types = {"INV": "Inversion", "DEL": "Deletion", "DUP": "Duplication", "BND": "Breakend"}
 
 def parse_naibr_leviathan_SVs(infiles: list[str]):
