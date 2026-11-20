@@ -23,7 +23,7 @@ jobs:
       - name: Install Harpy
         uses: prefix-dev/setup-pixi@v0.11.2
         with:
-          pixi-version: v0.62.0
+          pixi-version: v0.84.2
           cache: false
           activate-environment: true
       - name: Clear space
