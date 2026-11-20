@@ -82,6 +82,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: harpy qc
@@ -103,6 +105,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: harpy preproc meier2021
@@ -135,6 +139,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: test validate fastq
@@ -159,6 +165,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - run: pixi run build
@@ -179,6 +187,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: harpy deconvolve
@@ -198,6 +208,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: test strobealign
@@ -225,6 +237,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: snp mpileup
@@ -256,6 +270,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: impute
@@ -291,6 +307,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: phase
@@ -326,6 +344,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: leviathan
@@ -350,6 +370,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: naibr
@@ -374,6 +396,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: Clear Space
@@ -403,6 +427,8 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             test
+            resources
+            harpy
             .github/actions
       - uses: ./.github/actions/setup-harpy
       - name: lazy CLI and shell completion

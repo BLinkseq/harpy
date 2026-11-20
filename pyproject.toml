@@ -78,5 +78,5 @@ scripts = ["resources/register-kernel.sh", "resources/shell_completion.sh"]
 [tool.pixi.tasks]
 build            = {depends-on = ["build-demuxolotl", "build-djinn", "completion"]}
 completion       = {cmd = "bash resources/generate_completion.sh $CONDA_PREFIX python"}
-build-djinn      = {cmd = "CGO_ENABLED=0 go build -C demuxolotl -o $CONDA_PREFIX/bin/demuxolotl -ldflags='-s -w'"}
-build-demuxolotl = {cmd = "CGO_ENABLED=0 go build -C djinn -o $CONDA_PREFIX/bin/djinn -ldflags='-s -w'"}
+build-demuxolotl = {cmd = "CGO_ENABLED=0 go build -C demuxolotl -o $CONDA_PREFIX/bin/demuxolotl -ldflags='-s -w'"}
+build-djinn      = {cmd = "CGO_ENABLED=0 go build -C djinn -o $CONDA_PREFIX/bin/djinn -ldflags='-s -w'"}
