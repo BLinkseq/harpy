@@ -1,4 +1,4 @@
-# New
+## New
 - `harpy view envs` prints versions too, where applicable
 - CLI validations for `--hpc`/`-H` to check if the plugins necessary for the configuration are installed
 - `harpy preprocess meier2021` now uses `dmox` v0.3.1
@@ -12,7 +12,7 @@
 - `sge` and `pbs` cluster support added to `template`. The latter is experimental.
 - `harp phase snp` now does supplemental statistical phasing with `shapeit4` when provided a population file
 
-# Changes
+## Changes
 - much faster CLI startup: `harpy --version` and `harpy --help` go from ~2s to ~0.2s
   - the subcommands of `harpy` and `harpy-utils` are now imported only when they are run
   - heavy imports (e.g. `nbconvert`, `pysam`, `yaml`) moved out of module scope into the functions that need them
@@ -41,7 +41,7 @@
   - barcode stats for SAM and FASTQ files moved to djinn (breaking: removed from `harpy-utils`)
 
 
-# Fixes
+## Fixes
 - `harpy view envs`: simpler logic and print diagnostic text if empty
 - hyphenated formats now properly respected in various places
   - standardization during `harpy align`, fastq and sam validation, filtering invalids from `phase snp`
@@ -61,7 +61,7 @@
 - input file handling now respects symlinks instead of resolving to their targets
 - alignment barcode stats report exits early, without an error, with helpful information as to why there are no valid barcodes
 
-# Internal
+## Internal
 - simplified summaries logic
 - report functions have 1 retry built in (mostly for HPC contexts)
 - harpy-utils: replace Golang `regexp` with `coregex` for speed/efficiency
@@ -73,8 +73,9 @@ python-API call to `papermill` with the post-processing that was previously cove
   - functionally, this means the command line interface is cleaner in workflows, and the kernel engine can be declared to be IPC instead of TCP, which works better for concurrency.
 - harpy-managed dependency containers now hosted on GHCR (GitHub Container Registry) instead of DockerHub
 - `harpy.common.launch` and `harpy.common.workflow` moved from `harpy.common` to own module `harpy.runtime.*`
+- CI: build harpy once and subsequent jobs use env tarball
 
-# Added but not exposed yet
+## Added but not exposed yet
 - `harpy snp deepvariant` - call SNPs in high-depth samples using Google's DeepVariant. AI AI AI!!!
   - this option must use the docker image of the software because of the way DeepVariant is packaged, so `--container` isn't exposed
 - this is just internal scaffolding for now. Can be made public with sufficient interest
