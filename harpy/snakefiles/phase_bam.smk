@@ -61,7 +61,7 @@ if linked:
         shell:
             """
             {{
-                djinn sam filter-invalid -t {threads} --invalid {output.invalid} {input} > {output.valid}
+                djinn sam rm-invalid -@ {threads} -i {output.invalid} {input} > {output.valid}
                 samtools index {output.valid}  
             }} 2> {log}
             """
