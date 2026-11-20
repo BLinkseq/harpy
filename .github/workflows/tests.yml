@@ -161,7 +161,6 @@ jobs:
             test
             .github/actions
       - uses: ./.github/actions/setup-harpy
-      - run: pixi run build
       - name: harpy qc
         run: |
           harpy qc -x "--low_complexity_filter" --quiet 2 test/fastq && \
