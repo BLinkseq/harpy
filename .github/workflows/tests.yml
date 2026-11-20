@@ -211,6 +211,10 @@ jobs:
         run: |
           harpy align minimap --quiet 2 test/genome/genome.fasta.gz test/fastq && \
           ls -lh Align/minimap
+      - name: test arachne
+        run: |
+          harpy align arachne --quiet 2 test/genome/genome.fasta.gz test/fastq && \
+          ls -lh Align/arachne
 
   snp:
     needs: [changes, build]

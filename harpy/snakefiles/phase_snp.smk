@@ -153,7 +153,6 @@ rule link_fragments:
         vcf       = "workflow/input/heterozygotes/{sample}.het.vcf",
         fragments = "extract_hairs/{sample}.unlinked.frags"
     output:
-
         "link_fragments/{sample}.linked.frags"
     log:
         "logs/link_fragments/{sample}.linked.log"

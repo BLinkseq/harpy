@@ -31,11 +31,12 @@ class HarpyEnvs:
         ],
         "assembly" : [
             "bioconda::arcs",
+            "bioconda::busco",
             "bioconda::bwa",
             "bioconda::cloudspades",
             "bioconda::links",
+            "conda-forge::setuptools",  # needed for quast's distutils dep
             "bioconda::quast",
-            "bioconda::busco",
             "bioconda::samtools",
             "bioconda::tigmint"
         ],
