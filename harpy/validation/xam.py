@@ -7,11 +7,11 @@ import pysam
 
 from harpy.common.printing import HarpyPrint
 
-HAPLOTAGGING_RX = re.compile(r"^A\d{2}C\d{2}B\d{2}D\d{2}$")
-STLFR_RX = re.compile(r"^\d+_\d+_\d+$")
-TELLSEQ_RX = re.compile(r"^[ATCGN]+$")
+HAPLOTAGGING_RX = re.compile(r"^A\d{2}C\d{2}B\d{2}D\d{2}(?:-\S+)?$")
+STLFR_RX = re.compile(r"^\d+_\d+_\d+(?:-\S+)?$")
+TELLSEQ_RX = re.compile(r"^[ATCGN]+(?:-\S+)?$")
 
-class XAM():
+class XAM:
     """
     A class to contain and validate BAM/SAM input files. If detect_bc is True, will scan the first `maxrec`
     records of the first [up to] 5 files to determine barcode type, stopping at the first detection of a
@@ -53,7 +53,7 @@ class XAM():
             self.print.error(
                 "invalid file type",
                 f"[yellow]{len(badfiles)}[/] of the input alignment files did not conform to SAM/BAM format expectations.",
-                "Please verify that the files listed below are properly formatted SAM or BAM files."
+                "Please verify that the files listed below are properly formatted SAM or BAM files.",
                 "Offending Files",
                 ", ".join(badfiles)
             )
@@ -164,6 +164,3 @@ class XAM():
                 tmp.append(i)
         self.files = tmp
         self.count = len(tmp)
-
-
-            

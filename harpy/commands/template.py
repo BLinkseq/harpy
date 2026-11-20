@@ -29,7 +29,7 @@ def template():
     All commands write to `stdout`. Use hpc-* and impute without arguments.
     """
 
-@click.command(panel = "Input Files", no_args_is_help=True, epilog = "Documentation: https://pdimens.github.io/harpy/workflows/snp/#sample-grouping-file")
+@click.command(panel = "Input Files", no_args_is_help=True, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/snp/#sample-grouping-file")
 @click.argument('inputdir', required=True, type=click.Path(exists=True, file_okay=False))
 @click.help_option('--help', hidden = True)
 def groupings(inputdir):
@@ -60,17 +60,16 @@ def groupings(inputdir):
             hp.error(
                 "no files found",
                 f"No [bold]FASTQ[/] or [bold]BAM[/] files were detected in [blue]{inputdir}[/]",
-                "Check that [bold]FASTQ[/] file endings conform to [green].[/][[green]F[/][dim]|[/dim][green]R1[/]][green].[/][[green]fastq[/][dim]|[/dim][green]fq[/]][green].gz[/]\nCheck that [bold]BAM[/] files end in [green].bam[/]\nRead the documentation for details: https://pdimens.github.io/harpy/haplotagdata/#naming-conventions"
+                "Check that [bold]FASTQ[/] file endings conform to [green].[/][[green]F[/][dim]|[/dim][green]R1[/]][green].[/][[green]fastq[/][dim]|[/dim][green]fq[/]][green].gz[/]\nCheck that [bold]BAM[/] files end in [green].bam[/]\nRead the documentation for details: https://blinkseq.github.io/harpy/haplotagdata/#naming-conventions"
            )
-       samplenames = set([re.sub(bn_r, "", i, flags = re.IGNORECASE) for i in fqlist])
+       samplenames = {re.sub(bn_r, "", i, flags = re.IGNORECASE) for i in fqlist}
 
     hp.print(f"\n[bold]{len(samplenames)}[/] samples detected in [blue]{inputdir}[/]\n")
     for i in samplenames:
         _ = sys.stdout.write(f'{i}\tpop1\n')
     hp.notice("Please review the resulting file, as all samples have been grouped into a single population")
 
-#TODO FIX EPILOG
-@click.command(panel = "Other", epilog = "Documentation: https://pdimens.github.io/harpy/#reports")
+@click.command(panel = "Other", epilog = "Documentation: https://blinkseq.github.io/harpy/commands/template/#report")
 @click.option('-a', '--action', is_flag = True, default = False, help = 'Add a report-building GitHub Action to the repository')
 @click.option('-u', '--update', is_flag = True, default = False, help = 'Scan the git project for reports and update `myst.yml`')
 @click.help_option('--help', hidden = True)
@@ -87,8 +86,7 @@ def report(update, action):
     git_dir = ""
     git_dir_err = ""
     if os.path.isdir(".git"):
-        git_dir = os.getcwd() # or "."
-        pass
+        git_dir = os.getcwd()
     else:
         if action:
             if not shutil.which("git"):
@@ -97,7 +95,7 @@ def report(update, action):
                     "The [green]git[/] software was not found to identify the root directory of this project, therefore this is not considered to be a git-managed project."
                 )
             else:
-                git_dir_proc = subprocess.Popen("git rev-parse --show-toplevel".split(), text = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+                git_dir_proc = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'], text = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
                 git_dir = git_dir_proc.stdout.readline().strip()
                 git_dir_err = git_dir_proc.stderr.readline().strip()
                 if "not a git repository" in git_dir_err and action:
@@ -109,10 +107,8 @@ def report(update, action):
     if action:
         fetch_template("buildreports.yml", os.path.join(git_dir, ".github", "workflows", "buildreports.yml"))
         hp.notice(
-            (
-                "You will need to configure your GitHub repository to deploy Pages via GitHub Actions. To do that, navigate to the repository [blue]Settings[/] on GitHub, "
-                "go to the [blue]Pages[/] section (via left sidebar) and set [blue]Build and deployment>Source[/] to [green]GitHub Actions[/]."
-            )
+            "You will need to configure your GitHub repository to deploy Pages via GitHub Actions. To do that, navigate to the repository [blue]Settings[/] on GitHub, "
+            "go to the [blue]Pages[/] section (via left sidebar) and set [blue]Build and deployment>Source[/] to [green]GitHub Actions[/]."
         )
         dependabot_entry = {
             "package-ecosystem": "github-actions",
@@ -154,37 +150,17 @@ def hpc_generic():
     fetch_template("hpc-generic.yaml")
     package_absent("snakemake-executor-plugin-cluster-generic")
 
-#def hpc_generic2():
-#    pass
-    #executor: cluster-generic
-    #cluster-generic-submit-cmd:
-    #  mkdir -p results/slurm_logs/{rule} &&
-    #  sbatch
-    #    --partition=regular
-    #    --account=username
-    #    --cpus-per-task={threads}
-    #    --mem-per-cpu={resources.mem_per_cpu}
-    #    --time={resources.time}
-    #    --job-name=harpy-{rule}-{wildcards}
-    #    --output=results/slurm_logs/{rule}/{rule}-%j-{wildcards}.out
-    #    --error=results/slurm_logs/{rule}/{rule}-%j-{wildcards}.err
-    #    --parsable
-    #cluster-generic-status-cmd: status-sacct-robust.sh
-    #cluster-generic-cancel-cmd: scancel
-    #cluster-generic-cancel-nargs: 400
-    #default-resources:
-    #  - time="12:00:00"
-    #  - mem_per_cpu=3200
-    #  - tmpdir="/tmp"
-    #restart-times: 2
-    #max-jobs-per-second: 10
-    #max-status-checks-per-second: 2
-    #local-cores: 1
-    #latency-wait: 60
-    #cores: 800
-    #jobs: 500
-    #keep-going: True
-    #rerun-incomplete: True
+@click.command(panel = "HPC Configurations")
+@click.help_option('--help', hidden = True)
+def hpc_googlebatch():
+    """
+    Create a template config for Google Batch
+
+    This command creates a configuration for the Google Batch scheduler. Writes to `stdout`.
+    You will also need to install `snakemake-executor-plugin-googlebatch` for the HPC job submission to work.
+    """
+    fetch_template("hpc-googlebatch.yaml")
+    package_absent("snakemake-executor-plugin-googlebatch")
 
 @click.command(panel = "HPC Configurations")
 @click.help_option('--help', hidden = True)
@@ -200,6 +176,31 @@ def hpc_lsf():
 
 @click.command(panel = "HPC Configurations")
 @click.help_option('--help', hidden = True)
+def hpc_pbs():
+    """
+    Create a template config for PBS clusters
+
+    This command creates a configuration for a PBS (OpenPBS, PBS Pro, or Altair PBS) cluster.
+    Writes to `stdout`. You will also need to install `snakemake-executor-plugin-cluster-generic` for the HPC job submission to work.
+    """
+    fetch_template("hpc-pbs.yaml")
+    package_absent("snakemake-executor-plugin-cluster-generic")
+
+
+@click.command(panel = "HPC Configurations")
+@click.help_option('--help', hidden = True)
+def hpc_sge():
+    """
+    Create a template config for SGE/UGE/OGS
+
+    This command creates a configuration for the Sun Grid Engine (SGE), Univa Grid Engine (UGE), and Open Grid Scheduler (OGS) clusters.
+    Writes to `stdout`. You will also need to install `snakemake-executor-plugin-sge` for the HPC job submission to work.
+    """
+    fetch_template("hpc-sge.yaml")
+    package_absent("snakemake-executor-plugin-sge")
+
+@click.command(panel = "HPC Configurations")
+@click.help_option('--help', hidden = True)
 def hpc_slurm():
     """
     Create a template config for SLURM
@@ -210,20 +211,7 @@ def hpc_slurm():
     fetch_template("hpc-slurm.yaml")
     package_absent("snakemake-executor-plugin-slurm")
 
-@click.command(panel = "HPC Configurations")
-@click.help_option('--help', hidden = True)
-def hpc_googlebatch():
-    """
-    Create a template config for Google Batch
-
-    This command creates a configuration for the Google Batch scheduler. Writes to `stdout`.
-    You will also need to install `snakemake-executor-plugin-googlebatch` for the HPC job submission to work.
-    """
-    fetch_template("hpc-googlebatch.yaml")
-    package_absent("snakemake-executor-plugin-googlebatch")
-
-
-@click.command(panel =  "Input Files", context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://pdimens.github.io/harpy/workflows/impute/#parameter-file")
+@click.command(panel =  "Input Files", context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/impute/#parameter-file")
 @click.help_option('--help', hidden = True)
 def impute():
     """
@@ -242,5 +230,6 @@ template.add_command(groupings)
 template.add_command(hpc_generic)
 template.add_command(hpc_googlebatch)
 template.add_command(hpc_lsf)
+template.add_command(hpc_pbs)
 template.add_command(hpc_slurm)
 template.add_command(report)

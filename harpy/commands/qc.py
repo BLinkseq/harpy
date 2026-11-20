@@ -7,25 +7,26 @@ import rich_click as click
 from harpy.common.cli_filetypes import FASTQfile, HPCProfile, QCAdapters
 from harpy.common.cli_params import FastpParams, MultiInt, SnakemakeParams
 from harpy.common.system_ops import container_ok
-from harpy.common.workflow import Workflow
+from harpy.runtime.workflow import Workflow
 from harpy.validation.fastq import FASTQ
 
-@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://pdimens.github.io/harpy/workflows/qc")
+
+@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/qc")
 @click.option('-d', '--deduplicate', panel = "Parameters", is_flag = True, default = False, help = 'Identify and remove PCR duplicates')
 @click.option('-x', '--extra-params', panel = "Parameters", type = FastpParams(), help = 'Additional Fastp parameters, in quotes')
 @click.option('-l', '--length', panel = "Parameters", default = "30,150", type=MultiInt(2, minimum=30), show_default = True, help = 'Minimum,Maximum read lengths')
 @click.option('-a', '--trim-adapters', panel = "Parameters", type = QCAdapters(), help = 'Find and remove adapter sequences')
 @click.option('-U', '--unlinked', panel = "Parameters", is_flag = True, default = False, help = "Treat input data as not linked reads")
-@click.option('-O', '--output', panel = "Workflow Options", type = click.Path(exists = False, resolve_path = True), default = "QC", show_default=True,  help = 'Output directory name')
-@click.option('-@', '--threads', panel = "Workflow Options", default = 4, show_default = True, type = click.IntRange(4,999, clamp = True), help = 'Number of threads to use')
-@click.option('-T', '--no-temp', hidden = True, panel = "Workflow Options", is_flag = True, default = False, help = 'Don\'t delete temporary files')
+@click.option('--clean', hidden = True, panel = "Workflow Options", type = str, help = 'Delete the log (`l`), .snakemake (`s`), and/or workflow (`w`) folders when done')
 @click.option('-C', '--container', panel = "Workflow Options",  is_flag = True, default = False, help = 'Use a container instead of conda', callback=container_ok)
-@click.option('-N', '--setup', panel = "Workflow Options",  is_flag = True, hidden = True, show_default = True, default = False, help = 'Setup the workflow and exit')
 @click.option('-H', '--hpc', panel = "Workflow Options",  type = HPCProfile(), help = 'HPC submission YAML configuration file')
+@click.option('-T', '--no-temp', hidden = True, panel = "Workflow Options", is_flag = True, default = False, help = 'Don\'t delete temporary files')
+@click.option('-O', '--output', panel = "Workflow Options", type = click.Path(exists = False, resolve_path = True), default = "QC", show_default=True,  help = 'Output directory name')
 @click.option('-Q', '--quiet', panel = "Workflow Options", default = 0, type = click.IntRange(0,2,clamp=True), help = '`0` all output, `1` progress bar, `2` no output')
+@click.option('-N', '--setup', panel = "Workflow Options",  is_flag = True, hidden = True, show_default = True, default = False, help = 'Setup the workflow and exit')
 @click.option('-R', '--skip-reports', panel = "Workflow Options",  is_flag = True, default = False, help = 'Don\'t generate HTML reports')
 @click.option('-S', '--snakemake', panel = "Workflow Options", type = SnakemakeParams(), help = 'Additional Snakemake parameters, in quotes')
-@click.option('--clean', hidden = True, panel = "Workflow Options", type = str, help = 'Delete the log (`l`), .snakemake (`s`), and/or workflow (`w`) folders when done')
+@click.option('-@', '--threads', panel = "Workflow Options", default = 4, show_default = True, type = click.IntRange(4,999, clamp = True), help = 'Number of threads to use')
 @click.help_option('--help', hidden = True)
 @click.argument('inputs', required=True, type=FASTQfile(), nargs=-1)
 def qc(inputs, output, unlinked,length, trim_adapters, deduplicate, extra_params, threads, snakemake, skip_reports, quiet, hpc, clean, container, setup, no_temp):
@@ -71,9 +72,9 @@ def qc(inputs, output, unlinked,length, trim_adapters, deduplicate, extra_params
 
     workflow.info = {
         "Samples": fastq.count,
-        "Linked-Read Type": fastq.lr_type,
+        "Data Format": fastq.lr_type,
         **({"Treatment" : ", ".join(treatment)} if treatment else {"Treatment": "None"}),
         "Output Folder": os.path.relpath(output) + "/",
     }
-    
+
     workflow.initialize(setup)

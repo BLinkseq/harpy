@@ -1,0 +1,77 @@
+---
+title: Using harpy
+sidebar:
+    hidden: true
+---
+import { Aside, Steps,  Tabs, TabItem } from '@astrojs/starlight/components';
+
+Harpy is a data processing software suite. The different commands are intended to seamlessly work
+with each other with minimal friction. You may have a particular plan for your linked-read data,
+and the workflow you need will vary depending on your project. There are generally two kinds of workflows
+that you would consider for your work: one for variant detection and the other for genome assembly.
+
+<Aside title="Harpy works with WGS">
+
+While harpy is written primarily for linked-read data, most of the workflows accommodate non linked-read
+data, such as qc, aligning, variant calling. You're encouraged to try harpy on your data, regardless of
+whether it's linked reads or not.
+
+</Aside>
+
+## Typical Workflows
+Depending on your project goals, you may want any combination of SNPs, structural
+variants (inversions, deletions, duplications), or phased haplotypes. Below are diagrams
+outlining general workflows for linked-read data, depending on your goals.
+
+<Tabs>
+<TabItem label="Variant Calling">
+<Steps>
+1. **Preprocess data**
+    
+    Sample demultiplexing and linked-read barcode demultiplexing to identify barcodes remove technical sequences
+
+2. **Quality control**
+
+    Remove adapters, low quality sequences, reads that are too short, poly-G tails, etc.
+
+3. **Align sequences**
+
+    Align sequences to a reference genome, which enables variant detection later
+
+4. **Call SNPs**
+
+    Call Single Nucleotide Polymorphisms and small indels from alignments
+
+5. **Impute genotypes** _optional_
+
+    Use existing data to heuristically fill missing data or convert genotype likelihoods into hard genotype calls
+
+6. **Phase variants into haplotypes**
+
+    Convert individual SNPs into multi-allele haplotypes reflecting alleles that were inherited together from each parent
+
+7. **Call structural variants**
+
+    Call structural variants (SV) like inversions, large deletions, and duplications from alignments
+
+</Steps>
+</TabItem>
+<TabItem label="Assembly">
+<Steps>
+1. **Preprocess data**
+    
+    Sample demultiplexing and linked-read barcode demultiplexing to identify barcodes remove technical sequences
+
+2. **Quality Control**
+
+    Remove adapters, low quality sequences, reads that are too short, poly-G tails, etc.
+
+3. **Deconvolute**
+    Correct linked-read barcodes for unrelated sequences that share the same barcode by chance ("clashing")
+
+4. Assembly
+
+    Assemble sequences into a genome or metagenome
+</Steps>
+</TabItem>
+</Tabs>

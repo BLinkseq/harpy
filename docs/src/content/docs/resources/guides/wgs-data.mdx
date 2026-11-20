@@ -1,0 +1,64 @@
+---
+title: Non linked-read data
+---
+import { Aside, Card } from '@astrojs/starlight/components';
+import Accordion from '@/components/Accordion.astro';
+
+<Card title="TL;DR">
+- Non linked-read data is supported and auto-detected
+- Without linked-read information, harpy is still a viable way to QC, align, call SNPs, etc.
+- Workflows can be forced into non linked-read mode with `-U`
+</Card>
+
+Since version 2, harpy has supported non linked-read data like whole genome sequencing. It will
+auto-detect that your input FASTQ or BAM files are not linked-read data. This can also be forced
+with `--unlinked` / `-U`. You can safely ignore the linked-read information in some of the reports Harpy produces.
+
+## Quality Assessment
+Setting `--unlinked` in `qc` just ignores calculating/reporting linked-read metrics, the actual QC process doesn't incorporate linked-read data.
+```bash qc example
+harpy qc --unlinked --trim-adapters auto --min-length 50 data/WGS/sample_*.gz 
+```
+
+## Sequence Alignment
+Setting `--unlinked` disables linked-read specific routines in `align`. Doing so also ignores `--molecule-distance`.
+
+```bash title="align example"
+harpy align bwa --unlinked --min-quality 25 genome.fasta data/WGS/trimmed 
+```
+
+<Aside type="caution" title="RADseq data">
+RADseq data will probably work fine too, however you may need to post-process the
+BAM files to unset the duplicate flag, as marking duplicates in RADseq (without UMIs) [may cause issues](https://www.researchgate.net/post/How_to_exclude_PCR_duplicates_in_ddRAD) with SNP calling:
+```bash title="clear the duplicate tag"
+samtools view -b -h --remove-flags 1024 -o output.bam input.bam
+```
+</Aside>
+
+## Calling SNPs
+The SNP-calling workflows in Harpy don't use linked-read information at all, so you
+would use `snp mpileup` or `snp freebayes` without any modifications.
+
+```bash snp example
+harpy snp mpileup --regions 100000 --populations data.groups genome.fasta Align/strobe
+```
+
+## Impute Genotypes
+Set the value of the third (`usebx`) column of the parameter file to `FALSE` to disable 
+the linked-read things in `harpy impute`.
+```txt title="stitch.parameters"
+name    model   usebx   bxlimit   k       s       nGen
+model1    diploid   FALSE    50000    10      5       50
+model2    diploid   FASE    50000   15      10      100
+```
+Naturally, ignoring barcodes will also ignore whatever values are set for `bxlimit`. Otherwise, invoke the imputation workflow as you would normally:
+```bash title="impute example"
+harpy impute -t 10 stitch.parameters data/variants.bcf data/*.bam
+```
+
+## Phase Genotypes
+Like most of the other workflows, use `--unlinked` with `phase snp` to perform phasing without incorporating linked-read barcode
+information. When using this option, the value for `-d`/`--molecule-distance` will be ignored:
+```bash title="phase example"
+harpy phase -t 10 --unlinked variants.bcf data/*.bam 
+```

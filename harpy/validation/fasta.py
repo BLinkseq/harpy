@@ -9,7 +9,7 @@ from harpy.common.printing import HarpyPrint
 alphanum = re.compile(r'^[a-zA-Z0-9_\-\|]+$')
 nuc = re.compile(r'[ACGTURYKMSWBDHVN\-]+$', flags = re.IGNORECASE)
 
-class FASTA():
+class FASTA:
     '''
     A class to contain and validate a FASTA input file.
     '''
@@ -19,7 +19,7 @@ class FASTA():
         self.print = HarpyPrint(quiet)
         self.print.log("Validating input FASTA file", newline=False)
         try:
-            with pysam.FastxFile(self.file, persist=False) as fa:
+            with pysam.FastxFile(self.file, persist=False):
                 pass
         except Exception as e:
             self.print.validation(False)
@@ -44,6 +44,26 @@ class FASTA():
                 "contigs absent",
                 f"Some of the provided contigs were not found in [blue]{self.file_base}[/]. This will definitely cause plotting errors in the workflow.",
                 "Check that your contig names are correct, including uppercase and lowercase.",
+                f"Contigs absent in {self.file_base}",
+                ",".join([i for i in bad_names])
+            )
+        self.print.validation(True)
+
+    def match_contigs_vcf(self, contigs: str, vcffile: str):
+        """Checks whether a list of contigs from a vcf file are present in a fasta file"""
+        self.print.log("CHROM in VCF present in FASTA", newline=False)
+        valid_contigs = set()
+        with pysam.FastxFile(self.file, persist=False) as fa:
+            for record in fa:
+                valid_contigs.add(record.name)
+        bad_names = [i for i in contigs if i not in valid_contigs]
+
+        if bad_names:
+            self.print.validation(False)
+            self.print.error(
+                "contigs absent",
+                f"Some of the contigs in {os.path.basename(vcffile)} were not found in [blue]{self.file_base}[/].",
+                f"Check that your contig names are correct, including uppercase and lowercase. Also make sure that {os.path.basename(vcffile)} was generated from {self.file_base}.",
                 f"Contigs absent in {self.file_base}",
                 ",".join([i for i in bad_names])
             )

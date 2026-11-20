@@ -68,7 +68,7 @@ rule error_correction:
     conda:
         "envs/assembly.yaml"
     container:
-        f"docker://pdimens/harpy:assembly_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:assembly_{VERSION}"
     shell:
         "metaspades.py -t {threads} {params} -1 {input.FQ_R1} -2 {input.FQ_R2} > {log}"
 
@@ -94,7 +94,7 @@ rule spades_assembly:
     conda:
         "envs/assembly.yaml"
     container:
-        f"docker://pdimens/harpy:assembly_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:assembly_{VERSION}"
     shell:
         "metaspades.py -t {threads} {params} -1 {input.fastq_R1C} -2 {input.fastq_R2C} -s {input.fastq_UNC} > {log}"
 
@@ -116,7 +116,7 @@ rule cloudspades_metassembly:
     conda:
         "envs/assembly.yaml"
     container:
-        f"docker://pdimens/harpy:assembly_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:assembly_{VERSION}"
     threads:
         workflow.cores
     resources:
@@ -134,7 +134,7 @@ rule index_contigs:
     conda:
         "envs/align.yaml"
     container:
-        f"docker://pdimens/harpy:align_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
         "bwa index {input}"
 
@@ -155,7 +155,7 @@ rule align_to_contigs:
     conda:
         "envs/align.yaml"
     container:
-        f"docker://pdimens/harpy:align_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
         """
         {{
@@ -220,7 +220,7 @@ rule athena_metassembly:
     conda:
         "envs/metassembly.yaml"
     container:
-        f"docker://pdimens/harpy:metassembly_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:metassembly_{VERSION}"
     shell:
         """
         athena-meta {params.force} --config {input.config} &> {log} &&\\
@@ -246,7 +246,7 @@ rule QUAST_assessment:
     conda:
         "envs/assembly.yaml"
     container:
-        f"docker://pdimens/harpy:assembly_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:assembly_{VERSION}"
     shell:
         "metaquast.py --threads {threads} --pe1 {input.fastq_f} --pe2 {input.fastq_r} {params} {input.contigs} {input.scaffolds} 2> {log}"
 
@@ -270,7 +270,7 @@ rule BUSCO_analysis:
     conda:
         "envs/assembly.yaml"
     container:
-        f"docker://pdimens/harpy:assembly_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:assembly_{VERSION}"
     shell:
         # BUSCO exits 1 when no buscos are found, hence creating an output file in case that happens
         """
@@ -294,9 +294,9 @@ rule build_report:
     conda:
         "envs/qc.yaml"
     container:
-        f"docker://pdimens/harpy:qc_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
     container:
-        f"docker://pdimens/harpy:qc_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "multiqc {params} {input} > {output} 2> {log}"
 

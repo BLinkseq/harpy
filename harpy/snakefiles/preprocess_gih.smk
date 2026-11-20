@@ -12,10 +12,13 @@ REPORTS    = WORKFLOW.get("reports") or {}
 INPUTS     = config['Inputs']
 VERSION    = WORKFLOW.get('harpy-version', 'latest')
 
-fqlist       = INPUTS
+fqlist       = INPUTS["fastq"]
 skip_reports = REPORTS.get("skip", False)
 me_seq       = PARAMETERS.get("ME-sequence", "AGATGTGTATAAGAGACAG")
-mismatch     = PARAMETERS.get("ME-mismatch", 1) 
+mismatch     = PARAMETERS.get("ME-mismatch", 2) 
+qxrx         = PARAMETERS.get("qx-rx", False)
+keep_discard = PARAMETERS.get("keep-discard", False)
+schemafile   = INPUTS.get("schema", "embedded")
 
 bn_r = r"([_\.][12]|[_\.][FR]|[_\.]R[12](?:\_00[0-9])*)?\.((fastq|fq)(\.gz)?)$"
 samplenames = {re.sub(bn_r, "", os.path.basename(i), flags = re.IGNORECASE) for i in fqlist}
@@ -41,9 +44,9 @@ onstart:
         "subtitle": "This report aggregates the QA results created by falco",
         "report_comment": "Generated as part of the Harpy preprocess workflow",
         "report_header_info": [
-            {"Submit an issue": "https://github.com/pdimens/harpy/issues/new/choose"},
-            {"Read the Docs": "https://pdimens.github.io/harpy/workflows/preprocess/"},
-            {"Project Homepage": "https://github.com/pdimens/harpy"}
+            {"Submit an issue": "https://github.com/blinkseq/harpy/issues/new/choose"},
+            {"Read the Docs": "https://blinkseq.github.io/harpy/commands/preprocess/"},
+            {"Project Homepage": "https://github.com/blinkseq/harpy"}
         ]
     }
     if not skip_reports:
@@ -55,6 +58,7 @@ rule all:
     input: 
         'adapters.fasta',
         collect("{sample}.R{FR}.fq.gz", sample = samplenames, FR = [1,2]),
+        collect("{sample}.noME.fq.gz", sample = samplenames) if keep_discard else [],
         collect("reports/data/{sample}.bxcount", sample = samplenames),
         "reports/preprocess.QA.html" if not skip_reports else [],
         "reports/performance.ipynb" if not skip_reports else []
@@ -69,58 +73,28 @@ rule write_adapters:
             f.write(">Nextera GIH\nCTGTCTCTTATACACATCT\n")
             #f.write(f">ME Sequence\n{me_seq}\n")
 
-rule pad_barcodes:
+rule demultiplex:
     input:
         FQ1 = get_fq1,
-        FQ2 = get_fq2
-    output:
-        sam = pipe("stagger/{sample}.stagger.sam"),
-        stats = "reports/data/{sample}.MEstats"
-    log:
-        "logs/{sample}.stagger.log"
-    params:
-        f'--me {me_seq}',
-        f'--max-mismatch {mismatch}',
-    threads:
-        3
-    shell:
-        "gih-stagger --threads {threads} {params} --stats {output.stats} {input.FQ1} {input.FQ2} > {output.sam} 2> {log}"
-
-rule extract_barcodes:
-    input:
-        stagger = "stagger/{sample}.stagger.sam",
-        pheniqs_conf = "workflow/pheniqs.config.json"
-    output:
-        bam = temp("extract/{sample}.bam"),
-        json = "logs/extract/{sample}.json"
-    log:
-        "logs/{sample}.pheniqs"
-    params:
-        "-s",
-        "--quality"
-    conda:
-        "envs/preprocess.yaml"
-    container:
-        f"docker://pdimens/harpy:preprocess_{VERSION}"
-    shell:
-        """
-        pheniqs mux --output {output.bam} {params} -c {input.pheniqs_conf} --report {output.json} 2> {log} < {input.stagger}
-        """
-
-rule format_barcodes:
-    input:
-        "workflow/pheniqs.config.json",
-        "extract/{sample}.bam"
+        FQ2 = get_fq2,
+        schema = schemafile if schemafile != 'embedded' else []
     output:
         fq1 = "{sample}.R1.fq.gz",
         fq2 = "{sample}.R2.fq.gz",
-        stats = "reports/data/{sample}.BXstats"
+        discards = "{samples}.noME.fq.gz" if keep_discard else [],
+        stats = "reports/data/{sample}.dmxstats"
     log:
-        "logs/{sample}.convert.log"
+        "logs/{sample}.preproc"
+    params:
+        f'--me {me_seq}',
+        f'--max-mismatch {mismatch}',
+        '--qx-rx' if qxrx else '',
+        '-keep-discarded' if keep_discard else '',
+        f'-s {schemafile}' if schemafile != 'embedded' else ''
     threads:
-        2
+        4
     shell:
-        "gih-convert --threads {threads} {input} {output.fq1} {output.fq2} > {output.stats} 2> {log}"
+        "demuxolotl --threads {threads} {params} {wildcards.sample} {input.FQ1} {input.FQ2} > {output.stats} 2> {log}"
 
 rule barcode_counts:
     input:
@@ -128,7 +102,7 @@ rule barcode_counts:
     output:
         "reports/data/{sample}.bxcount"
     shell:
-        "djinn fastq count {input} > {output}"
+        "djinn fq count {input} > {output}"
 
 rule assess_quality:
     input:
@@ -140,7 +114,7 @@ rule assess_quality:
     conda:
         "envs/qc.yaml"
     container:
-        f"docker://pdimens/harpy:qc_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "falco --quiet --threads 1 -skip-report -skip-summary -data-filename {output} {input} > {log} 2>&1"
 
@@ -158,28 +132,22 @@ rule quality_report:
     conda:
         "envs/qc.yaml"
     container:
-        f"docker://pdimens/harpy:qc_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "multiqc --config workflow/multiqc.yaml {params} > {output} 2> {log}"
 
 rule barcode_report:
     input:
-        counts = collect("reports/data/{sample}.bxcount", sample = samplenames),
-        stats = collect("reports/data/{sample}.BXstats", sample = samplenames),
-        me = collect("reports/data/{sample}.MEstats", sample = samplenames),
+        collect("reports/data/{sample}.{ext}", sample = samplenames, ext = ['bxcount', 'dmxstats']),
         ipynb = "workflow/preproc_stats.ipynb"
     output:
-        tmp = temp("reports/performance.tmp.ipynb"),
-        ipynb = "reports/performance.ipynb"
+        "reports/performance.ipynb"
     log:
         "logs/performance.report.log"
     params:
-        indir = "-p indir " + os.path.abspath("reports/data/")
+        "-p indir " + os.path.abspath("reports/data/")
     shell:
         """
         export IPYTHONDIR=/tmp/ipython-pre-gih
-        {{
-            papermill -k ipython-harpy --no-progress-bar --log-level ERROR {input.ipynb} {output.tmp} {params.indir}
-            harpy-utils process-notebook {output.tmp} > {output.ipynb}
-        }} 2> {log}
+        harpy-utils run-notebook -k ipython-harpy {params} {input.ipynb} > {output} 2> {log}
         """

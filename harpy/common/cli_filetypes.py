@@ -5,22 +5,31 @@ import re
 from pathlib import Path
 
 import click
-import yaml
+from click.shell_completion import CompletionItem
 
-from harpy.common.file_ops import is_gzip, filepath
+from harpy.common.file_ops import filepath, is_gzip
 from harpy.common.printing import HarpyPrint
+from harpy.common.system_ops import check_snakemake_hpc
 
 hp = HarpyPrint()
 
-class SAMfile(click.ParamType):
+class FileCompletion(click.ParamType):
+    """
+    Base for the file-like types below: click can't complete anything for a custom ParamType,
+    so hand shell completion over to the shell's own filename completion.
+    """
+    def shell_complete(self, ctx, param, incomplete):
+        return [CompletionItem(incomplete, type = "file")]
+
+SAMre = re.compile(r"\.(bam|sam)$", re.IGNORECASE)
+SAMinvre = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
+class SAMfile(FileCompletion):
     """A CLI class to validate a BAM/SAM file as input. Checks for presence, format, and returns the absolute path"""
     name = "bam_file"
     def __init__(self, dir_ok: bool = True, single: bool = False):
         super().__init__()
         self.single = single
         self.dir_ok = False if single else dir_ok
-        self.re_ext = re.compile(r"\.(bam|sam)$", re.IGNORECASE)
-        self.inv_pattern = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
 
     def convert(self, value, param, ctx):
         infiles = []
@@ -29,23 +38,22 @@ class SAMfile(click.ParamType):
             self.fail(f"{value} was not found.", param, ctx)
 
         if not filepath.is_dir():
-            _f = filepath.resolve().as_posix()
-            if not self.re_ext.search(_f):
+            _f = filepath.absolute().as_posix()
+            if not SAMre.search(_f):
                 self.fail(f"{value} does not end with the accepted extensions for alignment files: .bam/.sam (case insensitive).")
             infiles.append(_f)
         else:
             if filepath.is_dir() and not self.dir_ok:
                 self.fail("Alignment input cannot be a directory", param, ctx)
             for i in filepath.glob("*"):
-                if i.is_file() and self.re_ext.search(i.name):
-                    infiles.append(i.resolve().as_posix())
+                if i.is_file() and SAMre.search(i.name):
+                    infiles.append(i.absolute().as_posix())
 
         # name and permission validations
         for _file in infiles:
             if not os.access(_file, os.R_OK):
                 self.fail(f"Alignment file {_file} does not have user read permission.", param, ctx)
-            #if self.inv_pattern.search(_file):
-            if self.inv_pattern.search(os.path.basename(_file)):
+            if SAMinvre.search(os.path.basename(_file)):
                 self.fail(f"Invalid characters detected in file name {_file}. Valid file names may contain only:\n  - A-Z 0-9 characters (case insensitive)\n  - . (period)\n  - _ (underscore)\n  - - (dash)")
 
         if len(infiles) < 1:
@@ -56,24 +64,25 @@ class SAMfile(click.ParamType):
         else:
             return infiles
 
-class FASTAfile(click.ParamType):
+FASTAre = re.compile(r"\.(fa|fas|fasta|fna|ffn|frn)(?:\.gz)?$", re.IGNORECASE)
+class FASTAfile(FileCompletion):
     """A CLI class to validate a FASTA file as input. Checks for presence, format, and returns the absolute path"""
     name = "fasta_file"
-
     def convert(self, value, param, ctx):
-        re_ext = re.compile(r"\.(fa|fas|fasta|fna|ffn|frn)(?:\.gz)?$", re.IGNORECASE)
         filepath = Path(value)
         if not filepath.exists() or not filepath.is_file():
             self.fail(f"FASTA file {value} was not found.", param, ctx)
         if not os.access(value, os.R_OK):
             self.fail(f"FASTA file {value} does not have reading permission.", param, ctx)
 
-        if not re_ext.search(value):
+        if not FASTAre.search(value):
             self.fail(f"File {value} does not have any of the recognized [case insensitive] FASTA file extensions (.fa, .fas, .fasta, .fna, .ffn, .frn). Gzipping (.gz) is also permitted.", param, ctx)
 
-        return filepath.resolve().as_posix()
+        return filepath.absolute().as_posix()
 
-class FASTQfile(click.ParamType):
+FASTQre = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
+FASTQrextre = re.compile(r"\.(fq|fastq)(?:\.gz)?$", re.IGNORECASE)
+class FASTQfile(FileCompletion):
     """
     A CLI class to validate a FASTQ file as input. Checks for presence, format, and returns the absolute path.
     Setting single to True returns a str, otherwise returns a list.
@@ -83,8 +92,6 @@ class FASTQfile(click.ParamType):
         super().__init__()
         self.single = single
         self.dir_ok = False if single else dir_ok
-        self.inv_pattern = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
-        self.re_ext = re.compile(r"\.(fq|fastq)(?:\.gz)?$", re.IGNORECASE)
 
     def convert(self, value, param, ctx):
         infiles = []
@@ -95,19 +102,19 @@ class FASTQfile(click.ParamType):
             self.fail("FASTQ input cannot be a directory", param, ctx)
 
         if not filepath.is_dir():
-            _f = filepath.resolve().as_posix()
-            if not self.re_ext.search(_f):
+            _f = filepath.absolute().as_posix()
+            if not FASTQrextre.search(_f):
                 self.fail(f"{value} does not end with the accepted extensions for FASTQ files: .fq[.gz]/.fastq[.gz] (case insensitive).")
-            infiles.append(filepath.resolve().as_posix())
+            infiles.append(filepath.absolute().as_posix())
         else:
             for i in filepath.glob("*"):
-                if i.is_file() and self.re_ext.search(i.name):
-                    infiles.append(i.resolve().as_posix())
+                if i.is_file() and FASTQrextre.search(i.name):
+                    infiles.append(i.absolute().as_posix())
 
         for _file in infiles:
             if not os.access(_file, os.R_OK):
                 self.fail(f"FASTQ file {_file} does not have user read permission.", param, ctx)
-            if self.inv_pattern.search(os.path.basename(_file)):
+            if FASTQre.search(os.path.basename(_file)):
                 self.fail(f"Invalid characters detected in file name {_file}. Valid file names may contain only:\n  - A-Z 0-9 characters (case insensitive)\n  - . (period)\n  - _ (underscore)\n  - - (dash)")
 
         if len(infiles) < 1:
@@ -118,15 +125,15 @@ class FASTQfile(click.ParamType):
         else:
             return infiles
 
-class IPYNBfile(click.ParamType):
+IPYNBre = re.compile(r"\.(ipynb)$", re.IGNORECASE)
+IPYNBinvre = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
+class IPYNBfile(FileCompletion):
     """A CLI class to validate an IPYNB file as input. Checks for file extension and returns the absolute path"""
     name = "ipynb_file"
     def __init__(self, dir_ok: bool = True, single: bool = False):
         super().__init__()
         self.single = single
         self.dir_ok = False if single else dir_ok
-        self.re_ext = re.compile(r"\.(ipynb)$", re.IGNORECASE)
-        self.inv_pattern = re.compile(r'[^a-z0-9._-]+', re.IGNORECASE)
 
     def convert(self, value, param, ctx):
         infiles = []
@@ -135,23 +142,22 @@ class IPYNBfile(click.ParamType):
             self.fail(f"{value} was not found.", param, ctx)
 
         if not filepath.is_dir():
-            _f = filepath.resolve().as_posix()
-            if not self.re_ext.search(_f):
+            _f = filepath.absolute().as_posix()
+            if not IPYNBre.search(_f):
                 self.fail(f"{value} does not end with .ipynb.")
             infiles.append(_f)
         else:
             if filepath.is_dir() and not self.dir_ok:
                 self.fail("Input cannot be a directory", param, ctx)
             for i in filepath.glob("*"):
-                if i.is_file() and self.re_ext.search(i.name):
-                    infiles.append(i.resolve().as_posix())
+                if i.is_file() and IPYNBre.search(i.name):
+                    infiles.append(i.absolute().as_posix())
 
         # name and permission validations
         for _file in infiles:
             if not os.access(_file, os.R_OK):
                 self.fail(f"Notebook file {_file} does not have user read permission.", param, ctx)
-            #if self.inv_pattern.search(_file):
-            if self.inv_pattern.search(os.path.basename(_file)):
+            if IPYNBinvre.search(os.path.basename(_file)):
                 self.fail(f"Invalid characters detected in file name {_file}. Valid file names may contain only:\n  - A-Z 0-9 characters (case insensitive)\n  - . (period)\n  - _ (underscore)\n  - - (dash)")
 
         if len(infiles) < 1:
@@ -162,17 +168,17 @@ class IPYNBfile(click.ParamType):
         else:
             return infiles
 
-class VCFfile(click.ParamType):
+VCFre = re.compile(r"\.(vcf|vcf\.gz|bcf)$", re.IGNORECASE)
+class VCFfile(FileCompletion):
     """A CLI class to validate a VCF/BCF file as input. Checks for presence, format, and returns the absolute path"""
     name = "vcf_file"
     def __init__(self, gzip_ok: bool = True):
         super().__init__()
         self.gzip_ok = gzip_ok
-        self.re_ext = re.compile(r"\.(vcf|vcf\.gz|bcf)$", re.IGNORECASE)
 
     def convert(self, value, param, ctx):
         filepath = Path(value)
-        _file = filepath.resolve().as_posix()
+        _file = filepath.absolute().as_posix()
         if not filepath.exists():
             self.fail(f"Variant call format file {value} was not found", param, ctx)
         if not os.access(value, os.R_OK):
@@ -180,12 +186,12 @@ class VCFfile(click.ParamType):
         if is_gzip(value) and not self.gzip_ok:
             self.fail(f"Variant call format file {value} cannot be gzipped. Please decompress it.", param, ctx)
 
-        if not self.re_ext.search(_file):
+        if not VCFre.search(_file):
             self.fail(f"File {value} was not recognized as having the [case-insensitive] accepted variant call format file extensions: .vcf, .vcf.gz, .bcf", param, ctx)
         else:
             return _file
 
-class PopulationFile(click.ParamType):
+class PopulationFile(FileCompletion):
     name = "populations_file"
 
     def convert(self, value, param, ctx):
@@ -194,9 +200,9 @@ class PopulationFile(click.ParamType):
             self.fail(f"Sample grouping file {value} was not found", param, ctx)
         if not os.access(value, os.R_OK):
             self.fail(f"Sample grouping file {value} does not have read permission.", param, ctx)
-        return filepath.resolve().as_posix()
+        return filepath.absolute().as_posix()
 
-class InputFile(click.ParamType):
+class InputFile(FileCompletion):
     """A class for a click type that verifies that a file exists and that it has an expected extension. Returns the absolute path"""
     name = "input_file"
     def __init__(self, filetype, gzip_ok):
@@ -210,7 +216,7 @@ class InputFile(click.ParamType):
             "gff": [".gff",".gff3"]
         }
         if self.filetype not in filedict:
-            self.fail(f"Extension validation for {self.filetype} is not yet implemented. This error should only appear during development; if you are a user and seeing this, please post an issue on GitHub: https://github.com/pdimens/harpy/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml")
+            self.fail(f"Extension validation for {self.filetype} is not yet implemented. This error should only appear during development; if you are a user and seeing this, please post an issue on GitHub: https://github.com/blinkseq/harpy/issues/new?assignees=&labels=bug&projects=&template=bug_report.yml")
         if not os.path.exists(value):
             self.fail(f"{value} does not exist. Please check the spelling and try again.", param, ctx)
         elif not os.access(value, os.R_OK):
@@ -227,9 +233,9 @@ class InputFile(click.ParamType):
                 self.fail(f"{value} does not end with one of the expected extensions [" + ", ".join(filedict[self.filetype]) + "]. Please verify this is the correct file type and rename the extension for compatibility.", param, ctx)
         if not valid and self.gzip_ok:
             self.fail(f"{value} does not end with one of the expected extensions [" + ", ".join(filedict[self.filetype]) + "]. Please verify this is the correct file type and rename the extension for compatibility. Gzip compression (ending in .gz) is allowed.", param, ctx)
-        return Path(value).resolve().as_posix()
+        return Path(value).absolute().as_posix()
 
-class HPCProfile(click.ParamType):
+class HPCProfile(FileCompletion):
     """A class for a click type which accepts a file with a snakemake HPC profile. Does validations to make sure it's the config file and not the directory."""
     name = "hpc_profile"
     def convert(self, value, param, ctx):
@@ -239,17 +245,39 @@ class HPCProfile(click.ParamType):
             self.fail(f"{value} is a directory, but input should be a yaml file.", param, ctx)
         if not os.access(value, os.R_OK):
             self.fail(f"{value} is not readable. Please check file permissions and try again", param, ctx)
+        import yaml
+
         with open(value, "r") as file:
             try:
-                yaml.safe_load(file)
+                yml = yaml.safe_load(file)
             except yaml.YAMLError as exc:
                 self.fail(f"Formatting error in {value}: {exc}")
-        return Path(value).resolve().as_posix()
+        # CHECKS FOR EXECUTOR AND FILE SYSTEM PLUGINS
+        err: list[str] = []
+        exec = yml.get("executor", None)
+        if not exec:
+            self.fail("The HPC configuration requires an 'executor' field, e.g., 'executor: slurm'. The executor will also require a plugin to be installed to use it, e.g., 'snakemake-executor-plugin-slurm'", param, ctx)
+        _ex = check_snakemake_hpc(f"snakemake-executor-plugin-{exec}")
+        if _ex:
+            err.append(_ex)
+        storage = yml.get("default-storage-provider", None)
+        if storage:
+            _ex = check_snakemake_hpc(f"snakemake-storage-plugin-{storage}")
+            if _ex:
+                err.append(_ex.lstrip())
+        if err:
+            _txt = "\n  ".join(err)
+            self.fail(f'''\
+The HPC profile provided requires snakemake plugins that were not found in the current environment.\
+To install the missing plugins:
+    {_txt}\
+''')
+        return Path(value).absolute().as_posix()
 
-class DemuxSchema(click.ParamType):
+SEGMENT_PATTERN = re.compile(r'^[A-D]\d{2}$')
+class DemuxSchema(FileCompletion):
     """A class for a click type that accepts a demultiplex schema and performs validation"""
     name = "demultiplex_schema"
-
     def convert(self, value, param, ctx):
         filepath = Path(value)
         if not filepath.exists():
@@ -264,28 +292,68 @@ class DemuxSchema(click.ParamType):
         segment_ids = set()
         samples = set()
         duplicates = False
-        segment_pattern = re.compile(r'^[A-D]\d{2}$')
+        bases = ['A','T','C','G']
+        is_stitch: bool = False
+        with open(filepath, 'r') as file:
+            for line in file:
+                _splitline = line.rstrip().split()
+                if len(_splitline) == 2:
+                   break
+                if len(_splitline) == 3:
+                    is_stitch = True
+                    break
+                # never broke, doesn't have 2 or 2 cols
+                hp.error(
+                    "incorrect schema format",
+                    f"Schema file [blue]{os.path.basename(value)}[/] has no valid rows. Under default workflows, the rows should have two columns in the format sample<tab>segment, e.g. [green]sample_01[/][dim]<tab>[/][green]C75[/]. "
+                    "If using base-stitching, then a 3-column format is expected: e.g., [green]sample_01[/][dim]<tab>[/][green]C75[/][dim]<tab>[/][green]A[/]."
+                )
         with open(filepath, 'r') as file:
             for line in file:
                 try:
-                    sample, segment_id = line.rstrip().split()
-                    if not segment_pattern.match(segment_id):
+                    _splitline = line.rstrip().split()
+                    if is_stitch:
+                        try:
+                            sample, segment_id, stitch_base = _splitline
+                        except ValueError:
+                            hp.error(
+                                "invalid schema format",
+                                f"A 3-column format was necessary but not detected at a row.",
+                                "When using base stitching, the sample rows of the schema format must be in the format [green]sample_01[/][dim]<tab>[/][green]C75[/][dim]<tab>[/][green]A[/].",
+                                "Line causing the error",
+                                line
+                            )
+                        if stitch_base not in bases:
+                            hp.error(
+                                "invalid schema format",
+                                f"A 3-column format was detected, suggesting you intend to use base stitching, however the third column value is not one of the ATCG bases.",
+                                "When using base stitching, the sample rows of the schema format must be in the format [green]sample_01[/][dim]<tab>[/][green]C75[/][dim]<tab>[/][green]A[/].",
+                                "Line causing the error",
+                                line
+                            )
+                    else:
+                        sample, segment_id = _splitline
+                    if not SEGMENT_PATTERN.match(segment_id):
                         hp.error(
                             "invalid segment format",
                             f"Segment ID [green]{segment_id}[/] does not follow the expected format.",
-                            "This haplotagging design expects segments to follow the format of letter [green bold]A-D[/] followed by [bold]two digits[/], e.g. [green bold]C51[/]). Check that your ID segments or formatted correctly and that you are attempting to demultiplex with a workflow appropriate for your data design."
+                            "This haplotagging design expects segments to follow the format of letter [green bold]A-D[/] followed by [bold]two digits[/]"
+                            ", e.g. [green bold]C51[/]). Check that your ID segments or formatted correctly and that you are attempting to demultiplex with "
+                            "a workflow appropriate for your data design.",
+                            "Line causing the error",
+                            line
                         )
                     code_letters.add(segment_id[0])
                     if sample in samples:
                         duplicates = True
                     samples.add(sample)
-                    if segment_id in segment_ids:
+                    if segment_id in segment_ids and not is_stitch:
                         hp.error(
                             "ambiguous segment ID",
                             "An ID segment must only be associated with a single sample.",
                             "A barcode segment can only be associated with a single sample. For example: [green bold]C05[/] cannot identify both [green]sample_01[/] and [green]sample_2[/]. In other words, a segment can only appear once.",
-                            "The segment triggering this error is",
-                            segment_id
+                            "Line causing the error",
+                            line
                         )
                     else:
                         segment_ids.add(segment_id)
@@ -304,11 +372,10 @@ class DemuxSchema(click.ParamType):
             )
         if duplicates:
             hp.notice("Sample names appear more than once, assuming this was intentional")
-        return filepath.resolve().as_posix()
+        return filepath.absolute().as_posix()
 
 class ImputeStrategy(click.ParamType):
     name = "impute_strategy"
-
     def isInt(self, x: str) -> bool:
         try:
             int(x)
@@ -341,10 +408,10 @@ class ImputeStrategy(click.ParamType):
 
         return value
 
-class QCAdapters(click.ParamType):
+NUC = re.compile(r'^[ATCG]+$', re.IGNORECASE)
+class QCAdapters(FileCompletion):
     name = "qc_adapters"
     def convert(self, value, param, ctx):
-        nuc = re.compile(r'^[ATCG]+$', re.IGNORECASE)
 
         if not value or value == "auto":
             return value
@@ -354,7 +421,7 @@ class QCAdapters(click.ParamType):
                 self.fail(f"--trim-adapters was given {value}, but that file does not have read permissions. Please modify the persmissions of the file to grant read access.", param, ctx)
             return filepath(value)
 
-        elif nuc.match(value.strip()):
+        elif NUC.match(value.strip()):
             return value.upper()
 
         else:
@@ -364,3 +431,34 @@ class QCAdapters(click.ParamType):
                 "If it was a nucleotide sequence, it must contain only ATCG (case-insensitive) characters.",
                 param, ctx
             )
+
+class BEDfile(FileCompletion):
+    name = "bed_file"
+    def convert(self, value, param, ctx):
+        filepath = Path(value)
+        if not filepath.exists():
+            self.fail(f"{value} does not exist. Please check the spelling and try again.", param, ctx)
+        if filepath.is_dir():
+            self.fail(f"{value} is a directory, but should be a file.", param, ctx)
+        if not os.access(value, os.R_OK):
+            self.fail(f"{value} is not readable. Please check file permissions and try again", param, ctx)
+        with open(value, 'r') as bed:
+            for idx,line in enumerate(bed,1):
+                line = line.strip()
+                if not line:
+                    continue
+                _split: list[str] = line.split()
+                if len(_split) <3:
+                    raise self.fail(f"Line {idx} in {filepath.name} has fewer than 3 fields. Value observed: {line}")
+                chrom, start, end  = _split[:3]
+                try:
+                    s = int(start)
+                except ValueError:
+                    raise self.fail(f"Start must be an integer. Error on line: {idx}:\n{line}")
+                try:
+                    e = int(end)
+                except ValueError:
+                    raise self.fail(f"End position must be an integer. Error on line {idx}:\n{line}")
+                if s > e:
+                    raise self.fail(f"Start position ({s}) is greater than end position ({e}). Error on line {idx}:\n{line}")
+        return filepath.absolute().as_posix()

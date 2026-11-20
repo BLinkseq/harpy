@@ -5,6 +5,7 @@ import uuid
 
 from IPython.display import HTML, display
 
+
 class JSFunction:
     """Wraps a raw JS string so it can be injected without JSON quoting."""
     def __init__(self, js):

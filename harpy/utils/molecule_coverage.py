@@ -6,6 +6,7 @@ import numpy as np
 
 from harpy.common.file_ops import safe_read
 
+
 def n_windows(contig_len: int, windowsize: int) -> int:
     return math.ceil(contig_len / windowsize)
 
@@ -38,7 +39,7 @@ def print_depth_counts(contig: str, counts: np.ndarray, windowsize: int, contig_
 @click.help_option('--help', hidden=True)
 def molecule_coverage(fai, statsfile, window):
     '''Calculate molecule coverage from a barcode stats file'''
-    
+
     contigs = {s[0]: int(s[1]) for line in fai for s in (line.split(),)}
 
     with safe_read(statsfile) as sf:

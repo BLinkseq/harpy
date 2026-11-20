@@ -11,6 +11,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      packages: write
     strategy:
       matrix:
         env: [align, assembly, preprocess, metassembly, phase, qc, impute, variants]
@@ -22,7 +23,7 @@ jobs:
       - name: Install Harpy
         uses: prefix-dev/setup-pixi@v0.11.2
         with:
-          pixi-version: v0.62.0
+          pixi-version: v0.84.2
           cache: false
           activate-environment: true
       - name: Clear space
@@ -34,16 +35,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
       - name: Login to Docker Hub
-        uses: docker/login-action@v4.7.0
+        uses: docker/login-action@v4.6.0
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
           context: container/${{ matrix.env }}
           push: true
-          tags: pdimens/harpy:${{ matrix.env }}_${{ github.ref_name }}
+          tags: ghcr.io/blinkseq/harpy:${{ matrix.env }}_${{ github.ref_name }}
 
   build_tarball:
     needs: build_versioned_containers
@@ -57,8 +59,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
-          fetch-depth: 1
-      - name: Build project
+          submodules: true
+      - name: Build Clean Tarball
         # This builds the release tarball, stripped of unneccessary things
         run: |
           mkdir artifacts

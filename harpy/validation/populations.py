@@ -1,4 +1,5 @@
 import os
+from collections import Counter
 from pathlib import Path
 
 from harpy.common.printing import HarpyPrint
@@ -55,3 +56,32 @@ class Populations():
             for line in infile:
                 if not line.lstrip().startswith("#"):
                     outfile.write(line)
+
+    def shapeit_validation(self):
+        '''Check if the population file has a minimum of 20 samples per population'''
+        self.print.log("Populations have at least 20 individuals", newline=False)
+        popcounts = Counter()
+        with open(self.file, "r", encoding="utf-8") as f:
+            for i in f:
+                if '#' in f:
+                    continue
+                popcounts.update({i.split()[1]: 1})
+        lessThan20 = Counter()
+        for i,j in popcounts.items():
+            if j < 20:
+                lessThan20[i] = j
+        if lessThan20:
+            issues = ""
+            for i,j in lessThan20.items():
+                issues += f"{i}: {j}\n"
+            self.print.validation(False)
+            self.print.error(
+                "too few samples per population",
+                "Some populations have fewer than 20 samples, which is the minimum required for shapeit4.",
+                "Please omit those populations, "
+                "consolidate the groups in biologically meaningful ways (if possible), "
+                "or consider omitting [green]--populations[/] and doing statistical phasing separately.",
+                "The populations causing this error are",
+                issues
+            )
+        self.print.validation(True)

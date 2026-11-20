@@ -49,8 +49,29 @@ jobs:
         with:
           filters: .github/filters.yml
 
-  resume:
+  build:
     needs: changes
+    if: ${{ contains(needs.changes.outputs.*, 'true') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+          fetch-depth: 1
+      - uses: prefix-dev/setup-pixi@v0.11.2
+        with:
+          cache: false
+      - run: pixi run build
+      - run: tar -cf pixi-env.tar .pixi harpy resources
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pixi-env
+          path: pixi-env.tar
+          retention-days: 1
+          compression-level: 0
+
+  resume:
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.resume == 'true' }}
     name: resume
     runs-on: ubuntu-latest
@@ -59,12 +80,10 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: harpy qc
         run: harpy qc --setup test/fastq
       - name: resume
@@ -73,7 +92,7 @@ jobs:
           ls -lh  QC
 
   preprocess:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.preproc == 'true' }}
     name: preprocess
     runs-on: ubuntu-latest
@@ -82,24 +101,30 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: harpy preproc meier2021
         run: |
-          harpy preprocess meier2021 -O Preproc/meier --quiet 2 test/preproc/samples.schema test/preproc/multiplex.R* test/preproc/multiplex.I* && \
+          harpy preprocess meier2021 -O Preproc/meier --quiet 2 test/preproc/meier2021/samples.schema test/preproc/meier2021/multiplex.R* test/preproc/meier2021/multiplex.I* && \
           ls -lh Preproc/meier
+      - name: harpy preproc meier2021 stitch-base
+        run: |
+          harpy preprocess meier2021 -O Preproc/meier-stitch --quiet 2 -s test/preproc/meier2021/stitch/stitch.schema test/preproc/meier2021/stitch/multiplex.stitch.R* test/preproc/meier2021/stitch/multiplex.stitch.I* && \
+          ls -lh Preproc/meier-stitch
+      - name: harpy preproc meier2021 stitch-base complementary
+        run: |
+          harpy preprocess meier2021 -O Preproc/meier-stitch-comp --quiet 2 -s -c test/preproc/meier2021/stitch_complementary/stitch.comp.schema test/preproc/meier2021/stitch_complementary/multiplex.stitch.comp.R* test/preproc/meier2021/stitch_complementary/multiplex.stitch.comp.I* && \
+          ls -lh Preproc/meier-stitch-comp
       - name: harpy preproc gih
         run: |
-          harpy preprocess gih -O Preproc/gih --quiet 2 test/preproc/gih* && \
+          harpy preprocess gih -O Preproc/gih --quiet 2 test/preproc/gih/gih* && \
           ls -lh Preproc/gih
 
 
   validate:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.validate == 'true' }}
     name: validate
     runs-on: ubuntu-latest
@@ -108,12 +133,10 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: test validate fastq
         run: |
           harpy validate fastq --quiet 2 test/fastq && \
@@ -125,7 +148,7 @@ jobs:
           ls -lh Validate/bam
 
   qc:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.qc == 'true' }}
     name: qc
     runs-on: ubuntu-latest
@@ -134,19 +157,17 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: harpy qc
         run: |
           harpy qc -x "--low_complexity_filter" --quiet 2 test/fastq && \
           ls -lh  QC
 
   deconvolve:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.deconvolve == 'true' }}
     name: deconvolve
     runs-on: ubuntu-latest
@@ -155,19 +176,17 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: harpy deconvolve
         run: |
           harpy deconvolve --quiet 2 test/fastq && \
           ls -lh Deconvolve
 
   align:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.align == 'true' }}
     name: align
     runs-on: ubuntu-latest
@@ -176,12 +195,10 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: test strobealign
         run: |
           harpy align strobe --quiet 2 test/genome/genome.fasta.gz test/fastq && \
@@ -194,9 +211,13 @@ jobs:
         run: |
           harpy align minimap --quiet 2 test/genome/genome.fasta.gz test/fastq && \
           ls -lh Align/minimap
+      - name: test arachne
+        run: |
+          harpy align arachne --quiet 2 test/genome/genome.fasta.gz test/fastq && \
+          ls -lh Align/arachne
 
   snp:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.snp == 'true' }}
     name: snp
     runs-on: ubuntu-latest
@@ -205,12 +226,10 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: snp mpileup
         run: |
           harpy snp mpileup --quiet 2 -r test/positions.bed -x "--ignore-RG" test/genome/genome.fasta.gz test/bam && \
@@ -229,7 +248,7 @@ jobs:
           ls -lh SNP/fbpoptest
 
   impute:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.impute == 'true' }}
     name: impute
     runs-on: ubuntu-latest
@@ -238,12 +257,10 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: impute
         run: |
           harpy impute --quiet 2 test/stitch.params test/vcf/test.bcf test/bam && \
@@ -266,7 +283,7 @@ jobs:
 
 
   phase:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.phase == 'true' }}
     name: phase
     runs-on: ubuntu-latest
@@ -275,12 +292,10 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: phase
         run: |
           harpy phase snp --quiet 2 -x "--max_iter 10001" test/vcf/test.bcf test/bam && \
@@ -303,7 +318,7 @@ jobs:
           ls -lh phasebam
 
   leviathan:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.leviathan == 'true' }}
     name: sv leviathan
     runs-on: ubuntu-latest
@@ -312,12 +327,10 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: leviathan
         run: |
           harpy sv leviathan --quiet 2 -m 100 -s 80,80,80 -b 1 -x "-M 2002" test/genome/genome.fasta.gz test/bam && \
@@ -329,7 +342,7 @@ jobs:
           ls -lh SV/leviathanpop
 
   naibr:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.naibr == 'true' }}
     name: sv naibr
     runs-on: ubuntu-latest
@@ -338,12 +351,10 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: naibr
         run: |
           harpy sv naibr --quiet 2 test/genome/genome.fasta.gz test/bam_phased && \
@@ -355,7 +366,7 @@ jobs:
           ls -lh SV/pop
 
   assembly:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.assembly == 'true' }}
     name: assembly
     runs-on: ubuntu-latest
@@ -364,12 +375,10 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
       - name: Clear Space
         uses: jlumbroso/free-disk-space@main
       - name: test assembly
@@ -386,7 +395,7 @@ jobs:
           ls -lh Metassembly
 
   other:
-    needs: changes
+    needs: [changes, build]
     if: ${{ needs.changes.outputs.other == 'true' }}
     name: miscellaneous
     runs-on: ubuntu-latest
@@ -395,12 +404,23 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
-      - name: Install Harpy
-        uses: prefix-dev/setup-pixi@v0.11.2
-        with:
-          cache: false
-          activate-environment: true
-      - run: pixi run build
+          sparse-checkout: |
+            test
+            .github/actions
+      - uses: ./.github/actions/setup-harpy
+      - name: lazy CLI and shell completion
+        run: |
+          python test/cli/check_lazy_cli.py
+          # `pixi run build` installs the completion scripts where each shell looks for them
+          for program in harpy harpy-utils hv; do
+            test -s "$CONDA_PREFIX/share/bash-completion/completions/$program"
+            test -s "$CONDA_PREFIX/share/zsh/site-functions/_$program"
+            test -s "$CONDA_PREFIX/share/fish/vendor_completions.d/$program.fish"
+          done
+      - name: HPC error reporting
+        run: python test/cli/check_hpc_errors.py
+      - name: job retries
+        run: python test/cli/check_retries.py
       - name: template impute
         run: harpy template impute
       - name: template groupings
@@ -411,4 +431,5 @@ jobs:
           harpy template hpc-googlebatch
           harpy template hpc-lsf
           harpy template hpc-generic
+          harpy template hpc-pbs
 

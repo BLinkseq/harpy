@@ -1,0 +1,15 @@
+name: Setup built Harpy env
+description: Restore the prebuilt pixi env and activate it
+runs:
+  using: composite
+  steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: pixi-env
+    - run: tar -xf pixi-env.tar
+      shell: bash
+    - uses: prefix-dev/setup-pixi@v0.11.2
+      with:
+        cache: false
+        run-install: false
+        activate-environment: true

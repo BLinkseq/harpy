@@ -15,12 +15,12 @@ from harpy import __version__
 from .printing import HarpyPrint
 
 
-class HarpyEnvs():
+class HarpyEnvs:
     '''The class that holds conda and pixi environments and means to create container dockerfiles'''
     def __init__(self):
         self.__environments__: dict = {
         "align" : [
-            #"bioconda::arachne",
+            "bioconda::arachne=0.4.2",
             "bioconda::bwa",
             "bioconda::minibwa",
             "bioconda::minimap2",
@@ -31,11 +31,12 @@ class HarpyEnvs():
         ],
         "assembly" : [
             "bioconda::arcs",
+            "bioconda::busco",
             "bioconda::bwa",
             "bioconda::cloudspades",
             "bioconda::links",
+            "conda-forge::setuptools",  # needed for quast's distutils dep
             "bioconda::quast",
-            "bioconda::busco",
             "bioconda::samtools",
             "bioconda::tigmint"
         ],
@@ -43,20 +44,20 @@ class HarpyEnvs():
             "bioconda::athena_meta=1.2"
         ],
         "preprocess": [
-            "bioconda::dmox>=0.2",
+            "bioconda::dmox>=0.3",
             "bioconda::pheniqs=2.1",
         ],
         "phase" : [
             "bioconda::hapcut2",
             "bioconda::samtools",
+            "bioconda::shapeit4=4.2.2",
             "bioconda::whatshap"
         ],
         "qc" : [
-            "conda-forge::click=8.2.1",
             "bioconda::falco=1.2.5",
             "bioconda::fastp",
             "bioconda::mosdepth",
-            "bioconda::multiqc=1.30",
+            "bioconda::multiqc=1.35",
             "bioconda::pysam=0.23",
             "bioconda::quickdeconvolution",
             "bioconda::samtools"
@@ -69,12 +70,13 @@ class HarpyEnvs():
             "bioconda::bcftools=1.23",
             "bioconda::freebayes=1.3.9",
             "bioconda::leviathan",
-            "bioconda::naibr-plus=0.5.4"
+            "bioconda::naibr-plus=0.5.4",
+            #"bioconda::svjedi-tag"
         ]
     }
 
-        self.dockerfile: str = """
-FROM ghcr.io/prefix-dev/pixi:0.62.0 AS build
+        self.dockerfile: str = """\
+FROM ghcr.io/prefix-dev/pixi:0.81.0 AS build
 
 # copy source code, pixi.toml and pixi.lock to the container
 WORKDIR /app
@@ -137,11 +139,12 @@ ENTRYPOINT ["/app/entrypoint.sh"]
         if "spades" in envs:
             # post-deployment script
             with open(os.path.join(_out, "spades.post-deploy.sh"), "w", encoding="utf-8") as shellscript:
-                shellscript.write("wget -O .spades.tar.gz https://github.com/ablab/spades/releases/download/v4.1.0/SPAdes-4.1.0-Linux.tar.gz\n")
-                shellscript.write("tar -xvzf .spades.tar.gz && rm .spades.tar.gz\n")
-                shellscript.write("mv SPAdes-4.1.0-Linux/bin/* ${CONDA_PREFIX}/bin && mv SPAdes-4.1.0-Linux/share/* ${CONDA_PREFIX}/share\n")
-                shellscript.write("rm -r SPAdes-4.1.0-Linux\n")
-
+                shellscript.write("""\
+wget -O .spades.tar.gz https://github.com/ablab/spades/releases/download/v4.1.0/SPAdes-4.1.0-Linux.tar.gz
+tar -xvzf .spades.tar.gz && rm .spades.tar.gz
+mv SPAdes-4.1.0-Linux/bin/* ${CONDA_PREFIX}/bin && mv SPAdes-4.1.0-Linux/share/* ${CONDA_PREFIX}/share
+rm -r SPAdes-4.1.0-Linux
+""")
     def prepare_container(self, env):
         '''
         Using the defined environments, create a folder (or series of folders) with a dockerfile
@@ -152,34 +155,36 @@ ENTRYPOINT ["/app/entrypoint.sh"]
         if env != "all":
             environ = {env: environ.get(env)}
 
-        for env,deps in environ.items():
-            shutil.rmtree(f"container/{env}", ignore_errors=True)
-            os.makedirs(f"container/{env}", exist_ok=True)
-            with open(f"container/{env}/Dockerfile", "w") as dockerfile:
+        for _env,deps in environ.items():
+            shutil.rmtree(f"container/{_env}", ignore_errors=True)
+            os.makedirs(f"container/{_env}", exist_ok=True)
+            with open(f"container/{_env}/Dockerfile", "w") as dockerfile:
                 dockerfile.write(self.dockerfile)
             if env == "report":
                 subprocess.run(
-                    f"pixi init container/{env} -c conda-forge -c r".split(),
+                    f"pixi init container/{_env} -c conda-forge -c r".split(),
                     check = True
                 )
             else:
                 subprocess.run(
-                    f"pixi init container/{env} -c conda-forge -c bioconda".split(),
+                    f"pixi init container/{_env} -c conda-forge -c bioconda".split(),
                     check = True
                 )
 
-            with open(f"container/{env}/pixi.toml", "r") as toml:
-                with open(f"container/{env}/pixi.fix.toml", "w") as out:
+            with (
+                open(f"container/{_env}/pixi.toml", "r") as toml,
+                open(f"container/{_env}/pixi.fix.toml", "w") as out
+            ):
                     for line in toml:
                         if line.startswith("version"):
                             line = f"version = \"{__version__}\"\n"
                         out.write(line)
 
-            os.remove(f"container/{env}/pixi.toml")
-            shutil.move(f"container/{env}/pixi.fix.toml", f"container/{env}/pixi.toml")
+            os.remove(f"container/{_env}/pixi.toml")
+            shutil.move(f"container/{_env}/pixi.fix.toml", f"container/{env}/pixi.toml")
 
             subprocess.run(
-                ["pixi", "add", "--no-progress", "--manifest-path", f"container/{env}/pixi.toml", *deps],
+                ["pixi", "add", "--no-progress", "--manifest-path", f"container/{_env}/pixi.toml", *deps],
                 check = True
             )
 

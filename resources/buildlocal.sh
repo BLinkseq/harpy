@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 set -euo pipefail 
+CGO_ENABLED=0
 
 if [ -z "$CONDA_PREFIX" ]; then
     echo "Error: active conda environment not detected."
@@ -12,12 +13,16 @@ mkdir -p ${CONDA_PREFIX}/bin
 # install harpy proper
 pip install --no-deps --disable-pip-version-check -e . && rm -rf build
 
+# shell completion scripts (bash, zsh, fish), sourced on activation
 {
-    cd harpy/utils || exit 1  
-    go build -C stagger -o ../gih-stagger -ldflags='-s -w' stagger.go
-    go build -C convert -o ../gih-convert -ldflags='-s -w' convert.go
-    go build -C standardize -o ../djinn-standardize -ldflags='-s -w' standardize.go 
-    chmod +x gih-stagger gih-convert djinn-standardize
-    mv gih-stagger gih-convert djinn-standardize "${CONDA_PREFIX}/bin/"
-    cd ../..
+    bash resources/generate_completion.sh "${CONDA_PREFIX}" python
+    mkdir -p "${CONDA_PREFIX}/etc/conda/activate.d"
+    cp resources/shell_completion.sh "${CONDA_PREFIX}/etc/conda/activate.d/harpy-completion.sh"
+    cp resources/shell_completion.fish "${CONDA_PREFIX}/etc/conda/activate.d/harpy-completion.fish"
+}
+
+# Go-based binaries
+{
+    go build -C demoxolotl -o $CONDA_PREFIX/bin/demoxolotl -ldflags='-s -w'
+    go build -C djinn -o $CONDA_PREFIX/bin/djinn -ldflags='-s -w'
 }

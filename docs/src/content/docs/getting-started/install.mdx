@@ -1,0 +1,173 @@
+---
+title: Installing Harpy
+sidebar:
+  label: Install
+tableOfContents: false
+---
+import { Badge, Steps, Aside } from '@astrojs/starlight/components';
+import Accordion from '@/components/Accordion.astro';
+
+<style>{`:root { --sl-content-width: 100%; }`}</style>
+
+
+Harpy is hosted on [Bioconda](https://anaconda.org/bioconda/harpy), which means you just need to have either  `conda` or `pixi` (or `docker`/`apptainer`) on your Unix-like 
+system to install it.
+
+<Accordion title="🐍 With conda" name="install" >
+  [Conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) and [mamba](https://mamba.readthedocs.io/en/latest/installation.html) are household names in software package management. Harpy
+  installs painlessly with conda (or mamba). It's best to create a new environment for a harpy installation,
+  but you can also install harpy into an existing environment. Conda will complain if there will dependency incompatibilities.
+
+  **Considerations**: Sometimes blocked by HPC admins. If conda, use conda version `23.10` or later.
+  
+  If using mamba, replace `conda` with `mamba` in the instructions below. 
+
+  ```bash annotations="side"
+  # [!callout /env_name/] replace `env_name` with whatever makes sense for you
+  conda create -n env_name -c bioconda -c conda-forge harpy #[!annotate] create a new environment and install
+  conda install -n env_name -c conda-forge bioconda::harpy #[!annotate] install into existing environment
+  conda update -c conda-forge bioconda::harpy #[!annotate] update existing harpy installation
+  ```
+
+  ### Usage with conda
+  Activate the conda environment that Harpy was installed into and 
+  ```bash annotations="side"
+  conda activate env_name # [!annotate] Activate the environment harpy is installed into
+  harpy # [!annotate] call `harpy` or `harpy --help` to get started
+  ```
+
+<Aside>
+  Tab-completion for `harpy`, `harpy-utils`, and `hv` (bash, zsh, and fish) should be enabled automatically 
+  whenever the environment is activated. Mileage may vary depending on your shell configuration.
+</Aside>
+
+</Accordion>
+<Accordion title="🌟 With pixi" name="install">
+Pixi is like conda and pulls from the same channels (it's pretty good, you should try it).
+
+**Considerations**: Like conda, but more features and faster. Slight learning curve.
+
+```bash annotations="side"
+pixi init -c conda-forge -c bioconda projectname && cd projectname # [!annotate] Create pixi project and environment. Replace `projectname` with whatever makes sense for you
+pixi add harpy # [!annotate] add harpy to the environment specification
+```
+
+Harpy can be updated within the environment, but bear in mind `pixi.toml` automatically puts in strict versioning constraints that you may need to manually loosen.
+```bash
+pixi update harpy # [!annotate] assumes you are in the pixi project directory
+```
+
+### Usage with pixi
+Pixi has two modes of operation:
+- `pixi shell`: similar to `conda activate`
+  ```bash title="with pixi shell" annotations="side"
+  cd path/to/workdir # [!annotate] Navigate to project directory
+  pixi shell  # [!annotate] Activate the pixi environment. You can also use `pixi shell -m path/to/workdir` without changing to that directory first.
+  harpy # [!annotate] Call harpy without arguments or use `harpy --help`
+  ```
+
+
+- `pixi run`: run one command by temporarily activating a pixi environment
+  ```bash title="with pixi run" annotations="side"
+  pixi run harpy #[!annotate] You can also use `pixi run -m path/to/workdir` if you aren't in the pixi project directory.
+  ```
+
+<Aside>
+  Tab-completion for `harpy`, `harpy-utils`, and `hv` (bash, zsh, and fish) should be enabled automatically 
+  whenever the environment is activated. Mileage may vary depending on your shell configuration.
+</Aside>
+
+</Accordion>
+
+
+<Accordion title="📦 As a container" name="install" >
+  All packages on Bioconda are automatically built as containers too!
+  Use [docker](https://docs.docker.com/engine/install/) or 
+  [apptainer](https://apptainer.org/docs/user/latest/quick_start.html#installation)
+  to get the containerized version of harpy, then proceed to use harpy however
+  you are used to using containers on your system.
+  
+  **Considerations**: Clunkier to use, but best system compatibility and might be what your HPC admins prefer.
+
+
+### 🐳 Docker
+Works on Windows, macOS, and Linux.
+```bash
+docker pull quay.io/biocontainers/harpy
+```
+
+### 🅰️ Apptainer
+Apptainer is Linux-only, but can be used inside a Windows WSL. Find the most recent tag [here](https://quay.io/repository/biocontainers/harpy?tab=tags).
+```bash title="Get latest container" annotations="side"
+TAG=$(curl -s "https://quay.io/api/v1/repository/biocontainers/harpy/tag/" | cut -d'"' -f6) # [!annotate] Optional, but gets latest tag
+apptainer pull docker://quay.io/biocontainers/harpy:$TAG #[!annotate] replace `$TAG` with the tag you want
+```
+</Accordion>
+
+<Accordion title="💣 With pip" name="install" badge = {{ text: "not recommended", variant: "caution" }}>
+  This is the "all else fails" solution and generally not recommended. You can install Harpy locally via [pip](https://python.land/virtual-environments/installing-packages-with-pip), 
+  however, it can only get so far as installing the Python package dependencies and not the other software, 
+  which you will need to install manually if it's not already on your system.
+
+  **Considerations**: Should be considered your last resort if the other methods don't work.
+
+<Aside type="danger">
+The problem is, if you get Harpy installed this way, you will need to use `--container` for the workflows,
+since otherwise it would use Conda, which we're assuming isn't available to your system (otherwise you would
+have installed Harpy using it). If you're on a Linux system, that should be fine. However, if you're on a macOS
+system, the container software, `Apptainer`, isn't available for macOS (or Windows), meaning you won't be able 
+to use most of Harpy.
+</Aside>
+
+<Steps>
+  1. Download the latest release
+      The latest release can be found [here](https://github.com/blinkseq/harpy/releases/latest). You will want to download the latest tarball, which will be named `harpy.VERISON.tar.gz`.
+      ```bash
+      wget https://github.com/blinkseq/harpy/releases/download/4.1.1/harpy.4.3.tar.gz # [!annotate] change the version number to the latest release!
+      tar xvfz harpy.4.3.tar.gz
+      cd harpy.4.3
+      ```
+
+  2. Install Harpy using `pip`
+      ```bash
+      python -m pip install .
+      ```
+
+      If for some reason that fails, try this method:
+      ```bash
+      python3 -m pip install --upgrade build && python3 -m build && \
+          pip install dist/*.whl
+      ```
+
+  3. Install the remaining software
+      Unfortunately, you will still need to install the remaining non-Python software, listed below with their minimum version numbers in
+      parentheses. With any luck, your system might have one of more of them already installed!
+        - bcftools, htslib, samtools (all >=1.22, [described here](https://www.htslib.org/download/))
+        - seqtk
+          ```bash
+          git clone https://github.com/lh3/seqtk.git;
+          cd seqtk; make
+          ```
+
+
+      Other things you need to install include:
+      - [djinn](https://blinkseq.github.io/djinn/), [demuxolotl](https://github.com/blinkseq/demuxolotl) (included but need compilation)
+      - [go](https://go.dev/doc/install) needs to be installed to compile both
+
+      ```bash title="compile demuxolotl+djinn" annotations="side"
+      go build -C demuxolotl -o $PREFIX/bin -ldflags='-s -w'   # [!annotate] Compile `demuxolotl`. Replace `$PREFIX/bin` with a directory on your `PATH` 
+      go build -C djinn -o $PREFIX/bin -ldflags='-s -w'   # [!annotate] Compile `djinn`. Replace `$PREFIX/bin` with a directory on your `PATH` 
+      ```
+    
+    4. Updating harpy
+      Updating harpy installed this way would require repeating the steps with a different Harpy version.
+
+</Steps>
+
+
+### Usage with pip
+You should be able to call `harpy` from your command line:
+```bash
+harpy
+```
+</Accordion>

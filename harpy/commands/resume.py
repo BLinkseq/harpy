@@ -8,7 +8,7 @@ import yaml
 
 from harpy.common.environments import check_environments
 from harpy.common.printing import HarpyPrint
-from harpy.common.workflow import Workflow
+from harpy.runtime.workflow import Workflow
 
 hp = HarpyPrint()
 
@@ -32,13 +32,12 @@ def config_extract(d: dict, section:str, key: str = "", allow_missing: bool = Fa
     elif key:
         val = val.get(key, {})
 
-    if not val:
-        if not allow_missing:
-            hp.error(
-                "incorrect workflow.yaml",
-                "The [blue]workflow.yaml[/] file is missing one or more the necessary/expected keys.",
-                f"Please verify that [blue]workflow/workflow.yaml[/] is not missing the [green]{key}[/] key (and it is not empty) under the [green]{section}[/] section."
-            )
+    if not val and not allow_missing:
+        hp.error(
+            "incorrect workflow.yaml",
+            "The [blue]workflow.yaml[/] file is missing one or more the necessary/expected keys.",
+            f"Please verify that [blue]workflow/workflow.yaml[/] is not missing the [green]{key}[/] key (and it is not empty) under the [green]{section}[/] section."
+        )
     return val
 
 def snakemake_profile_extract(d: dict, key: str):
@@ -52,17 +51,17 @@ def snakemake_profile_extract(d: dict, key: str):
         )
     return val
 
-@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://pdimens.github.io/harpy/workflows/other")
+@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/other")
+@click.option('--clean', hidden = True, type = str, help = 'Delete the log (`l`), .snakemake (`s`), and/or workflow (`w`) folders when done')
 @click.option('-a', '--absolute',  is_flag = True, default = False, help = 'Call Snakemake with absolute paths')
 @click.option('-d', '--direct',  is_flag = True, default = False, help = 'Call Snakemake directly without Harpy intervention')
-@click.option('-@', '--threads', type = click.IntRange(2, 999, clamp = True), help = 'Change the number of threads (>1)')
 @click.option('-Q', '--quiet', default = 0, type = click.IntRange(0,2,clamp=True), help = '`0` all output, `1` progress bar, `2` no output')
-@click.option('--clean', hidden = True, panel = "Workflow Options", type = str, help = 'Delete the log (`l`), .snakemake (`s`), and/or workflow (`w`) folders when done')
+@click.option('-@', '--threads', type = click.IntRange(2, 999, clamp = True), help = 'Change the number of threads (>1)')
 @click.help_option('--help', hidden = True)
 @click.argument('directory', required=True, type=click.Path(exists=True, file_okay=False, readable=True, resolve_path=True), nargs=1)
 def resume(directory, absolute, direct, threads, clean, quiet):
     """
-    Continue an incomplete Harpy workflow
+    Continue an incomplete Harpy process
 
     In the event you need to run the Snakemake workflow present in a Harpy output directory
     (e.g. `Align/bwa`) without redoing validations and writing new configuration files (config files get updated with new thread count and log file name),
@@ -73,7 +72,6 @@ def resume(directory, absolute, direct, threads, clean, quiet):
     - the `workflow/profile.yaml` file
     - the `workflow/workflow.yaml` file
     - `workflow/envs/*.yaml` file(s) if using conda
-    - `workflow/hpc/config.yaml` if using HPC
     """
     CONFIG_FILE = os.path.join(directory, "workflow", "workflow.yaml")
     PROFILE_FILE = os.path.join(directory, "workflow", "profile.yaml")
@@ -89,11 +87,13 @@ def resume(directory, absolute, direct, threads, clean, quiet):
 
     #container = snakemake_profile["software-deployment-method"] == "apptainer"
     _name = config_extract(harpy_config, "Workflow", "name")
+    _version = config_extract(harpy_config, "Workflow", "harpy-version")
     _allow_noparams = True if "validate" in _name else False
     _dir = snakemake_profile_extract(snakemake_profile, "directory")
     _inputs = config_extract(harpy_config, "Inputs")
 
     workflow = Workflow(_name, "NA", _dir, False, clean, quiet, no_validation=True)
+    workflow.version = _version
     if isinstance(_inputs, list):
         workflow.input(_inputs)
     else:
@@ -133,11 +133,6 @@ def resume(directory, absolute, direct, threads, clean, quiet):
         workflow.profile = snakemake_profile
         workflow.write_snakemake_profile()
 
-    workflow.info = {
-        "Workflow" : "harpy " + workflow.name.replace("_", " "),
-        "Output Folder" : directory + "/"
-    }
-
     if direct:
         if absolute:
             _ = os.system(workflow.snakemake_cmd_absolute)
@@ -145,6 +140,16 @@ def resume(directory, absolute, direct, threads, clean, quiet):
             _ = os.system(workflow.snakemake_cmd_relative)
         if _ > 0:
             sys.exit(1)
-    else:
-        workflow.onstart(rule = False)
-        workflow.launch(absolute)
+        sys.exit(0)
+
+    # doesn't matter what it says, just needs to be something or None
+    # keeps consistent parsing of error messages at the end
+    workflow.hpc = snakemake_profile.get("executor", {})
+
+    workflow.info = {
+        #"Workflow" : "harpy " + workflow.name.replace("_", " "),
+        "Output Folder" : directory + "/"
+    }
+
+    workflow.onstart()
+    workflow.launch(absolute)

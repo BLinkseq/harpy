@@ -25,11 +25,11 @@ large_thresh  = PARAMETERS.get("variant-thresholds", {}).get("large", 95)
 dup_thresh    = PARAMETERS.get("variant-thresholds", {}).get("duplicates", 10)
 genomefile    = INPUTS["reference"]
 bamlist       = INPUTS["alignments"]
-grp          = INPUTS.get("groupings") or {}
+grp           = INPUTS.get("groupings") or {}
 if grp:
     groupings = grp.get("processed", [])
     if not os.path.isfile(groupings):
-        groupings.get("source") or []
+        groupings = groupings.get("source", [])
 else:
     groupings = []
 
@@ -58,7 +58,7 @@ rule process_reference:
     conda:
         "envs/align.yaml"
     container:
-        f"docker://pdimens/harpy:align_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell: 
         """
         {{
@@ -94,7 +94,7 @@ if popdict:
             bam = "workflow/input/{sample}.bam",
             bai = "workflow/input/{sample}.bam.bai"
         output:
-            temp("lrez_index/{sample}.bci")
+            temp("lrez_index/{sample}.bci", group_jobs = True)
         log:
             "logs/lrez_index/{sample}.concat.log"
         threads:
@@ -102,7 +102,7 @@ if popdict:
         conda:
             "envs/variants.yaml"
         container:
-            f"docker://pdimens/harpy:variants_{VERSION}"
+            f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
         shell:
             "LRez index bam -p -b {input.bam} -o {output} --threads {threads}"
 else:
@@ -110,7 +110,7 @@ else:
         input: 
             get_alignments
         output:
-            temp("lrez_index/{sample}.bci")
+            temp("lrez_index/{sample}.bci", group_jobs = True)
         log:
             "logs/process_alignments/{sample}.log"
         threads:
@@ -118,7 +118,7 @@ else:
         conda:
             "envs/variants.yaml"
         container:
-            f"docker://pdimens/harpy:variants_{VERSION}"
+            f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
         shell:
             """
             {{
@@ -153,7 +153,7 @@ rule call_variants:
     conda:
         "envs/variants.yaml"
     container:
-        f"docker://pdimens/harpy:variants_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
     shell:
         "LEVIATHAN -b {input.bam} -i {input.bc_idx} {params} -g {input.genome} -o {output.vcf} -t {threads} --candidates {output.candidates} 2> {log.runlog}"
 
@@ -215,13 +215,13 @@ rule aggregate_variants:
                             _ = breakends.write(line)
 
 rule report:
+    retries: 1
     input: 
         faidx = f"{workflow_geno}.fai",
         stats = collect("{var}.bedpe", var = ['inversions', 'deletions', 'duplications', 'breakends']),
         ipynb = "workflow/sv.ipynb"
     output:
-        tmp = temp("reports/leviathan.summary.tmp.ipynb"),
-        ipynb = "reports/leviathan.summary.ipynb"
+        "reports/leviathan.summary.ipynb"
     log:
         "logs/report.log"
     params:
@@ -229,13 +229,7 @@ rule report:
         f"-p faidx " + os.path.abspath(f"{workflow_geno}.fai"),
         f"-p contigs {plot_contigs}" if plot_contigs != "default" else ""
     shell:
-        """
-        export IPYTHONDIR=/tmp/ipython-leviathan
-        {{
-            papermill -k ipython-harpy --no-progress-bar --log-level ERROR {input.ipynb} {output.tmp} {params}
-            harpy-utils process-notebook {output.tmp} LEVIATHAN > {output.ipynb}
-        }} 2> {log}
-        """
+        "harpy-utils run-notebook -k ipython-harpy {params} {input.ipynb} LEVIATHAN > {output} 2> {log}"
 
 rule all:
     default_target: True

@@ -2,6 +2,7 @@ import sys
 
 import click
 
+
 @click.command(no_args_is_help = False)
 @click.option('-m', '--me-seq', type=str, default = "AGATGTGTATAAGAGACAG", show_default = True, help = "The ME sequence used in tagmentation")
 @click.help_option('--help', hidden = True)

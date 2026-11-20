@@ -1,0 +1,44 @@
+---
+title: Choosing an aligner
+---
+import { Aside } from '@astrojs/starlight/components';
+import Accordion from '@/components/Accordion.astro';
+
+After your sequences (in FASTQ format) have been checked for quality, you
+will need to align them to a reference genome before you can call variants.
+Harpy offers several aligners for this purpose:
+
+| command   | aligner     | best for          |                                       repository |                      publication                       |
+| :-------- | :---------- | :---------------- | -----------------------------------------------: | :----------------------------------------------------: |
+| `arachne` | arachne     | linked-read aware |    [github](https://github.com/blinkseq/arachne) |                                                        |
+| `bwa`     | minibwa     | general use       |         [github](https://github.com/lh3/minibwa) |       [preprint](https://github.com/lh3/minibwa)       |
+| `minimap` | minimap2    | long reads        |        [github](https://github.com/lh3/minimap2) | [paper](https://doi.org/10.1093/bioinformatics/bty191) |
+| `strobe`  | strobealign | speed             | [github](https://github.com/ksahlin/strobealign) |  [paper](https://doi.org/10.1186/s13059-022-02831-7)   |
+
+Neither minibwa, minimap2, nor strobealign are linked-read aware aligners, but Harpy transfers the barcode information
+from the sequence headers into the alignments, preserving linked-read information.
+The BLink-seq team have since revived and combined Lariat and EMA to create `arachne`, which uses linked-read information
+to resolve alignments over repeat regions. 
+
+<Accordion title="Linked reads improve alignment in repetitive regions">
+Arachne is a fork and successor of Lariat, the aligner written by 10X Genomics for the original linked-read technology.
+It defaults to using an improved version of the EM algorithm from [EMA](https://www.biorxiv.org/content/10.1101/220236v1),
+but can use the RFA algorithm from Lariat with the `--rfa` flag. Incorporating linked-read information during mapping
+improves accuracy over barcode-naive alignment, as shown here from _Shajii et al_ (figure 3):
+
+![EMA Publication figure 3](../../../../assets/ema.fig3.jpg)
+</Accordion>
+
+## Non linked-read WGS data
+You can skip the workflow routines that do things specific to linked reads, meaning you can comfortably use
+`align bwa`, `align strobe`, and `align minimap` for WGS without issue. Since arachne is a linked-read aligner,
+non-linked-read data is unsuitable for it. Frankly, it would probably be somewhat inferior to using minibwa alone
+and would take longer. In most cases, harpy will detect if input data aren't linked-reads `--unlinked`
+
+<Aside type="caution" title="RADseq data">
+RADseq data will probably work fine too, however you may need to post-process the
+BAM files to unset the duplicate flag, as marking duplicates in RADseq (without UMIs) [may cause issues](https://www.researchgate.net/post/How_to_exclude_PCR_duplicates_in_ddRAD) with SNP calling:
+```bash
+samtools view -b -h --remove-flags 1024 -o output.bam input.bam
+```
+</Aside>

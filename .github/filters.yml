@@ -1,5 +1,6 @@
 common: &common
   - 'harpy/common/**'
+  - 'harpy/runtime/**'
   - 'harpy/__main__.py'
   - 'harpy/validation/**'
   - 'harpy/report/*.py'
@@ -41,7 +42,6 @@ qc: &qc
   - *environments
   - 'harpy/commands/qc.py'
   - 'harpy/snakefiles/qc.smk'
-  - 'harpy/utils/bx_stats_fq.py'
   - 'harpy/validation/fastq.py'
   - 'test/fastq/**'
   - 'harpy/notebooks/fastp_qc.ipynb'
@@ -55,10 +55,9 @@ align: &align
   - 'harpy/snakefiles/align_strobe.smk'
   - 'harpy/snakefiles/align_minimap.smk'
   - 'harpy/snakefiles/align.smk'
-  - 'harpy/notebooks/align_stats.ipynb'
+  - 'harpy/notebooks/align_sample_stats.ipynb'
   - 'harpy/notebooks/align_lrstats.ipynb'
   - 'harpy/notebooks/samtools_stats.ipynb'
-  - 'harpy/utils/bx_stats_sam.py'
   - 'harpy/utils/molecule_coverage.py'
   - 'harpy/validation/fasta.py'
   - 'harpy/validation/fastq.py'
@@ -127,6 +126,10 @@ assembly: &assembly
   - 'harpy/validation/fastq.py'
 other: &other
   - *common
+  - 'harpy/commands/completion.py'
+  - 'harpy/utils/__init__.py'
+  - 'resources/*completion*'
+  - 'test/cli/**'
   - 'harpy/commands/template.py'
   - 'harpy/commands/hpc.py'
 resume: &resume

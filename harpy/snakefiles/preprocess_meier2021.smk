@@ -10,8 +10,10 @@ VERSION    = WORKFLOW.get('harpy-version', 'latest')
 
 skip_reports     = REPORTS.get("skip", False)
 qxrx             = PARAMETERS.get("qx-rx", False)
-unknown_samples  = PARAMETERS.get("samples", False)
-unknown_barcodes = PARAMETERS.get("barcodes", False)
+unknown_samples  = PARAMETERS.get("unknown-samples", False)
+unknown_barcodes = PARAMETERS.get("unknown-barcodes", False)
+stitch_base      = PARAMETERS.get("stitch", {}).get("base", False)
+stitch_comp      = PARAMETERS.get("stitch", {}).get("complementary", False)
 schemafile       = INPUTS["schema"]
 
 localrules: all
@@ -30,9 +32,9 @@ onstart:
         "subtitle": "This report aggregates the QA results created by falco",
         "report_comment": "Generated as part of the Harpy preprocess workflow",
         "report_header_info": [
-            {"Submit an issue": "https://github.com/pdimens/harpy/issues/new/choose"},
-            {"Read the Docs": "https://pdimens.github.io/harpy/workflows/preprocess/"},
-            {"Project Homepage": "https://github.com/pdimens/harpy"}
+            {"Submit an issue": "https://github.com/blinkseq/harpy/issues/new/choose"},
+            {"Read the Docs": "https://blinkseq.github.io/harpy/commands/preprocess/"},
+            {"Project Homepage": "https://github.com/blinkseq/harpy"}
         ]
     }
     if not skip_reports:
@@ -44,9 +46,9 @@ samplenames = Counter()
 duplicates = len(samplenames) != samplenames.total()
 samplenames = set(samplenames.keys())
 if unknown_samples:
-    samplenames.add("_unknown_samples")
+    samplenames.add("nosample")
 if unknown_barcodes:
-    samplenames.add("_unknown_barcodes")
+    samplenames.add("nomatch")
 
 rule barcode_segments:
     output:
@@ -66,34 +68,32 @@ rule demultiplex:
         segment_d = "workflow/segment_D.bc",
         schema = schemafile
     output:
-        collect("{sample}.R{FR}.fq.gz", sample = samplenames, FR = [1,2]),
-        bx_info = "logs/preprocess.barcodes"
+        collect("samples/{sample}.R{FR}.fq.gz", sample = samplenames, FR = [1,2])
     log:
         "logs/dmox.log"
     params:
-        outdir = "--samples " + os.getcwd(),
-        qxrx = "--rx --qx" if qxrx else "",
-        unknown_barcodes = "--undetermined-barcodes _unknown_barcodes" if unknown_barcodes else "",
-        unknown_samples = "--undetermined-samples _unknown_samples" if unknown_samples else "",
-        duplicate_samples = "--multiple-samples-per-barcode" if duplicates else ""
+        "--output " + os.getcwd(),
+        "--rx --qx" if qxrx else "",
+        "--undetermined-barcodes" if unknown_barcodes else "",
+        "--undetermined-samples" if unknown_samples else "",
+        "--multiple-samples-per-barcode" if duplicates else "",
+        "--use-stitch-base --sx true" if stitch_base else "",
+        "--allow-complementary-stitch" if stitch_base and stitch_comp else ""
     threads:
         workflow.cores
     conda:
         "envs/preprocess.yaml"
     container:
-        f"docker://pdimens/harpy:preprocess_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:preprocess_{VERSION}"
     shell:
-        """
-        dmox --i1 {input.I1} --i2 {input.I2} --r1 {input.R1} --r2 {input.R2} \
-        --ref-a {input.segment_a} --ref-b {input.segment_b} --ref-c {input.segment_c} \
-        --ref-d {input.segment_d} --schema {input.schema} \
-        --n-writers {threads} {params} \
-        --barcodes-table {output.bx_info} 2> {log}
-        """
+        "dmox --i1 {input.I1} --i2 {input.I2} --r1 {input.R1} --r2 {input.R2} "
+        "--ref-a {input.segment_a} --ref-b {input.segment_b} --ref-c {input.segment_c} "
+        "--ref-d {input.segment_d} --schema {input.schema} "
+        "--n-writers {threads} {params} 2> {log}"
 
 rule assess_quality:
     input:
-        "{sample}.R{FR}.fq.gz"
+        "samples/{sample}.R{FR}.fq.gz"
     output: 
         "reports/data/{sample}.R{FR}.fastqc"
     log:
@@ -103,7 +103,7 @@ rule assess_quality:
     conda:
         "envs/preprocess.yaml"
     container:
-        f"docker://pdimens/harpy:preprocess_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:preprocess_{VERSION}"
     shell:
         """
         ( falco --quiet --threads {threads} -skip-report -skip-summary -data-filename {output} {input} ) > {log} 2>&1 ||
@@ -136,13 +136,12 @@ rule quality_report:
     conda:
         "envs/qc.yaml"
     container:
-        f"docker://pdimens/harpy:qc_{VERSION}"
+        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "multiqc --config workflow/multiqc.yaml {params} > {output} 2> {log}"
 
 rule all:
     default_target: True
     input:
-        fq = collect("{sample}.R{FR}.fq.gz", sample = samplenames, FR = [1,2]),
-        barcode_logs = "logs/preprocess.barcodes",
+        fq = collect("samples/{sample}.R{FR}.fq.gz", sample = samplenames, FR = [1,2]),
         reports = "reports/preprocess.QA.html" if not skip_reports else []

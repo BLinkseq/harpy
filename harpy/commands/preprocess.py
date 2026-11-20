@@ -6,10 +6,11 @@ import rich_click as click
 
 from harpy.common.cli_filetypes import DemuxSchema, FASTQfile, HPCProfile
 from harpy.common.cli_params import SnakemakeParams
-from harpy.common.file_ops import fetch_template
 from harpy.common.system_ops import container_ok
-from harpy.common.workflow import Workflow
+from harpy.runtime.workflow import Workflow
+from harpy.validation.demux import pheniqsSchema
 from harpy.validation.fastq import FASTQ
+
 
 @click.group(options_metavar='')
 @click.help_option('--help', hidden = True)
@@ -28,24 +29,26 @@ def preprocess():
       - Iqbal _el al._ (in prep)
     """
 
-@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://pdimens.github.io/harpy/workflows/preprocess/")
+@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/preprocess/")
 @click.option('-u', '--keep-unknown-samples', panel = "Parameters",  is_flag = True, default = False, help = 'Keep a separate file of reads with recognized barcodes but don\'t match any sample in the schema')
 @click.option('-b', '--keep-unknown-barcodes', panel = "Parameters",  is_flag = True, default = False, help = 'Keep a separate file of reads with unrecognized barcodes')
+@click.option('-s', '--stitch', panel = "Parameters",  is_flag = True, default = False, help = 'Use the bases between segments to demultiplex')
+@click.option('-c', '--stitch-comp', panel = "Parameters",  is_flag = True, default = False, help = 'Allow complementary bases when using `--stitch`')
 @click.option('-q', '--qx-rx', panel = "Parameters", is_flag = True, default = False, help = 'Include the `QX:Z` and `RX:Z` tags in the read header')
-@click.option('-@', '--threads', panel = "Workflow Options", default = 4, show_default = True, type = click.IntRange(2,999, clamp = True), help = 'Number of threads to use')
-@click.option('-O', '--output', panel = "Workflow Options", type = click.Path(exists = False, resolve_path = True), default = "Preprocess", show_default=True,  help = 'Output directory name')
 @click.option('--clean', hidden = True, panel = "Workflow Options", type = str, help = 'Delete the log (`l`), .snakemake (`s`), and/or workflow (`w`) folders when done')
 @click.option('-C', '--container', panel = "Workflow Options",  is_flag = True, default = False, help = 'Use a container instead of conda', callback=container_ok)
 @click.option('-N', '--setup', panel = "Workflow Options",  is_flag = True, hidden = True, default = False,  help = 'Setup the workflow and exit')
 @click.option('-H', '--hpc', panel = "Workflow Options",  type = HPCProfile(), help = 'HPC submission YAML configuration file')
+@click.option('-O', '--output', panel = "Workflow Options", type = click.Path(exists = False, resolve_path = True), default = "Preprocess", show_default=True,  help = 'Output directory name')
 @click.option('-Q', '--quiet', panel = "Workflow Options", default = 0, type = click.IntRange(0,2,clamp=True), help = '`0` all output, `1` progress bar, `2` no output')
 @click.option('-R', '--skip-reports', panel = "Workflow Options",  is_flag = True, show_default = True, default = False, help = 'Don\'t generate HTML reports')
 @click.option('-S', '--snakemake', panel = "Workflow Options", type = SnakemakeParams(), help = 'Additional Snakemake parameters, in quotes')
+@click.option('-@', '--threads', panel = "Workflow Options", default = 4, show_default = True, type = click.IntRange(2,999, clamp = True), help = 'Number of threads to use')
 @click.argument('schema', required = True, type=DemuxSchema())
 @click.argument('R12_FQ', required=True, type=FASTQfile(dir_ok= False), nargs=2)
 @click.argument('I12_FQ', required=True, type=FASTQfile(dir_ok= False), nargs=2)
 @click.help_option('--help', hidden = True)
-def meier2021(r12_fq, i12_fq, output, schema, qx_rx, keep_unknown_samples, keep_unknown_barcodes, threads, snakemake, skip_reports, quiet, hpc, clean, container, setup):
+def meier2021(r12_fq, i12_fq, output, schema, qx_rx, keep_unknown_samples, keep_unknown_barcodes, stitch, stitch_comp, threads, snakemake, skip_reports, quiet, hpc, clean, container, setup):
     """
     Preprocess FASTQ files haplotagged with the Meier _et al._ 2021 protocol
 
@@ -67,43 +70,50 @@ def meier2021(r12_fq, i12_fq, output, schema, qx_rx, keep_unknown_samples, keep_
         "I2": i12_fq[1][0]
     }
     workflow.param(qx_rx, "qx-rx")
-    workflow.param(keep_unknown_barcodes, "barcodes")
-    workflow.param(keep_unknown_samples, "samples")
+    workflow.param(keep_unknown_barcodes, "unknown-barcodes")
+    workflow.param(keep_unknown_samples, "unknown-samples")
+    workflow.param(stitch, "stitch:base")
+    workflow.param(stitch_comp, "stitch:complementary")
     workflow.notebooks["skip"] = skip_reports
 
     workflow.info = {
-        "Barcode Design": "Meier [italic]et al.[/] 2021",
+        "Barcode Design": "Meier et al. 2021",
         "Demultiplex Schema": os.path.basename(schema),
         "Include QX/RX tags" : "Yes" if qx_rx else "No",
+        "Use stitch bases" : "Yes" if stitch else "No",
         "Output Folder" : os.path.relpath(output) + "/"
     }
 
     workflow.initialize(setup)
 
-@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://pdimens.github.io/harpy/workflows/preprocess/")
+@click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog = "Documentation: https://blinkseq.github.io/harpy/commands/preprocess/")
 @click.option('-m', '--me-seq', panel = "Parameters", type = str, default = "AGATGTGTATAAGAGACAG", show_default=True, help = "ME sequence to look for")
 @click.option('-n', '--mismatch', panel = "Parameters", default = 2, show_default = True, type = click.IntRange(0,19, clamp = True), help = 'Allow N mismatches in ME sequence')
-@click.option('-@', '--threads', panel = "Workflow Options", default = 4, show_default = True, type = click.IntRange(2,999, clamp = True), help = 'Number of threads to use')
-@click.option('-O', '--output', panel = "Workflow Options", type = click.Path(exists = False, resolve_path = True), default = "Preprocess", show_default=True,  help = 'Output directory name')
-@click.option('-T', '--no-temp', hidden = True, panel = "Workflow Options", is_flag = True, default = False, help = 'Don\'t delete temporary files')
+@click.option('-q', '--qx-rx', panel = "Parameters", is_flag = True, default = False, help = 'Include the `QX:Z` and `RX:Z` tags in the read header')
+@click.option('-k', '--keep-discard', panel = "Parameters", is_flag = True, default = False, help = 'Retain sequences discarded for not having ME sequence in separate file')
+@click.option('-s', '--schema', panel = "Workflow Options", type = click.Path(exists=True, dir_okay=False, readable=True, resolve_path=True), help = 'Pheniqs-style JSON decoding schema file')
+@click.option('--clean', hidden = True, panel = "Workflow Options", type = str, help = 'Delete the log (`l`), .snakemake (`s`), and/or workflow (`w`) folders when done')
 @click.option('-C', '--container', panel = "Workflow Options",  is_flag = True, default = False, help = 'Use a container instead of conda', callback=container_ok)
-@click.option('-N', '--setup', panel = "Workflow Options",  is_flag = True, hidden = True, default = False,  help = 'Setup the workflow and exit')
 @click.option('-H', '--hpc', panel = "Workflow Options",  type = HPCProfile(), help = 'HPC submission YAML configuration file')
+@click.option('-T', '--no-temp', hidden = True, panel = "Workflow Options", is_flag = True, default = False, help = 'Don\'t delete temporary files')
+@click.option('-O', '--output', panel = "Workflow Options", type = click.Path(exists = False, resolve_path = True), default = "Preprocess", show_default=True,  help = 'Output directory name')
 @click.option('-Q', '--quiet', panel = "Workflow Options", default = 0, type = click.IntRange(0,2,clamp=True), help = '`0` all output, `1` progress bar, `2` no output')
+@click.option('-N', '--setup', panel = "Workflow Options",  is_flag = True, hidden = True, default = False,  help = 'Setup the workflow and exit')
 @click.option('-R', '--skip-reports', panel = "Workflow Options",  is_flag = True, show_default = True, default = False, help = 'Don\'t generate HTML reports')
 @click.option('-S', '--snakemake', panel = "Workflow Options", type = SnakemakeParams(), help = 'Additional Snakemake parameters, in quotes')
-@click.option('--clean', hidden = True, panel = "Workflow Options", type = str, help = 'Delete the log (`l`), .snakemake (`s`), and/or workflow (`w`) folders when done')
+@click.option('-@', '--threads', panel = "Workflow Options", default = 4, show_default = True, type = click.IntRange(2,999, clamp = True), help = 'Number of threads to use')
 @click.argument('inputs', required=True, type=FASTQfile(), nargs=-1)
 @click.help_option('--help', hidden = True)
-def gih(inputs, output, me_seq, mismatch, threads, snakemake, skip_reports, quiet, hpc, clean, container, setup, no_temp):
+def gih(inputs, output, me_seq, mismatch, threads, snakemake, skip_reports, schema, qx_rx, keep_discard, quiet, hpc, clean, container, setup, no_temp):
     """
-    Preprocess FASTQ files haplotagged with the GIH protocol
+    Preprocess FASTQ files prepared with the GIH BLink-seq protocol
 
 
     Provide the input fastq files and/or directories at the end of the command
     as individual files/folders, using shell wildcards (e.g. `data/poccidentalis*.fq`), or both.
     The resulting FASTQ file pairs will have inline barcodes removed and added to the sequence headers,
-    but will still need QC to remove adapters and low-quality reads/regions.
+    but will still need QC to remove adapters and low-quality reads/regions. Uses embedded BLink-seq decoding
+    schema, but a custom one can be added if you have a good reason to do so (not recommended).
     """
     workflow = Workflow("preprocess_gih", "preprocess_gih.smk", output, container, clean, quiet, no_validation=True)
     workflow.setup_snakemake(threads, hpc, snakemake, no_temp)
@@ -112,17 +122,21 @@ def gih(inputs, output, me_seq, mismatch, threads, snakemake, skip_reports, quie
 
     ## checks and validations ##
     fastq = FASTQ(inputs, detect_bc = False, quiet= True)
+    if schema:
+        pheniqsSchema(schema)
 
     workflow.notebooks["skip"] = skip_reports
-    fetch_template("pheniqs.config.json", os.path.join(output, "workflow", "pheniqs.config.json"))
-    workflow.input(fastq.files)
+    workflow.param(qx_rx, "qx-rx")
+    workflow.param(keep_discard, "keep-discard")
+    workflow.input('embedded' if not schema else schema, "schema")
+    workflow.input(fastq.files, "fastq")
     workflow.param(me_seq, "ME-sequence")
     workflow.param(mismatch, "ME-mismatch")
-    #workflow.param(min_len, "min-length")
 
     workflow.info = {
-        "Barcode Design": "Iqbal [italic]et al.[/] (in prep)",
-        "Output Folder": os.path.relpath(output) + "/"
+        "Barcode Design": "Iqbal et al. (in prep)",
+        "Output Folder": os.path.relpath(output) + "/",
+        "Schema": "embedded" if not schema else schema,
     }
 
     workflow.initialize(setup)

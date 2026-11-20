@@ -1,0 +1,162 @@
+---
+title: Running on an HPC Cluster
+sidebar:
+  label: Running on an HPC
+description: Best-practices for running on a computing cluster
+---
+import { Aside, Badge, Steps } from '@astrojs/starlight/components';
+import Accordion from '@/components/Accordion.astro';
+
+It's much more common to run big bioinformatics software on high-performance computing (HPC) systems than it is on
+a local machine like a desktop or laptop. HPCs typically require you to "submit" jobs to some kind of scheduler, which
+can add an extra layer of abstraction to running basic commands. Harpy can be invoked two ways on an HPC: as the job itself,
+which we don't recommend, or as the job scheduler.
+
+<Accordion title="Submit a harpy command directly to the scheduler" badge = {{ text: "not recommended", variant: "danger", size: "medium" }}>
+This method, which we stress we **don't recommend**, is as simple as writing a bash script that
+includes a `harpy` call and whatever parameters you would use for your scheduler. In this example,
+we are showing what might work for the SLURM scheduler:
+
+```bash title="harpy_align.sh"
+#! /usr/bin/env bash
+#SBATCH --time=10:00
+#SBATCH --partition=short
+#SBATCH --job-name=simple_job
+#SBATCH --output=simple_job.out
+
+conda activate harpy_env
+harpy align data/ref.fa data/fastq
+```
+**Pro**:
+- relatively simple setup with a single script
+
+**Cons**:
+- you can only guess how long it will take
+- memory and threads will vary across different steps, meaning you need to set a maximum across all possible tasks within a workflow
+- one super long, monolithic job that might be semi-catastrophic if fails because harpy workflows often spawn hundreds to thousands of jobs
+---
+
+</Accordion>
+
+
+Most harpy commands, depending on how many samples you have, might spawn hundreds to thousands of jobs. The snakefiles underpinning
+the commands have well-defined rules that will automatically work in most HPC contexts with a bit of initial configuration. Snakemake
+ends up acting like a scheduler that itself submits jobs to your HPC scheduler on your behalf, which is **incredibly convenient**. You
+can specify things like maximum number of jobs to submit so you can be courteous and respectful of other users.
+
+<Aside title="Why do it this way?">
+With this approach, the harpy/snakemake process will be active on the current (login) node,
+and **submitting jobs to your scheduler**, where the scheduler will decide what gets run, where, and when.
+This creates significantly better parallelism across tasks. As a result, **harpy will not run tasks on the login node** and the snakemake process that governs the job
+submission is rather lightweight, so you will _not_ be scolded by your sysadmins. This is in fact the idiomatic
+way of using Snakemake on HPC systems.
+</Aside>
+
+These snakemake features are made available with some [snakemake plugins](https://snakemake.github.io/snakemake-plugin-catalog/index.html).
+These plugins have the configurations necessary to correctly interface with various HPC schedulers like SLURM, LSF, GRID, or offer generic
+options so you can tailor something to your exact system. There are also plugins to support for things like remote Amazon `s3` storage,
+and overall cover a lot of typical use-cases. The process then becomes:
+
+<Steps>
+1. **install the appropriate plugin**
+    - e.g., `conda install bioconda::snakemake-executor-plugin-lsf`
+2. **add some plugin-specific parameters to a YAML file**
+    - the [plugin documentation](https://snakemake.github.io/snakemake-plugin-catalog/index.html) will list what the options are (see below about templates)
+3. **run harpy using the `--hpc <file.yml>` option**
+    ```bash title="Example: adding an HPC profile"
+    harpy qc -@ 25 --hpc slurm.yaml data/fastq
+    ```
+</Steps>
+
+## HPC Configuration
+The configuration stuff can feel like a lot, especially at first. Harpy includes a series of template YAML files
+that are configured for their corresponding executor plugin (e.g., SLURM, LSF, etc.), accessed by `template hpc-`. 
+The configurations can sometimes become very technical, so we recommend starting with a simple configuration and 
+getting more complex as necessary. The Snakemake executor plugins are admittedly not consistent in their documentation
+quality and it's sometimes a rapidly changing landscape.
+```bash title="Example: use harpy template to get a configuration scaffold"
+harpy template hpc-slurm > slurm.config.yml
+```
+
+```yaml title="slurm.config.yml" hidden={14-22}
+__use_yte__: true
+executor: slurm #[!annotate] DO NOT CHANGE THIS
+default-resources:
+  slurm_account: $USER #[!annotate] you might need to change this
+  slurm_partition: regular #[!annotate] will vary based on your system
+  slurm_status_command: squeue -u $USER
+  slurm_jobname_prefix: harpy
+  mem_mb: attempt * 2000 #[!annotate] might need to increase this
+  runtime: 10 #[!annotate] probably should make this much bigger
+jobs: 50
+latency-wait: 60
+retries: 1
+
+# This section is for advanced copying into a scratch directory #
+## requires snakemake-storage-plugin-fs, which can be installed via conda
+#default-storage-provider: fs
+#local-storage-prefix: /home2/$USER
+#shared-fs-usage:
+#  - persistence
+#  - software-deployment
+#  - sources
+#  - source-cache
+```
+
+Once you update the configuration YAML file, use it with `--hpc` in a harpy command:
+```bash
+harpy validate bam -@ 20 --hpc slurm.config.yaml data/alignments
+```
+
+<Aside type="tip" title="Use a terminal multiplexer">
+Harpy will be actively running for the duration of the workflow, submitting jobs and checking their completion
+status. It's best to run harpy in a terminal multiplexer like `screen` or `tmux` to reduce the possibility of
+unexpected process termination due to a machine going to sleep, running out of power, losing internet, etc.
+</Aside>
+
+<Aside title="Misleading progress bar">
+In HPC mode, the harpy progress bar acts a little differently. The leftmost column of the progress bar typically
+describes how many active jobs there are for a step/rule. But, in HPC mode, a job being submitted to the scheduler
+doesn't necessarily mean it's actively running, so that column should be considered _"jobs submitted but havent finished yet"_.
+That includes jobs that were submitted but haven't started yet. Similarly,
+the rightmost column (time elapsed) can't distinguish from when a job was submitted and when it actually began running,
+so the rightmost column should be interpreted as _"time since something was queued_."
+</Aside>
+
+## Advanced
+The Snakemake framework also allows you to overwrite Harpy's internal workflow defaults
+in the event your dataset needs more (or less) resources. For example, you can change the
+number of threads for a rule, how much memory it should be allocated, etc. Here is a real-world example from an `align` run:
+
+```yaml title="slurm.yaml" annotations="side"
+__use_yte__: true
+executor: slurm
+default-resources:
+    slurm_account: accountname
+    mem_mb_per_cpu: 1800
+    time: "0:12:00"
+
+set-resources: #[!annotate] parent key for setting rule-specific runtime parameters
+  preprocess_reference:  #[!annotate] the specific rule whose resources we are changing
+    mem_mb: 64000 #[!annotate] total memory (RAM) required per job
+    threads: 1 #[!annotate] remove multithreading to reduce RAM usage
+    tmpdir: /tmp  #[!annotate] setting a custom temporary directory
+
+  align:
+    mem_mb: 32000
+    threads: 8
+    time: "2:00:00" #[!annotate] alignment will take much longer than the default 12min
+
+  standardize_barcodes:
+    mem_mb: 24000
+    threads: 1
+
+  mark_duplicates:
+    mem_mb: 120000 
+    threads: 8
+    tmpdir: /tmp
+
+jobs: 100 #[!annotate] queue 100 jobs at a time
+latency-wait: 60 #[!annotate] wait 60sec after a job finishes before checking that output files exist
+retries: 1
+```

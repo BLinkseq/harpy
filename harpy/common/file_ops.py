@@ -3,15 +3,14 @@
 import curses
 import glob
 import gzip
-import importlib.resources as resources
 import os
 import re
 import shutil
 import sys
 from datetime import datetime
+from importlib import resources
 from pathlib import Path
 
-import pysam
 from click import echo_via_pager
 from pygments import highlight
 from pygments.formatters import get_formatter_by_name
@@ -25,12 +24,12 @@ from harpy.common.printing import HarpyPrint
 
 def filepath(infile: str) -> str:
     """returns a posix-formatted absolute path of infile"""
-    return Path(infile).resolve().as_posix()
+    return Path(infile).absolute().as_posix()
 
 def symlink(original: str, destination: str) -> None:
     """Create a symbolic link from original -> destination if the destination doesn't already exist."""
     if not (Path(destination).is_symlink() or Path(destination).exists()):
-        Path(destination).symlink_to(Path(original).resolve())
+        Path(destination).symlink_to(Path(original).absolute())
 
 def fetch_template(target: str, outfile = None) -> None:
     """
@@ -114,7 +113,7 @@ def is_bgzipped(file_path: str) -> bool:
             # BGZF EOF marker signature
             bgzf_eof = b"\x1f\x8b\x08\x04\x00\x00\x00\x00\x00\xff\x06\x00\x42\x43\x02\x00\x1b\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00"
             return eof_block == bgzf_eof
-    except (IOError, OSError):
+    except OSError:
         return False
 
 def is_plaintext(file_path: str) -> bool:
@@ -126,24 +125,73 @@ def is_plaintext(file_path: str) -> bool:
     except UnicodeDecodeError:
         return False
 
-def pop_manifest(groupingfile, filelist) -> dict:
+def pop_manifest(groupingfile, filelist) -> dict[str,list[str]]:
     '''
     Create dictionary of population => filenames to make it easier to
     set the snakemake rules/wildcards for population grouping
     '''
-    d = {}
+    d: dict[str, list[str]] = {}
     with open(groupingfile) as f:
         for line in f:
             samp, pop = line.rstrip().split()
             if samp.lstrip().startswith("#"):
                 continue
             r = re.compile(fr".*/({samp.lstrip()})\.(bam|sam)$", flags = re.IGNORECASE)
-            sampl = list(filter(r.match, filelist))[0]
-            if pop not in d.keys():
+            sampl = next(filter(r.match, filelist))
+            if pop not in d:
                 d[pop] = [sampl]
             else:
                 d[pop].append(sampl)
     return d
+
+def pop_manifest_simple(groupingfile) -> dict[str,list[str]]:
+    '''
+    Create dictionary of population => sample_names to make it easier to
+    set the snakemake rules/wildcards for population grouping. Input format
+    is preserved, including directories, extensions, etc.
+
+    Example:
+    pop1    sample1
+    pop1    sample2
+    pop2    sample3
+    pop3    sample4
+
+    becomes
+
+    {
+        'pop1' : ['sample1', 'sample2'],
+        'pop2' : ['sample3'],
+        'pop3' : ['sample4']
+    }
+    '''
+    d: dict[str, list[str]] = {}
+    with open(groupingfile) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            if line.lstrip().startswith("#"):
+                continue
+            samp, pop = line.split()
+            samp = samp.strip()
+            pop = pop.strip()
+            if pop not in d:
+                d[pop] = [samp]
+            else:
+                d[pop].append(samp)
+    return d
+
+def get_vcf_contigs(vcf: str):
+    """reads the header of a vcf/bcf file and return a list of the contigs listed therein"""
+    from pysam import VariantFile
+    with VariantFile(vcf) as _vcf:
+        return list(_vcf.header.contigs.keys())
+
+def get_vcf_samples(vcf: str) -> list[str]:
+    """reads the header of a vcf/bcf file and return a list of the samples listed therein"""
+    from pysam import VariantFile
+    with VariantFile(vcf) as _vcf:
+        return list(_vcf.header.samples)
 
 def naibr_extra(argsDict: dict, extra) -> dict:
     if extra:
@@ -183,6 +231,8 @@ def genomic_windows(input: str, output: str, window: int = 10000, mode: int = 1)
                 for startpos,endpos in zip(starts, ends):
                     fout.write(f"{contig}\t{startpos}\t{endpos}\n")
         return
+
+    import pysam
 
     with pysam.FastxFile(input, persist = False) as FA, open(output, "w") as fout:
         for record in FA:
@@ -301,7 +351,7 @@ def choose_logfile(directory: str, choose:bool) -> str:
         console.print(_tb)
         selection = Prompt.ask(
             "\n[bold blue]Select a log file by number ([bold green]#[/])[/]",
-            choices=list(str(i) for i in range(1,len(files) + 1)),
+            choices=[str(i) for i in range(1,len(files) + 1)],
             show_choices=False
         )
 
