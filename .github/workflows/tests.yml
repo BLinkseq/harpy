@@ -43,6 +43,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
       - name: Check Which Files Have Changes
         uses: dorny/paths-filter@v4
         id: filter
@@ -57,6 +58,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -80,6 +82,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -114,6 +117,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -140,6 +144,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -161,6 +166,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -182,6 +188,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -211,6 +218,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -244,6 +252,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -281,6 +290,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -318,6 +328,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -344,6 +355,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -370,6 +382,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
@@ -401,6 +414,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        submodules: true
         with:
           fetch-depth: 1
       - name: Install Harpy
