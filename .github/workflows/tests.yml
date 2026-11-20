@@ -50,7 +50,7 @@ jobs:
           filters: .github/filters.yml
 
   build:
-    needs: [changes, build]
+    needs: changes
     if: ${{ contains(needs.changes.outputs.*, 'true') }}
     runs-on: ubuntu-latest
     steps:
