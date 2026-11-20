@@ -189,7 +189,7 @@ rule phase:
         """
         HAPCUT2 --fragments {input.frags} --vcf {input.vcf} --out {output.blocks} {params} > {log} 2>&1
         {{
-            bcftools view --threads 1 -Oz6 -o {output.vcfgz} --write-index {output.vcf}
+            bcftools view --threads 1 -Oz6 -o {output.vcfgz} {output.vcf}
             bcftools index {output.vcf}
         }} 2>> {log}
         """
