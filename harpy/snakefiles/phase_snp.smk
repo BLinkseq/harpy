@@ -171,8 +171,7 @@ rule phase:
         frags = fragfile
     output:
         blocks = "phase_blocks/{sample}.blocks",
-        vcf    = temp("phase_blocks/{sample}.blocks.phased.VCF"),
-        vcfgz  ="phase_blocks/{sample}.phased.vcf.gz"
+        vcf    = temp("phase_blocks/{sample}.blocks.phased.VCF", group_jobs=True),
     log:
         "logs/hapcut2/{sample}.blocks.phased.log"
     params:
@@ -186,13 +185,15 @@ rule phase:
     container:
         f"ghcr.io/blinkseq/harpy:phase_{VERSION}"
     shell:
-        """
-        HAPCUT2 --fragments {input.frags} --vcf {input.vcf} --out {output.blocks} {params} > {log} 2>&1
-        {{
-            bcftools view --threads 1 -Oz6 -o {output.vcfgz} {output.vcf}
-            bcftools index {output.vcf}
-        }} 2>> {log}
-        """
+        "HAPCUT2 --fragments {input.frags} --vcf {input.vcf} --out {output.blocks} {params} > {log} 2>&1"
+
+rule compress_phaseblock:
+    input:
+        "phase_blocks/{sample}.blocks.phased.VCF"
+    output:
+        "phase_blocks/{sample}.phased.vcf.gz"
+    shell:
+        "bcftools view -Oz6 -o {output} --write-index {input}"
 
 rule summarize_blocks:
     input:

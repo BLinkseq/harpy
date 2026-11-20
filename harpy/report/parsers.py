@@ -289,7 +289,7 @@ def read_count_hist(infile: str) -> pl.DataFrame:
 
 ## SV output parsers ------------------
 #for i in infiles:
-_sv_coltypes = {'contig': pl.String, 'Chr1': pl.String, 'Chr2' : pl.String, 'Start': pl.Int64, 'End': pl.Int64, 'End1': pl.Int64}
+_sv_coltypes = {'contig': pl.String, 'Chr1': pl.String, 'Chr2' : pl.String}
 _sv_types = {"INV": "Inversion", "DEL": "Deletion", "DUP": "Duplication", "BND": "Breakend"}
 
 def parse_naibr_leviathan_SVs(infiles: list[str]):
@@ -313,7 +313,8 @@ def parse_naibr_leviathan_SVs(infiles: list[str]):
         sv.columns = [i.replace("position_", "").replace("_", " ").title() for i in sv.columns]
         sv = sv.with_columns(pl.col('Type').replace_strict(_sv_types))
     
-    return sv
+    sv = sv.with_columns(pl.col("Length").replace(".", "0"))
+    return sv.with_columns(pl.all().exclude('Sample', 'Contig', 'Type').cast(pl.Int64))
 
 def process_variants(df: pl.DataFrame, bin_size: int = 50) -> pl.DataFrame:
     """Group variants by binning positions into windows"""
