@@ -297,13 +297,12 @@ def parse_naibr_leviathan_SVs(infiles: list[str]):
     _infiles = [f for f in infiles if os.path.getsize(f)]
     if not _infiles:
         return None
-    sv = pl.read_csv(
+    sv = pl.scan_csv(
         _infiles,
-        separator = "\t",
-        schema_overrides = _sv_coltypes,
-        infer_schema_length = None,
-    )
-
+        separator="\t",
+        schema_overrides=_sv_coltypes,
+        infer_schema_length=None,
+    ).collect()
     # standardize the column names btwn Leviathan and Naibr
     if "Break1" in sv.columns:
         sv = sv.drop("Chr2")
