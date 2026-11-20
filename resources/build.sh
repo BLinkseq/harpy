@@ -1,3 +1,5 @@
+CGO_ENABLED=0
+
 {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 ## shell completion scripts (bash, zsh, fish) for harpy, harpy-utils, and hv, installed where each shell looks for them

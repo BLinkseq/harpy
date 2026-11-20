@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 set -euo pipefail 
+CGO_ENABLED=0
 
 if [ -z "$CONDA_PREFIX" ]; then
     echo "Error: active conda environment not detected."
