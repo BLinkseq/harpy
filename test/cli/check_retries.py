@@ -20,7 +20,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 from harpy.common.errorparsing import ErrorHandler
-from harpy.common.launch import LaunchSnakemake
+from harpy.runtime.launch import LaunchSnakemake
 from harpy.common.printing import HarpyPrint
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
