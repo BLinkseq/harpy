@@ -100,7 +100,7 @@ if lr_type != "none" and not (bx_tag and vx_tag):
         threads:
             2
         shell:
-            "djinn-standardize --threads {threads} {input} > {output} 2> {log}"
+            "djinn sam convert -@ {threads} standard {input} > {output} 2> {log}"
 
 rule depth_stats:
     input:
