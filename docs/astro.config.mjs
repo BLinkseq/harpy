@@ -44,7 +44,7 @@ export default defineConfig({
         starlightSidebarTopics([
           {
             label: 'Getting Started',
-            link: '/getting-started/install',
+            link: '/getting-started/',
             icon: 'information',
             items: [
               {

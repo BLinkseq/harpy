@@ -33,14 +33,14 @@ harpy phase snp --threads 20 Variants/variants.raw.bcf alignments/
 ```
 
 ## Running Options
-In addition to the [common runtime options](../../getting-started/common-options), the `phase` command is configured using these command-line arguments:
+In addition to the [common runtime options](../common-options), the `phase` command is configured using these command-line arguments:
 
 
 | argument                   | default  | description                                                                                                                  |
 | :------------------------- | :------: | :--------------------------------------------------------------------------------------------------------------------------- |
 | `VCF`                      |          | <Badge variant="tip" text="required"/> Path to BCF/VCF file                                                                  |
 | `INPUTS`                   |          | <Badge variant="tip" text="required"/> Files or directories containing [input BAM files](../../getting-started/input-format) |
-| `--contigs`                |          | [Contigs to plot](../../getting-started/common-options#contigs) in the report                                                |
+| `--contigs`                |          | [Contigs to plot](../common-options#contigs) in the report                                                |
 | `--extra-params` `-x`      |          | Additional Hapcut2 arguments, in quotes                                                                                      |
 | `--reference` `-r`         |          | Path to reference genome if wanting to also use reads spanning indels                                                        |
 | `--min-map-qual` `-q`      |   `20`   | Minimum mapping quality score to be considered for phasing                                                                   |

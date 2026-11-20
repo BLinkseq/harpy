@@ -29,8 +29,8 @@ harpy will look for the directory written in `.harpyerror`
 | Mode        | description                                                       |
 | :---------- | :---------------------------------------------------------------- |
 | `config`    | View a workflow's config file                                     |
-| `error`     | View the exact failture of a snakemake run from the snakemake log |
 | `envs`*     | View the conda environments and their software in `.environments` |
+| `error`     | View the exact failure of a snakemake run from the snakemake log  |
 | `log`       | View a workflow's last snakemake log file                         |
 | `profile`   | View a workflow's snakemake parameter file                        |
 | `snakefile` | View a workflow's snakefile                                       |
@@ -49,7 +49,7 @@ To use `environments`, you can run it without arguments or give it a `SOFTWARE` 
 to only print environments where `SOFTWARE` is found (it also works with partial matches).
 
 ```txt title="viewing all environments"
-harpy view environments
+harpy view envs
 
 Conda Environments
 ├── .environments/e38c41849c266f1765a6dad2ea0db37a_
@@ -71,7 +71,7 @@ Conda Environments
 ```
 
 ```txt title="searching for a program"
-harpy view environments fast
+harpy view envs fast
 
 Conda Environments
 └── .environments/3090e313a5f362f817f7572c06ff912a_

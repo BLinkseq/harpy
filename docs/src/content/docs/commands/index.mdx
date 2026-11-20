@@ -3,3 +3,58 @@ title: Harpy commands
 sidebar:
     hidden: true
 ---
+
+Harpy features several commands that are all prefixed by `harpy`. For example, to use the `qc` command, you would write:
+```bash
+harpy qc
+```
+
+Some commands have subcommands, like `align` or `snp`, and those follow a similar pattern of `harpy command subcommand`:
+```bash
+harpy snp mpileup
+```
+The commands generally follow a pattern of:
+- **Parameters**: things that impact results
+- **Workflow Options**: things that impact how the workflow runs
+
+The latter are almost always identical across commands, so we don't repeat them on every command's page. Instead, you can
+read about the common options here. Calling harpy, it's commands, or subcommands without arguments or with `--help` will show help text:
+```bash
+$ harpy snp mpileup
+
+Usage: harpy snp mpileup [OPTIONS] REFERENCE INPUTS...
+
+Use mpileup to call SNPs and indels
+Provide the reference fasta followed by the input alignment (.bam) files and/or
+directories at the end of the command as individual files/folders, using shell
+wildcards (e.g. data/scarab*.bam), or both.
+
+Regions (--regions) to call variants in: a 1-indexed BED file parallelized by
+region, chrom:start-end for a single region, or an integer (default) for
+parallelizing over fixed-size intervals across the reference genome.
+
+Optionally specify --populations for population-aware variant calling (harpy
+template can create that file).
+
+Parameters:
+  --extra-params    -x  Additional deepvariant parameters, in quotes
+  --keep-invariant  -i  Keep invariant sites in the output
+  --ploidy          -n  Ploidy of samples
+                        [default=2]
+  --populations     -p  File of sample<TAB>population
+  --regions         -r  Regions where to call variants
+                        [default=50000000]
+
+Workflow Options:
+  --container     -C  Use a container instead of conda
+  --hpc           -H  HPC submission YAML configuration file
+  --output        -O  Output directory name
+                      [default=SNP/mpileup]
+  --quiet         -Q  0 all output, 1 progress bar, 2 no output
+  --skip-reports  -R  Don't generate HTML reports
+  --snakemake     -S  Additional Snakemake parameters, in quotes
+  --threads       -@  Number of threads to use
+                      [default=4]
+
+Documentation: https://blinkseq.github.io/harpy/commands/snp
+```

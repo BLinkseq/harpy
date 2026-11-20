@@ -58,13 +58,13 @@ biological suitability remains the user's responsibility.
 </Aside>
 
 ## Running Options
-In addition to the [common runtime options](../../getting-started/common-options), the `impute` command is configured using these command-line arguments:
+In addition to the [common runtime options](../common-options), the `impute` command is configured using these command-line arguments:
 
 | argument              |     default      | description                                                                                                                  |
 | :-------------------- | :--------------: | :--------------------------------------------------------------------------------------------------------------------------- |
 | `PARAMETERS`          |                  | STITCH [parameter file](#parameter-file) (tab-delimited) <Badge variant="tip" text="required"/>                             |
 | `VCF`                 |                  | Path to VCF/BCF file <Badge variant="tip" text="required"/>                                                                 |
-| `INPUTS`              |                  | Files or directories containing [input BAM files](../../getting-started/common-options) <Badge variant="tip" text="required"/>   |
+| `INPUTS`              |                  | Files or directories containing [input BAM files](../common-options) <Badge variant="tip" text="required"/>   |
 | `--extra-params` `-x` |                  | Extra arguments to add to STITCH, provided in quotes                                                                         |
 | `--grid-size` `-g`    |  `1` (per-snp)   | Perform imputation in windows of a specific size, instead of per-SNP                                                         |
 | `--vcf-samples`, `-V` |                  | Use samples present in vcf file for imputation rather than those found the directory ([see below](#prioritize-the-vcf-file)) |

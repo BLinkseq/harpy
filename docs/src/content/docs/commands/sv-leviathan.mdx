@@ -60,14 +60,14 @@ harpy sv leviathan --threads 20 -s 90,95,95 genome.fasta Align/bwa
 ```
 
 ## Running Options
-In addition to the [common runtime options](../../getting-started/common-options), the [!badge corners="pill" text="sv leviathan"] module is configured using these command-line arguments:
+In addition to the [common runtime options](../common-options), the [!badge corners="pill" text="sv leviathan"] module is configured using these command-line arguments:
 
 
 | argument                    |  default   | description                                                                                                                                    |
 | :-------------------------- | :--------: | :--------------------------------------------------------------------------------------------------------------------------------------------- |
 | `INPUTS`                    |            | <Badge variant="tip" text="required"/> Files or directories containing input BAM files                                                         |
 | `REFERENCE`                 |            | <Badge variant="tip" text="required"/> Reference genome that was used to create alignments                                                     |
-| `--contigs`                 |            | [Contigs to plot](../../getting-started/common-options#--contigs) in the report                                                                |
+| `--contigs`                 |            | [Contigs to plot](../common-options#--contigs) in the report                                                                |
 | `-d` `--duplicates`         |    `10`    | Consider SV of the same type as duplicates if their breakpoints are within this distance                                                       |
 | `-x` `--extra-params`       |            | Additional naibr arguments, in quotes                                                                                                          |
 | `-i` `--iterations`         |    `50`    | Number of iterations to perform (reduces memory)                                                                                               |
