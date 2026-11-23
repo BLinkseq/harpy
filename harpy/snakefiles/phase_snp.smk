@@ -22,12 +22,12 @@ base_qual         = PARAMETERS.get("min-base-quality", 13)
 molecule_distance = PARAMETERS.get("distance-threshold", 50000)
 extra             = PARAMETERS.get("extra", "")
 variantfile       = INPUTS["vcf"]
-linkagemap        = INPUTS.get("linkage-map", [])
+linkagemap        = INPUTS.get("linkage-map", None)
 grp               = INPUTS.get("groupings") or {}
 if grp:
     groupings = grp.get("processed", [])
     if not (isinstance(groupings, str) and os.path.isfile(groupings)):
-        groupings = groupings.get("source", [])
+        groupings = grp.get("source", [])
     contigs: list[str] = get_vcf_contigs(variantfile)
 else:
     groupings = []
@@ -199,30 +199,19 @@ rule compress_phaseblock:
 
 rule summarize_blocks:
     input:
-        "split_by_pop/{population}.bcf.csi",
-        bcf = "split_by_pop/{population}.bcf"
+        collect("phase_blocks/{sample}.blocks", sample = samplenames)
     output:
-        "statistical_phasing/{population}.{contig}.shapeit4.bcf.csi",
-        bcf = "statistical_phasing/{population}.{contig}.shapeit4.bcf"
+        "reports/blocks.summary.gz"
     log:
-        "statistical_phasing/logs/{population}.{contig}.shapeit4.log"
-    threads:
-        8
-    params:
-        lambda wc: f"--region {wc.contig}",
-        "--sequencing",
-        "--use-PS 0.0001",
-        f"--map {groupings}" if groupings else ""
-    conda:
-        "envs/phase.yaml"
-    container:
-        f"ghcr.io/blinkseq/harpy:phase_{VERSION}"
+        "logs/summary.log"
     shell:
         """
         {{
-            shapeit4 --input {input.bcf} {params} --thread {threads} --log {log} --output {output.bcf}
-            bcftools index {output.bcf}
-        }} 2>> {log}
+            echo -e "sample\\tcontig\\tn_snp\\tpos_start\\tblock_length"
+            for i in {input}; do
+                harpy-utils parse-phaseblocks $i
+            done
+        }} 2> {log} | gzip > {output}
         """
 
 rule annotate_phase:
@@ -332,8 +321,8 @@ else:
 rule statistical_phase:
     input:
         "split_by_pop/{population}.bcf.csi",
-        linkagemap = linkagemap,
-        bcf = "split_by_pop/{population}.bcf"
+        bcf = "split_by_pop/{population}.bcf",
+        linkagemap = linkagemap or []
     output:
         "statistical_phasing/{population}/{contig}.shapeit4.bcf.csi",
         bcf = "statistical_phasing/{population}/{contig}.shapeit4.bcf"
