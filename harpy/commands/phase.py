@@ -97,6 +97,7 @@ def bam(vcf, inputs, output, threads, unlinked, vcf_samples, molecule_distance, 
 @click.option('-q', '--min-map-quality', panel = "Parameters", default = 20, show_default = True, type = click.IntRange(0, 40, clamp = True), help = 'Minimum mapping quality for phasing')
 @click.option('-d', '--molecule-distance', panel = "Parameters", default = 50000, show_default = True, type = click.IntRange(min = 100), help = 'Distance cutoff to split molecules (bp)')
 @click.option('-p', '--populations', panel = "Parameters", type=click.Path(exists = True, dir_okay=False, readable=True, resolve_path=True), help = 'Population grouping file for secondary phasing')
+@click.option('-l', '--linkage-map', panel = "Parameters", type=click.Path(exists = True, dir_okay=False, readable=True, resolve_path=True), help = 'Optional linkage map for secondary phasing')
 @click.option('-t', '--prune-threshold', panel = "Parameters", default = 30, show_default = True, type = click.IntRange(0,100, clamp = True), help = 'PHRED-scale threshold (%) for pruning low-confidence SNPs (larger prunes more.)')
 @click.option('-r', '--reference', panel = "Parameters", type=FASTAfile(), help = 'Path to reference genome if wanting to also extract reads spanning indels')
 @click.option('-U', '--unlinked', panel = "Parameters", is_flag = True, default = False, help = "Treat input data as not linked reads")
@@ -115,7 +116,7 @@ def bam(vcf, inputs, output, threads, unlinked, vcf_samples, molecule_distance, 
 @click.help_option('--help', hidden = True)
 @click.argument('vcf', required = True, type = VCFfile(), nargs = 1)
 @click.argument('inputs', required=True, type=SAMfile(), nargs=-1)
-def snp(vcf, inputs, output, threads, unlinked, min_map_quality, min_base_quality, molecule_distance, prune_threshold, vcf_samples, reference, populations, snakemake, extra_params, skip_reports, quiet, hpc, clean, container, contigs, setup, no_temp):
+def snp(vcf, inputs, output, threads, unlinked, linkage_map, min_map_quality, min_base_quality, molecule_distance, prune_threshold, vcf_samples, reference, populations, snakemake, extra_params, skip_reports, quiet, hpc, clean, container, contigs, setup, no_temp):
     """
     Phase SNPs into haplotypes
 
@@ -149,12 +150,18 @@ def snp(vcf, inputs, output, threads, unlinked, min_map_quality, min_base_qualit
     if reference:
         fasta = FASTA(reference, quiet)
         workflow.input(fasta.file, "reference")
+    else:
+        workflow.input(None, "reference")
     if populations:
         popfile = Populations(populations, alignments.files, quiet)
         popfile.shapeit_validation()
         popfile.copy_to_workflow(output)
         workflow.input(popfile.file, "groupings:source")
         workflow.input("workflow/sample.groups", "groupings:processed")
+    else:
+        workflow.input(None, "groupings:source")
+        workflow.input(None, "groupings:processed")
+    workflow.input(linkage_map if linkage_map else None, "linkage-map")
     workflow.input(alignments.files, "alignments")
     workflow.param(prune_threshold, "prune")
     workflow.param(min_map_quality, "min-map-quality")

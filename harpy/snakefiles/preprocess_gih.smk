@@ -81,7 +81,7 @@ rule demultiplex:
     output:
         fq1 = "{sample}.R1.fq.gz",
         fq2 = "{sample}.R2.fq.gz",
-        discards = "{samples}.noME.fq.gz" if keep_discard else [],
+        discards = "{sample}.noME.fq.gz" if keep_discard else [],
         stats = "reports/data/{sample}.dmxstats"
     log:
         "logs/{sample}.preproc"
@@ -89,7 +89,7 @@ rule demultiplex:
         f'--me {me_seq}',
         f'--max-mismatch {mismatch}',
         '--qx-rx' if qxrx else '',
-        '-keep-discarded' if keep_discard else '',
+        '--keep-discarded' if keep_discard else '',
         f'-s {schemafile}' if schemafile != 'embedded' else ''
     threads:
         4
@@ -114,7 +114,7 @@ rule assess_quality:
     conda:
         "envs/qc.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "falco --quiet --threads 1 -skip-report -skip-summary -data-filename {output} {input} > {log} 2>&1"
 
@@ -132,7 +132,7 @@ rule quality_report:
     conda:
         "envs/qc.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "multiqc --config workflow/multiqc.yaml {params} > {output} 2> {log}"
 
@@ -147,7 +147,4 @@ rule barcode_report:
     params:
         "-p indir " + os.path.abspath("reports/data/")
     shell:
-        """
-        export IPYTHONDIR=/tmp/ipython-pre-gih
-        harpy-utils run-notebook -k ipython-harpy {params} {input.ipynb} > {output} 2> {log}
-        """
+        "harpy-utils run-notebook -k ipython-harpy {params} {input.ipynb} > {output} 2> {log}"

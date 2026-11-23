@@ -116,7 +116,6 @@ class Workflow:
             #hpc_dir = os.path.join(self.workflow_directory, "hpc")
             #self.profile["workflow-profile"] = hpc_dir
         self.profile = {
-            **({'__use_yte__': True} if hpc else {}),
             "cores" : threads,
             "rerun-incomplete": True,
             "show-failed-logs": True,

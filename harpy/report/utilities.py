@@ -3,6 +3,7 @@ import os
 from io import StringIO
 from typing import Literal
 
+import math
 import numpy as np
 import polars as pl
 
@@ -60,9 +61,9 @@ def binned_histogram(data: pl.Series, bin_size: int|float, normalize: bool = Fal
     with columns ['bin','interval','count']. If `normalize=True`, returns a DataFrame with columns ['bin','interval', 'proportion'].
     '''
     col_max: float | int = (data.max() or 0) if max_val is None else max_val
-    #col_max: float | int = int(data.max()) if max_val is None else max_val
-    bins = np.arange(0, col_max + bin_size, bin_size).round(precision)
-    #bins = np.arange(0, col_max + (3 * bin_size), bin_size).round(precision)
+    # at least one complete bin, so an all-zero (or empty) series still has two edges
+    n_bins = max(1, math.ceil(col_max / bin_size))
+    bins = (np.arange(n_bins + 1) * bin_size).round(precision)
 
     labels: list[str] = [f"{round(i, precision)}-{round(i + bin_size, precision)}" for i in bins]
 
@@ -81,26 +82,29 @@ def binned_histogram(data: pl.Series, bin_size: int|float, normalize: bool = Fal
         colname: values
     })
 
-def consolidated_hist(data: pl.Series, linkmask: pl.Series, binwidth: int|float, normalize: bool) -> pl.DataFrame:
+def consolidated_hist(data: pl.Series, linkmask: pl.Series, binwidth: int|float, normalize: bool, max_val: int|float|None = None) -> pl.DataFrame:
     '''
     Invoke `binned_histogram()` once for all the data (a column) and linked-read only data, returning a single DataFrame
     with cumulative sum columns. The `linkmask` is a boolean list/series that subsets `data`. Both `nmol` and
     `nlinkmol` are necessary to correctly calculate proportions.
+    Pass `max_val` (the max across every column you want on the same grid) so separate calls produce
+    identical bins. It is never allowed to be below this column's own max.
     '''
-    shared_max = max(float(data.max()), float(data.filter(linkmask).max()))
-    binned_df = binned_histogram(data, binwidth, normalize, max_val = shared_max).rename({'proportion': 'all reads'})
-    binned_dfl = binned_histogram(data.filter(linkmask), binwidth, normalize, max_val = shared_max)
+    linked = data.filter(linkmask)
+    shared_max = max(float(data.max() or 0), float(linked.max() or 0), float(max_val or 0))
+    colname = 'proportion' if normalize else 'count'
+    binned_df = binned_histogram(data, binwidth, normalize, max_val=shared_max).rename({colname: 'all reads'})
+    binned_dfl = binned_histogram(linked, binwidth, normalize, max_val=shared_max)
     binned_df = binned_df.with_columns([
-        binned_dfl['proportion'].alias('linked reads'),
+        binned_dfl[colname].alias('linked reads'),
         binned_df['all reads'].cum_sum().alias('all reads (cumsum)'),
-        binned_dfl['proportion'].cum_sum().alias('linked reads (cumsum)'),
+        binned_dfl[colname].cum_sum().alias('linked reads (cumsum)'),
     ])
     if isinstance(binwidth, int):
         labels = [
             f"{int(float(i))}-{int(float(i)) + binwidth - 1}"
             for i in binned_df["bin"].to_list()
         ]
-        #labels = [f"{i}-{int(i)+binwidth-1}" for i in binned_df['bin'].to_list()]
     else:
         digits = len(str(binwidth).split(".")[1])
         labels = [f"{i}-{round(float(i)+binwidth,digits)}" for i in binned_df['bin'].to_list()]

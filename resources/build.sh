@@ -13,7 +13,7 @@ done
 ## build Go binaries
 {
   go build -C djinn -o $PREFIX/bin/djinn -ldflags='-s -w'
-  go build -C demoxolotl -o $PREFIX/bin/demoxolotl -ldflags='-s -w'
+  go build -C demuxolotl -o $PREFIX/bin/demuxolotl -ldflags='-s -w'
 }
 
 ## activate/deactive processes

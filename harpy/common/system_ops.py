@@ -4,103 +4,73 @@ Various system-level checks such as whether packages exist, architecture, etc.
 
 import os
 import platform
+import rich_click as click
 import shutil
 
-import rich_click as click
+from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 from rich.markdown import Markdown
 
 from harpy.common.printing import HarpyPrint
 
+def is_conda_package_installed(package_name: str) -> bool:
+    """Exact-name match against conda-meta/. Works for conda, mamba and pixi, no `conda` module needed."""
+    prefix = os.environ.get("CONDA_PREFIX")
+    if not prefix:
+        return False
+    # records are named <name>-<version>-<build>.json
+    return any(
+        p.name.rsplit("-", 2)[0] == package_name
+        for p in Path(prefix, "conda-meta").glob(f"{package_name}-*.json")
+    )
 
-def is_conda_package_installed(package_name) -> int:
-    """
-    Return 0 if package exists
-    Return 1 if conda is not found but CONDA_PREFIX is defined, implying it's mamba
-    Return 2 if package not found in current conda env
-    Return 3 if error
-    Return 4 if CONDA env not detected
-    """
-    if "CONDA_PREFIX" in os.environ:
-        try:
-            from conda.base.context import context
-            from conda.core.prefix_data import PrefixData
-        except ModuleNotFoundError:
-            # CONDA_PREFIX is there but conda itself isnt: likely mamba
-            return 1
-        try:
-            # Get the current environment prefix
-            prefix = context.active_prefix or context.root_prefix
 
-            # Get prefix data for current environment
-            prefix_data = PrefixData(prefix)
-
-            # Check if package exists in the prefix
-            if any(package_name in record.name for record in prefix_data.iter_records()):
-                return 0
-            else:
-                return 2
-        except Exception:
-            return 3
-    else:
-        return 4
-
-def is_pip_package_installed(package_name) -> bool:
-    import importlib.metadata
-    from importlib.metadata import PackageNotFoundError
+def is_pip_package_installed(package_name: str) -> bool:
     try:
-        importlib.metadata.version(package_name)
+        version(package_name)
         return True
     except PackageNotFoundError:
         return False
 
-def is_pixi_shell() -> bool:
-    # Check for pixi-specific environment variables
-    pixi_indicators = [
-        'PIXI_PROJECT_ROOT',
-        'PIXI_PROJECT_NAME',
-        'PIXI_PROJECT_MANIFEST',
-        'PIXI_ENVIRONMENT_NAME'
-    ]
 
-    return any(var in os.environ for var in pixi_indicators)
+def is_installed(pkg: str) -> bool:
+    return is_conda_package_installed(pkg) or is_pip_package_installed(pkg)
+
+
+def is_pixi_shell() -> bool:
+    return any(v in os.environ for v in (
+        "PIXI_PROJECT_ROOT", "PIXI_PROJECT_NAME", "PIXI_PROJECT_MANIFEST", "PIXI_ENVIRONMENT_NAME"
+    ))
+
+
+def install_cmd(pkg: str) -> str:
+    if is_pixi_shell():
+        return f"pixi add {pkg}"
+    if "CONDA_PREFIX" in os.environ:
+        tool = "mamba" if shutil.which("mamba") else "conda" if shutil.which("conda") else None
+        if tool:
+            return f"{tool} install -c bioconda {pkg}"
+    return f"pip install {pkg}"
+
+
+def check_snakemake_hpc(plugin: str) -> str:
+    """Returns "" if installed, otherwise the install command for the detected environment."""
+    return "" if is_installed(plugin) else install_cmd(plugin)
 
 def package_absent(pkg: str, executor: bool = True) -> bool:
-    """helper function to search for a package in the active conda environment"""
+    """True (and prints install instructions) if `pkg` is missing from the active environment."""
+    if is_installed(pkg):
+        return False
+    intro = ""
     if executor:
-        out_text = "Using this scheduler requires installing a Snakemake plugin which wasn't detected in this environment. "
+        intro = "Using this scheduler requires installing a Snakemake plugin which wasn't detected in this environment."
+
+    text = Markdown(f"{intro} It can be installed with:\n\n```bash\n{install_cmd(pkg)}\n```")
+    if executor:
+        HarpyPrint().notice(text)
     else:
-        out_text = "Using the `--container` option requires `apptainer`, which wasn't detected in this environment. "
-
-    out_text += "It can be installed with:"
-
-    # check for conda/mamba
-    if shutil.which("conda") or shutil.which("mamba"):
-        conda_check = is_conda_package_installed(pkg)
-        if conda_check == 0:
-            return False
-        elif conda_check == 2:
-            if is_pixi_shell():
-                out_text += f"\n\n```bash\npixi add {pkg}\n```"
-            else:
-                out_text += f"\n\n```bash\nconda install -c bioconda {pkg}\n```"
-        elif conda_check == 1:
-            out_text += f"\n\n```bash\nmamba install -c bioconda {pkg}\n```"
-        if conda_check in [1,2]:
-            if executor:
-                HarpyPrint().notice(Markdown(out_text))
-            else:
-                HarpyPrint().error("missing required package", Markdown(out_text))
-            return True
-
-    if not is_pip_package_installed(pkg):
-        out_text += f"\n\n```bash\npip install {pkg}\n```"
-        if executor:
-            HarpyPrint().notice(Markdown(out_text))
-        else:
-            HarpyPrint().error("missing required package", Markdown(out_text))
-        return True
-
-    return False
+        HarpyPrint().error("missing required package", text)
+    return True
 
 def check_snakemake_hpc(plugin: str):
     """

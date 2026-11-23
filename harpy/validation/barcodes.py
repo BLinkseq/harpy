@@ -2,6 +2,7 @@
 Processes and validations relating to identifying barcodes and/or linked-read types
 """
 
+from harpy.common.progress import PanelProgress
 import subprocess
 
 from harpy.common.file_ops import is_gzip, safe_read
@@ -22,7 +23,7 @@ def validate_barcodefile(infile: str, return_len: bool = False, quiet: int = 0, 
         if not set(barcode).issubset(nucleotides) or barcode != barcode.upper():
             hp.error("incorrect format", f"Invalid barcode format on [bold]line {line_num }[/]: [yellow]{barcode}[/].\nBarcodes in [blue]{infile}[/] must be captial letters and only contain standard nucleotide characters [green]ATCG[/].")
         return len(barcode)
-    progress = hp.progressbar()
+    progress = PanelProgress()
     with safe_read(infile) as bc_file, hp.progresspanel(progress, title= "Validating barcodes"):
         out = subprocess.Popen(['wc', '-l', infile], stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()[0]
         linenum = int(out.partition(b' ')[0])

@@ -152,10 +152,10 @@ rule impute:
     conda:
         "envs/impute.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:impute_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:impute_{VERSION}"
     shell:
         """
-        mkdir -p {resources.tmpdir}; trap "rm -rf {resources.tmpdir}" 0
+        mkdir -p {resources.tmpdir}; trap "rm -rf $(realpath {resources.tmpdir})" 0
         {{
             STITCH.R --nCores={threads} --bamlist={input.bamlist} --posfile={input.infile} {params}
             tabix {output.vcf}

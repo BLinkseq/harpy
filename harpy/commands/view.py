@@ -91,16 +91,18 @@ def envs(program):
             "No conda recipes ending in [green].yaml[/] found in [blue].environments[/]."
         )
     tree = Tree("[bold]Conda Environments")
+    program = program.lower() if program else ""
     for i in files:
         with open(i, "r") as file:
             deps: list[str] = yaml.safe_load(file)['dependencies']
+            deps = [i.lower() for i in deps]
             for idx in range(len(deps)):
                 deps[idx] = deps[idx].split('::', 1)[-1]
         if not program or any(program in j for j in deps):
             _subtree = tree.add("[bold]" + i.removesuffix('.yaml'), style = "blue")
             for d in deps:
                 if program:
-                    if program.lower() in d:
+                    if program in d:
                         _subtree.add(d + " <", style = 'bold green', highlight = False)
                     else:
                         _subtree.add(d, style = 'dim default', highlight = False)

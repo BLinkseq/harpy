@@ -15,11 +15,11 @@ a classic genome assembly assumes there is exactly one genome present in your se
 assemble the most contiguous sequences for this one individual.
 
 ```bash title="Usage"
-harpy metassembly OPTIONS... FASTQ_R1 FASTQ_R2
+harpy assembly OPTIONS... FASTQ_R1 FASTQ_R2
 ```
 
 ```bash title="Example: create a prokaryote assembly with designated kmer lengths"
-harpy metassembly --threads 20 -u prokaryote -k 13,51,75,83 data.R1.fq data.R2.fq
+harpy assembly --threads 20 -u prokaryote -k 13,51,75,83 data.R1.fq data.R2.fq
 ```
 
 ## Running Options
@@ -48,7 +48,7 @@ the descriptions are provided with an extra badge to reflect which part of the a
 | `--organism-type` `-u`     | `eukaryote` | Organism type for assembly report: `eukaryote`,`prokaryote`, or `fungus` <Badge text="report"/>                                                                                  |
 
 
-## :icon-tag: Deconvolved Inputs
+## Deconvolved Inputs
 For linked-read assemblies, the barcodes need to be deconvolved in the sequence data, meaning that
 barcodes that are shared by reads that originate from different molecules need to have unique barcode
 IDs. Deconvolution often takes the form of adding a hyphenated integer to the end of a barcode so that software

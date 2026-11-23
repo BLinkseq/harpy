@@ -61,8 +61,8 @@ In addition to the [common runtime options](../common-options), the `preprocess 
 | `--keep-discard` | false               | Keep sequences discarded for missing the ME sequence as `sample.noME.fq.gz`                 |
 | `--me-seq` `-m`  | AGATGTGTATAAGAGACAG | ME sequence to look for                                                                     |
 | `--mismatch` `n` | 2                   | Allow `n` mismatches in ME sequence                                                         |
-| `--qxrx` `-q`    | false               | Include the `QX:Z` and `RX:Z` tags in the read header                                       |
-| `--scema` `-s`   |                     | [Pheniqs-style](https://biosails.github.io/pheniqs/configuration) JSON decoding schema file |
+| `--qx-rx` `-q`   | false               | Include the `QX:Z` and `RX:Z` tags in the read header                                       |
+| `--schema` `-s`  |                     | [Pheniqs-style](https://biosails.github.io/pheniqs/configuration) JSON decoding schema file |
 
 #### The ME Sequence
 The Mosaic End (ME) sequence is very important for preprocessing these data correctly, as identifying the position it starts will
@@ -168,7 +168,7 @@ harpy preprocess meier2021 OPTIONS... SCHEMA R1_FQ R2_FQ I1_FQ I2_FQ
 ```
 
 ```bash title="Example: using BASH wildcards"
-harpy preprocess meier2021 --threads 20 --schema demux.schema Plate_1_S001_R*.fastq.gz Plate_1_S001_I*.fastq.gz
+harpy preprocess meier2021 --threads 20 demux.schema Plate_1_S001_R*.fastq.gz Plate_1_S001_I*.fastq.gz
 ```
 
 ### Running Options
@@ -183,7 +183,7 @@ In addition to the [common runtime options](../common-options), the `preprocess 
 | `I2_FQ`                        | The reverse FASTQ index file provided by the sequencing facility <Badge variant="tip" text="required"/> |
 | `--keep-unknown-samples` `-u`  | Keep a separate file of reads with recognized barcodes but don't match any sample in the schema         |
 | `--keep-unknown-barcodes` `-b` | Keep a separate file of reads with unrecognized barcodes                                                |
-| `--qxrx` `-q`                  | Include the `QX:Z` and `RX:Z` tags in the read header                                                   |
+| `--qx-rx` `-q`                 | Include the `QX:Z` and `RX:Z` tags in the read header                                                   |
 | `--stitch` `-s`                | Use the bases between segments to demultiplex                                                           |
 
 

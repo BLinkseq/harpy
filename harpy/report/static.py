@@ -1,3 +1,4 @@
+import html
 import json
 import re
 import shutil
@@ -60,8 +61,9 @@ def _sanitize(md: str) -> str:
                 body.append(lines[i]); i += 1
             i += 1
             inner = markdown2html(_sanitize("\n".join(body))).strip()
+            if title:
+                out.append(f'<p><strong>{html.escape(title)}</strong></p>')
             out.append(inner)
-            #out.append(f"<hr>\n{inner}\n")
             continue
 
         m = OPEN.match(line)

@@ -99,7 +99,7 @@ rule call_variants:
     conda:
         "envs/variants.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:variants_{VERSION}"
     shell:
         """
         freebayes -f {input.reference} -L {input.bamlist} {params} 2> {log} |

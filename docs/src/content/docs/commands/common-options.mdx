@@ -52,12 +52,12 @@ in the modules' help strings, and can be configured using these arguments:
 | `--container` `-C`    | toggle                         |         | Use preconfigured Apptainer container instead of local conda environments                                                                    |
 | `--contigs`           | file path or list              |         | Contigs to plot in the report(s)                                                                                                             |
 | `--help`              |                                |         | Show the module docstring                                                                                                                    |
-| `--hpc` `-H`          |                                |         | Have snakemake submit all jobs to an HPC ([details](Resources/hpc.md))                                                                       |
+| `--hpc` `-H`          |                                |         | Have snakemake submit all jobs to an HPC ([details](../../getting-started/running-on-hpc))                                                                       |
 | `--output` `-O`       | string                         | varies  | Name of output directory                                                                                                                     |
 | `--quiet` `-Q`        | [0,1,2]                        |    0    | `0` prints all progress information, `1` prints unified progress bar, `2` suppressess all console output except errors                       |
 | `--setup` `-N`        | toggle <Badge text="hidden"/>  |         | Perform validations and setup workflow environment, but don't run anything                                                                   |
 | `--skip-reports` `-R` | toggle                         |         | Skip the processing and generation of HTML reports in a workflow                                                                             |
-| `--snakemake` `-S`    | string                         |         | Additional [Snakemake](Resources/snakemake#adding-snakemake-parameters) options, in quotes                                                   |
+| `--snakemake` `-S`    | string                         |         | Additional [Snakemake](../../resources/other/snakemake/#adding-snakemake-parameters) options, in quotes                                                   |
 | `--threads` `-@`      | integer                        |    4    | Number of threads to use                                                                                                                     |
 | `--unlinked` `-U`     | toggle                         |         | Treat the input as non linked-read data                                                                                                      |
 | `--no-temp` `-T`      | toggle                         |         | Do no delete temporary files during or after a workflow (shortcut for snakemake's `--no-temp`)                                               |
@@ -73,7 +73,7 @@ harpy align arachne --threads 20 --quiet 2 genome.fasta samples/trimmedreads
 ### --unlinked
 As of version 3.0, Harpy tries to auto-detect the type of data that input FASTQ or BAM files may be: `haplotagging`, `stlfr`, `tellseq`, or `none`.
 The formats for these data and how their barcodes look are described [here](https://blinkseq.github.io/linkedreads/info/#linked-read-varieties). That means
-you no longer have to specify linked-read technology, and if you aren't using linked reads, that's fine too ([in most cases](resources/wgs_data.md)). 
+you no longer have to specify linked-read technology, and if you aren't using linked reads, that's fine too ([in most cases](../../resources/guides/wgs-data)).
 However, you can force many commands to treat your data as not linked-read using `-U`/`--unlinked`. This toggle skips data type detection
 and circumvents any linked-read specific parts of workflows. Data that is already not linked-read would be detected as such, so this
 tends to be more helpful if you want to either 1. shave off a second or two from preprocessing non-linked-read data or 2. push linked-read
@@ -102,4 +102,3 @@ harpy align bwa --contigs contigs.txt genome.fasta dir/data
 Things start to look sloppy and cluttered with >30 contigs, so it's advisable not to
 exceed that number.
 </Aside>
-

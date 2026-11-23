@@ -61,7 +61,7 @@ harpy sv naibr OPTIONS... REFERENCE INPUTS...
 ```
 
 ```bash title="Example"
-harpy sv naibr --threads 20 genome.fasta Align/bwa
+harpy sv naibr --threads 20 genome.fasta phase/bams/*bam
 ```
 
 ## Running Options
@@ -72,7 +72,7 @@ In addition to the [common runtime options](../common-options), the `sv naibr` c
 | :------------------------- | :------: | :---------------------------------------------------------------------------------------- |
 | `INPUTS`                   |          | <Badge variant="tip" text="required"/> Files or directories containing phased BAM files   |
 | `REFERENCE`                |          | <Badge variant="tip" text="required"/> Reference genome used to generate input alignments |
-| `--contigs`                |          | [Contigs to plot](/getting-started/common-options#--contigs) in the report                |
+| `--contigs`                |          | [Contigs to plot](../../common-options#--contigs) in the report                |
 | `--extra-params` `-x`      |          | Additional naibr arguments, in quotes                                                     |
 | `--min-barcodes` `-b`      |   `2`    | Minimum number of barcode overlaps supporting candidate SV                                |
 | `--min-quality` `-q`       |   `30`   | Minimum `MQ` (SAM mapping quality) to pass filtering                                      |
@@ -140,18 +140,16 @@ The resulting folder also includes a `workflow` directory (not shown) with workf
   - bedpe
     - sample1.bedpe
     - sample2.bedpe
-  - configs
+    - qc_fail
+      - sample1.fail.bedpe
+      - sample2.fail.bedpe
+  - config
     - sample1.config
     - sample2.config
-  - filtered
-    - sample1.fail.bedpe
-    - sample2.fail.bedpe
   - IGV
     - sample1.reformat.bedpe
     - sample2.reformat.bedpe
-  - logs
-    - sample1.log
-    - sample2.log
+  - logs/
   - reports
     - naibr.summary.ipynb
   - vcf
@@ -168,7 +166,7 @@ The resulting folder also includes a `workflow` directory (not shown) with workf
 | `configs/`           | the configuration files harpy generated for each sample    |
 | `filtered/`          | the variants that failed NAIBR's internal filters          |
 | `IGV/`               | same as the output `.bedpe` files but in IGV format        |
-| `logs/*.log`         | what NAIBR writes to `stderr` during operation             |
+| `logs/`              | what NAIBR writes to `stderr` during operation             |
 | `reports/`           | summary report with interactive plots of detected SV       |
 | `vcf/`               | the resulting variants, but in `.VCF` format               |
 
@@ -177,7 +175,7 @@ The resulting folder also includes a `workflow` directory (not shown) with workf
 By default, Harpy runs `naibr` with these parameters (excluding inputs and outputs):
 ```python
 min_mapq = 30
-min_sv   = 100000
+min_sv   = 1000
 k        = 2
 d        = 100000
 ```
@@ -186,7 +184,7 @@ Below is a list of all `naibr` runtime options, excluding those Harpy already us
 These are taken directly from the [NAIBR documentation](https://github.com/pontushojer/NAIBR#running-naibr). If adding these arguments, do so in quotes:
 
 ```
-harpy sv naibr -x "candidates duplications.bedpe" data/alignments/*
+harpy sv naibr -x "candidates duplications.bedpe" ref.fa data/alignments/*
 ```
 
 ```txt title="NAIBR arguments"

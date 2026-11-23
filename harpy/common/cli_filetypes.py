@@ -296,7 +296,9 @@ class DemuxSchema(FileCompletion):
         is_stitch: bool = False
         with open(filepath, 'r') as file:
             for line in file:
-                _splitline = line.rstrip().split()
+                if not line.strip():
+                    continue
+                _splitline: list[str] = line.rstrip().split()
                 if len(_splitline) == 2:
                    break
                 if len(_splitline) == 3:

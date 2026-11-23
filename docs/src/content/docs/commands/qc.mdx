@@ -9,7 +9,7 @@ import Accordion from '@/components/Accordion.astro';
 
 <Accordion title="📝 You will need">
 - at least 2 cores/threads available
-- paired-end [fastq](/getting-started/inputformat.md/#naming-conventions) sequence files <Badge text="gzipped recommended"/>
+- paired-end [fastq](../../getting-started/input-format#naming-conventions) sequence files <Badge text="gzipped recommended"/>
     - **sample names**: <Badge variant="success" text="a-z"/> <Badge variant="success" text="0-9"/> <Badge variant="success" text="."/> <Badge variant="success" text="_"/> <Badge variant="success" text="-"/> <Badge text="case insensitive"/>
     - **forward**: <Badge variant="success" text="_F"/> <Badge variant="success" text=".F"/> <Badge variant="success" text=".1"/> <Badge variant="success" text="_1"/> <Badge variant="success" text="_R1_001"/> <Badge variant="success" text=".R1_001"/> <Badge variant="success" text="_R1"/> <Badge variant="success" text=".R1"/> 
     - **reverse**: <Badge variant="success" text="_R"/> <Badge variant="success" text=".R"/> <Badge variant="success" text=".2"/> <Badge variant="success" text="_2"/> <Badge variant="success" text="_R2_001"/> <Badge variant="success" text=".R2_001"/> <Badge variant="success" text="_R2"/> <Badge variant="success" text=".R2"/> 
@@ -70,8 +70,9 @@ When setting the read lengths via `--length`:
 In the event you need the forward and reverse reads trimmed down to different read lengths, this can be achieved by
 adding the `--max_len2` fastp parameter with `-x "--max_len2 VAL"` to set the maximum length of the **reverse** reads to `VAL`,
 e.g. `-x "--max_len2 130"`. In practice that would look like:
+
 ```bash
-harpy qc -l 30,150 -x "--max_len2 125" -a data/fastq/
+harpy qc -l 30,150 -x "--max_len2 125" -a auto data/fastq/
 ```
 </Accordion>
 

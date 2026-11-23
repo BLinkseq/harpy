@@ -181,7 +181,7 @@ rm -r SPAdes-4.1.0-Linux
                         out.write(line)
 
             os.remove(f"container/{_env}/pixi.toml")
-            shutil.move(f"container/{_env}/pixi.fix.toml", f"container/{env}/pixi.toml")
+            shutil.move(f"container/{_env}/pixi.fix.toml", f"container/{_env}/pixi.toml")
 
             subprocess.run(
                 ["pixi", "add", "--no-progress", "--manifest-path", f"container/{_env}/pixi.toml", *deps],

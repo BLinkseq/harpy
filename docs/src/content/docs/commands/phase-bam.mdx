@@ -34,15 +34,15 @@ graph LR
 </Accordion>
 
 ```bash title="Usage"
-harpy phase bam OPTIONS... VCF INPUTS...
+harpy phase bam OPTIONS... REFERENCE VCF INPUTS...
 ```
+
 ```bash title="Example"
-harpy phase bam --threads 10 phased.bcf data/*.bam 
+harpy phase bam --threads 10 ref.fa phased.bcf data/*.bam 
 ```
 
 ## Running Options
 In addition to the [common runtime options](../common-options), the `phase bam` command is configured using these command-line arguments:
-
 
 | argument                   | default  | description                                                                                                                                  |
 | :------------------------- | :------: | :------------------------------------------------------------------------------------------------------------------------------------------- |

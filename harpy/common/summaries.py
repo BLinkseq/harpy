@@ -256,7 +256,7 @@ Within R, STITCH was invoked with the following parameters:
         niterations = 40,
         switchModelIteration = 39,{gridparam}
         splitReadIterations = NA,
-        outputdir = outdir
+        outputdir = outdir,
         output_filename = outfile
     )
 
@@ -317,7 +317,7 @@ Athena ran with the config file Harpy built from the files created from the prev
         hairs_params = f"{indelarg} {linkarg} --mmq {map_qual} --mbq {base_qual} --nf 1 --maxfragments 1500000"
         prune = f"--threshold {pruning}" if pruning > 0 else "--no_prune 1"
 
-        self.summary =  f'''The harpy phase bam workflow ran using these parameters:
+        self.summary =  f'''The harpy phase snp workflow ran using these parameters:
 The provided variant file: {variantfile}
 
 The variant file was split by sample and filtered for heterozygous sites using:

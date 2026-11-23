@@ -56,7 +56,7 @@ rule deconvolve:
     conda:
         "envs/qc.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "QuickDeconvolution -t {threads} -i {input} -o {output} {params} > {log} 2>&1"
 

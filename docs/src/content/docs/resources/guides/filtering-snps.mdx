@@ -64,7 +64,7 @@ However, chained expressions can use spaces between each expression
 
 ```bash title="filtering expression examples"
 bcftools view -Ob -e 'QUAL<=10 | DP>35 | MQBZ<-3 | RPBZ<-3 | RPBZ>3 | FORMAT/SP>32 | SCBZ>3' in.vcf > out.bcf # [!ref] -e to EXCLUDE
-bcftools filter -Ob -i 'QUAL>10 | DP<=35 | MQBZ>=-3 | RPBZ>=-3 | RPBZ<=3 | FORMAT/SP<=32 | SCBZ<=3' in.vcf > out.bcf # [!ref] -i to INCLUDE, this example would result in the same output as the -e example
+bcftools filter -Ob -e 'QUAL<=10 | DP>35 | MQBZ<-3 | RPBZ<-3 | RPBZ>3 | FORMAT/SP>32 | SCBZ>3' in.vcf > out.bcf
 ```
 
 

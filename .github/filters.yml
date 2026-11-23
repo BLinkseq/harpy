@@ -5,6 +5,7 @@ common: &common
   - 'harpy/validation/**'
   - 'harpy/report/*.py'
   - '.github/workflows/tests.yml'
+  - '.github/actions/**'
   - '.github/filters.yml'
   - 'pyproject.toml'
 environments: &environments
@@ -36,7 +37,7 @@ preproc: &preproc
   - 'harpy/commands/preprocess.py'
   - 'harpy/snakefiles/preprocess**.smk'
   - 'harpy/validation/fastq.py'
-  - 'test/data/preproc/**'
+  - 'test/preproc/**'
 qc: &qc
   - *common
   - *environments

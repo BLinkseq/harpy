@@ -50,7 +50,7 @@ rule process_reference:
     conda:
         "envs/align.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
         """
         {{
@@ -75,9 +75,9 @@ rule arachne_prep:
     conda:
         "envs/align.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
-        "arachne prep -t {threads} prep/{wildcards.sample} {input} 2> {log}"
+        "arachne prep -t {threads} {params} prep/{wildcards.sample} {input} 2> {log}"
 
 rule align:
     input:
@@ -91,9 +91,10 @@ rule align:
     log:
         "logs/arachne/{sample}.arachne.log"
     params:
-        f"-c {centromeres}" if centromeres else "",
-        f"-d {molecule_distance}",
-        lambda wc: "-s " + wc.get("sample")
+        '--rfa' if useRFA else '',
+        f'-c {centromeres}' if centromeres else '',
+        f'-d {molecule_distance}',
+        lambda wc: '-s ' + wc.get("sample")
     threads:
         12
     resources:
@@ -101,7 +102,7 @@ rule align:
     conda:
         "envs/align.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:align_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:align_{VERSION}"
     shell:
         """
         {{

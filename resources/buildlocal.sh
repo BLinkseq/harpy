@@ -23,6 +23,6 @@ pip install --no-deps --disable-pip-version-check -e . && rm -rf build
 
 # Go-based binaries
 {
-    go build -C demoxolotl -o $CONDA_PREFIX/bin/demoxolotl -ldflags='-s -w'
+    go build -C demuxolotl -o $CONDA_PREFIX/bin/demuxolotl -ldflags='-s -w'
     go build -C djinn -o $CONDA_PREFIX/bin/djinn -ldflags='-s -w'
 }
