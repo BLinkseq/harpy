@@ -79,7 +79,6 @@ harpy template hpc-slurm > slurm.config.yml
 ```
 
 ```yaml title="slurm.config.yml" hidden={14-22}
-__use_yte__: true
 executor: slurm #[!annotate] DO NOT CHANGE THIS
 default-resources:
   slurm_account: $USER #[!annotate] you might need to change this
@@ -129,7 +128,6 @@ in the event your dataset needs more (or less) resources. For example, you can c
 number of threads for a rule, how much memory it should be allocated, etc. Here is a real-world example from an `align` run:
 
 ```yaml title="slurm.yaml" annotations="side"
-__use_yte__: true
 executor: slurm
 default-resources:
     slurm_account: accountname
