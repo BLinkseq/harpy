@@ -113,8 +113,8 @@ rule sort_variants:
 
 rule concat_samples:
     input:
-        collect("samples/{sample}.bcf.csi", part = samplenames),
-        bcf = collect("samples/{sample}.bcf", part = samplenames)
+        collect("samples/{sample}.bcf.csi", sample = samplenames),
+        bcf = collect("samples/{sample}.bcf", sample = samplenames)
     output:
         concatlist = temp("logs/bcf.files"),
         bcf = "variants.raw.bcf",

@@ -81,7 +81,7 @@ rule demultiplex:
     output:
         fq1 = "{sample}.R1.fq.gz",
         fq2 = "{sample}.R2.fq.gz",
-        discards = "{samples}.noME.fq.gz" if keep_discard else [],
+        discards = "{sample}.noME.fq.gz" if keep_discard else [],
         stats = "reports/data/{sample}.dmxstats"
     log:
         "logs/{sample}.preproc"
@@ -89,7 +89,7 @@ rule demultiplex:
         f'--me {me_seq}',
         f'--max-mismatch {mismatch}',
         '--qx-rx' if qxrx else '',
-        '-keep-discarded' if keep_discard else '',
+        '--keep-discarded' if keep_discard else '',
         f'-s {schemafile}' if schemafile != 'embedded' else ''
     threads:
         4

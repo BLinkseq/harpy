@@ -63,12 +63,13 @@ def run_notebook(kernel, params, notebook, text):
         tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir,
         tempfile.NamedTemporaryFile("r", suffix=".ipynb") as tmp
     ):
-        os.environ.setdefault("JUPYTER_RUNTIME_DIR", os.path.join(tmpdir, "rt"))
-        os.environ.setdefault("IPYTHONDIR", os.path.join(tmpdir, "ipy"))
+        reltmp = os.path.relpath(tmpdir)
+        os.environ.setdefault("JUPYTER_RUNTIME_DIR", os.path.join(reltmp, "rt"))
+        os.environ.setdefault("IPYTHONDIR", os.path.join(reltmp, "ipy"))
         c = Config()
         c.KernelManager.transport = "ipc"
         # absolute per-run socket path; default "kernel-ipc" is relative to CWD (shared, Lustre)
-        c.KernelManager.ip = os.path.join(tmpdir, "kernel")
+        c.KernelManager.ip = os.path.join(reltmp, "kernel")
         pm.execute_notebook(
             input_path=notebook,
             output_path=tmp.name,
