@@ -192,7 +192,8 @@ rule compress_phaseblock:
     input:
         "phase_blocks/{sample}.blocks.phased.VCF"
     output:
-        "phase_blocks/{sample}.phased.vcf.gz"
+        "phase_blocks/{sample}.phased.vcf.gz.tbi",
+        vcf = "phase_blocks/{sample}.phased.vcf.gz"
     shell:
         "bcftools view -Oz6 -o {output} --write-index {input}"
 
@@ -217,6 +218,7 @@ rule annotate_phase:
     priority: 100
     input:
         "workflow/input/original/{sample}.bcf.csi",
+        "phase_blocks/{sample}.phased.vcf.gz.tbi",
         phase = "phase_blocks/{sample}.phased.vcf.gz",
         orig = "workflow/input/original/{sample}.bcf"
     output:

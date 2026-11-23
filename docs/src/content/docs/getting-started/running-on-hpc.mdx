@@ -25,7 +25,7 @@ we are showing what might work for the SLURM scheduler:
 #SBATCH --output=simple_job.out
 
 conda activate harpy_env
-harpy align data/ref.fa data/fastq
+harpy align bwa data/ref.fa data/fastq
 ```
 **Pro**:
 - relatively simple setup with a single script
@@ -134,10 +134,10 @@ executor: slurm
 default-resources:
     slurm_account: accountname
     mem_mb_per_cpu: 1800
-    time: "0:12:00"
+    runtime: 12
 
 set-resources: #[!annotate] parent key for setting rule-specific runtime parameters
-  preprocess_reference:  #[!annotate] the specific rule whose resources we are changing
+  process_reference:  #[!annotate] the specific rule whose resources we are changing
     mem_mb: 64000 #[!annotate] total memory (RAM) required per job
     threads: 1 #[!annotate] remove multithreading to reduce RAM usage
     tmpdir: /tmp  #[!annotate] setting a custom temporary directory
@@ -147,13 +147,11 @@ set-resources: #[!annotate] parent key for setting rule-specific runtime paramet
     threads: 8
     time: "2:00:00" #[!annotate] alignment will take much longer than the default 12min
 
-  standardize_barcodes:
+  standardize:
     mem_mb: 24000
-    threads: 1
 
   mark_duplicates:
     mem_mb: 120000 
-    threads: 8
     tmpdir: /tmp
 
 jobs: 100 #[!annotate] queue 100 jobs at a time
