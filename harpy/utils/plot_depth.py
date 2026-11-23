@@ -29,6 +29,7 @@ def plot_depth(contigs, prefix, molcov, coverage):
 
     # Moved here to reduce import lag when using CLI
     from harpy.report.plots import depthplot
+    import altair as alt
 
     _contigs = None
 
@@ -136,6 +137,7 @@ def plot_depth(contigs, prefix, molcov, coverage):
         # partition_by(as_dict=True) returns tuple keys
         name = name[0]
 
+    with alt.data_transformers.disable_max_rows():
         depthplot(group, name).save(
             f"{prefix}.{name}.depth.html"
         )

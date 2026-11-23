@@ -6,24 +6,33 @@ import tempfile
 from datetime import datetime
 
 import click
+import nbformat
 import papermill as pm
 from papermill.cli import _resolve_type
 from traitlets.config import Config
 
 
-def _process(lines, text):
+def _process(path, text):
     _date = datetime.now().strftime('%Y-%m-%d')
     UID = ''.join(random.choices(string.ascii_letters + string.digits, k=15))
     text = list(text)
-    for line in lines:
+    nb = nbformat.read(path, as_version=4)
+    # PLACEHOLDER only in template markdown: never in injected params, metadata, or outputs
+    for cell in nb.cells:
+        if cell.cell_type != "markdown":
+            continue
+        lines = cell.source.splitlines(keepends=True)
+        for i, line in enumerate(lines):
+            if "PLACEHOLDER" in line:
+                if not text:
+                    sys.stderr.write("ERROR: more PLACEHOLDER text than replacement text provided\n")
+                    sys.exit(1)
+                lines[i] = line.replace("PLACEHOLDER", text.pop(0))
+        cell.source = "".join(lines)
+    for line in nbformat.writes(nb).splitlines(keepends=True):
         if line.startswith("Ctrl click to launch") or "Starting kernel" in line:
             continue
-        if 'PLACEHOLDER' in line:
-            if not text:
-                sys.stderr.write("ERROR: more PLACEHOLDER text than replacement text provided\n")
-                sys.exit(1)
-            line = line.replace("PLACEHOLDER", text.pop(0))
-        elif "9999-12-31" in line:
+        if "9999-12-31" in line:
             line = line.replace("9999-12-31", _date)
         elif "injected-parameters" in line:
             line = line.replace('"injected-parameters"', '"injected-parameters",\n"remove-cell"')
@@ -47,7 +56,7 @@ def run_notebook(kernel, params, notebook, text):
 
     run-notebook -k ipython-harpy -p indir path input.ipynb arg1 arg2... > output.ipynb
     """
-    # ponytail: IPC sockets avoid the TCP port race between concurrent kernels on one node
+    # IPC sockets avoid the TCP port race between concurrent kernels on one node
     tempfile.tempdir = '.harpyreports'
     os.makedirs('.harpyreports', exist_ok=True)
     with (
@@ -61,17 +70,13 @@ def run_notebook(kernel, params, notebook, text):
         # absolute per-run socket path; default "kernel-ipc" is relative to CWD (shared, Lustre)
         c.KernelManager.ip = os.path.join(tmpdir, "kernel")
         pm.execute_notebook(
-            input_path = notebook,
-            output_path = tmp.name,
-            parameters = {k: _resolve_type(v) for k, v in params},
-            kernel_name = kernel,
-            start_timeout = 120,
-            progress_bar = False,
-            log_output = False,
-            config= c ,
+            input_path=notebook,
+            output_path=tmp.name,
+            parameters={k: _resolve_type(v) for k, v in params},
+            kernel_name=kernel,
+            start_timeout=120,
+            progress_bar=False,
+            log_output=False,
+            config=c,
         )
-        _process(tmp, text)
-    try:
-        os.rmdir('.harpyreports')
-    except OSError:
-        pass  # not empty (or already gone)
+        _process(tmp.name, text)

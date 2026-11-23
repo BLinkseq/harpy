@@ -28,16 +28,16 @@ harpy metassembly --threads 20 -u prokaryote -k 13,51,75,83 reads.R1.fq reads.R2
 In addition to the [common runtime options](../common-options), the `metassembly` command is configured using these command-line arguments:
 
 
-| argument               |   default   | description                                                                                                                                    |
-| :--------------------- | :---------: | :--------------------------------------------------------------------------------------------------------------------------------------------- |
-| `FASTQ_R1`             |             | deconvolved FASTQ file of forward reads   <Badge variant="tip" text="required"/>                                                               |
-| `FASTQ_R2`             |             | deconvolved FASTQ file of reverse reads <Badge variant="tip" text="required"/>                                                                 |
-| `--bx-tag` `-b`        |    `BX`     | Which sequence header tag encodes the linked-read barcode (`BX` for `BX:Z` or `BC` for `BC:Z`) <Badge variant="tip" text="required"/>          |
-| `--extra-params` `-x`  |             | Additional spades parameters, in quotes                                                                                                        |
-| `--ignore-bx`          |             | Ignore linked-read info for initial spades assembly                                                                                            |
+| argument               |   default   | description                                                                                                                                     |
+| :--------------------- | :---------: | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FASTQ_R1`             |             | deconvolved FASTQ file of forward reads   <Badge variant="tip" text="required"/>                                                                |
+| `FASTQ_R2`             |             | deconvolved FASTQ file of reverse reads <Badge variant="tip" text="required"/>                                                                  |
+| `--bx-tag` `-b`        |    `BX`     | Which sequence header tag encodes the linked-read barcode (`BX` for `BX:Z` or `BC` for `BC:Z`) <Badge variant="tip" text="required"/>           |
+| `--extra-params` `-x`  |             | Additional spades parameters, in quotes                                                                                                         |
+| `--unlinked`           |     `U`     | Ignore linked-read info for initial spades assembly                                                                                             |
 | `--kmer-length` `-k`   |   `auto`    | Kmer lengths to use for initial spades assembly. They must be **odd** and **\<128**, separated by commas, and without spaces. (e.g. `13,23,51`) |
-| `--max-memory` `-r`    |   `10000`   | Maximum memory for spades to use, given in megabytes                                                                                           |
-| `--organism-type` `-u` | `eukaryote` | Organism type for assembly report. Options: `eukaryote`,`prokaryote`,`fungus`                                                                  |
+| `--max-memory` `-r`    |   `10000`   | Maximum memory for spades to use, given in megabytes                                                                                            |
+| `--organism-type` `-u` | `eukaryote` | Organism type for assembly report. Options: `eukaryote`,`prokaryote`,`fungus`                                                                   |
 
 ## Deconvolved Inputs
 For linked-read assemblies, the barcodes need to be deconvolved in the sequence data, meaning that
@@ -86,18 +86,18 @@ structure and most important outputs.
 <FileTree>
 - Metassembly
   - athena
-    - athena.asm.fa
+  - athena.asm.fa
     - athena.config
   - busco
-    - short_summary.*.txt
+    - short_summary.*.txt
     - run_*_odb10
   - quast
-    - report.*
+    - report.*
     - predicted_genes
   - reports
     - assembly.metrics.html
   - *spades_assembly
-    - contigs.fasta
+    - contigs.fasta
 </FileTree>
 
 
@@ -120,7 +120,7 @@ By default, Harpy runs `spades` with these parameters (excluding inputs and outp
 ```bash title="How harpy calls spades"
 spades.py --meta -t threads -m mem -k k --gemcode1-1 FQ_R1 --gemcode1-2 FQ_R2
 
-# with --ignore-bx
+# with --unlinked
 metaspades.py -t threads -m mem -k k -1 FQ_R1 -2 FQ_R2 --only-error-correction #[!ref] error correct reads
 metaspades.py -t threads -m mem -k k -1 FQ_R1C -2 FQ_R2C -s FQ_UNPAIREDC --only-assembler #[!ref] assemble corrected reads
 ```

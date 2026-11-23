@@ -131,7 +131,7 @@ rule concat_samples:
         """
         printf '%s\\n' {input.bcf} > {output.concatlist}
         {{
-            bcftools merge -@ {params} --no-version -l {output.concatlist} |
+            bcftools merge --threads {params} --force-single --no-version -l {output.concatlist} |
             bcftools sort - --write-index -Ob -o {output.bcf} --max-mem {resources.mem_mb}M 
         }} 2> {log}
         """
@@ -162,7 +162,6 @@ rule variant_report:
         ipynb  = "workflow/bcftools_stats.ipynb"
     output:
         data = temp("reports/data/variants.{type}.stats"),
-        tmp =  temp("reports/variants.{type}.tmp.ipynb"),
         ipynb = "reports/variants.{type}.ipynb"
     log:
         "logs/variants.{type}.report.log"

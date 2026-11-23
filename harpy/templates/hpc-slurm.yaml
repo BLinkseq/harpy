@@ -1,12 +1,11 @@
-__use_yte__: true
 executor: slurm
 default-resources:
-  slurm_account: $USER
-  slurm_partition: regular
-  slurm_status_command: squeue -u $USER 
-  slurm_jobname_prefix: harpy
   mem_mb: attempt * 2000
   runtime: 10
+slurm-account: $USER
+slurm-partition: regular
+slurm-jobname-prefix: harpy
+slurm-status-command: squeue
 jobs: 50
 latency-wait: 60
 retries: 1

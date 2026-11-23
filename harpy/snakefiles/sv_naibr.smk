@@ -84,7 +84,7 @@ rule concat_groups:
     input: 
         bamfiles = lambda wc: collect("{samples}", samples = popdict[wc.sample]) 
     output:
-        bam = temp("workflow/input/{sample}.bam", group_jobs = True),
+        bam = temp("workflow/input/{sample}.bam"),
         bai = temp("workflow/input/{sample}.bam.bai")
     log:
         "logs/concat_groups/{sample}.concat.log"
@@ -134,7 +134,7 @@ rule call_variants:
     conda:
         "envs/variants.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:variants_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:variants_{VERSION}"
     shell:
         "naibr {input.conf} > {log} 2>&1 && rm -rf naibrlog"
 

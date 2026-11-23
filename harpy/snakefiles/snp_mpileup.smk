@@ -164,13 +164,13 @@ rule realign_indels:
 rule variant_report:
     retries: 1
     input: 
-        genome  = "workflow/reference/ref.fa.gz",
-        bcf     = "variants.{type}.bcf",
-        idx     = "variants.{type}.bcf.csi",
+        genome = "workflow/reference/ref.fa.gz",
+        bcf    = "variants.{type}.bcf",
+        idx    = "variants.{type}.bcf.csi",
         ipynb  = "workflow/bcftools_stats.ipynb"
     output:
-        data = "reports/data/variants.{type}.stats",
-        ipynb = temp("reports/variants.{type}.ipynb")
+        data = temp("reports/data/variants.{type}.stats"),
+        ipynb = "reports/variants.{type}.ipynb"
     log:
         "logs/variants.{type}.report.log"
     params:

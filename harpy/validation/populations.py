@@ -62,10 +62,10 @@ class Populations():
         self.print.log("Populations have at least 20 individuals", newline=False)
         popcounts = Counter()
         with open(self.file, "r", encoding="utf-8") as f:
-            for i in f:
-                if '#' in f:
+            for line in f:
+                if not line or line.lstrip().startswith('#'):
                     continue
-                popcounts.update({i.split()[1]: 1})
+                popcounts.update({line.split()[1]: 1})
         lessThan20 = Counter()
         for i,j in popcounts.items():
             if j < 20:

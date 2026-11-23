@@ -252,27 +252,34 @@ class FastpResults:
                     self.max_len_r2 = max(len(qual_curve_before_r2), self.max_len_r2)
                     self.max_len_r2_after = max(len(qual_curve_after_r2), self.max_len_r2_after)
 
-                    stats["Sample"].append(jf.replace('.fastp.json', ''))
-                    stats["Reads (Before)"].append(before.get('total_reads', 0))
-                    stats["Reads (After)"].append(after.get('total_reads', 0))
-                    stats["Bases (Before)"].append(before.get('total_bases', 0))
-                    stats["Bases (After)"].append(after.get('total_bases', 0))
-                    stats["% Q20 (Before)"].append(round(before.get('q20_rate', 0) * 100, 2))
-                    stats["% Q20 (After)"].append(round(after.get('q20_rate', 0) * 100, 2))
-                    stats["% Q30 (Before)"].append(round(before.get('q30_rate', 0) * 100, 2))
-                    stats["% Q30 (After)"].append(round(after.get('q30_rate', 0) * 100, 2))
-                    stats["% GC (Before)"].append(round(before.get('gc_content', 0) * 100, 2))
-                    stats["% GC (After)"].append(round(after.get('gc_content', 0) * 100, 2))
+                stats["Sample"].append(jf.replace('.fastp.json', ''))
+                stats["Reads (Before)"].append(before.get('total_reads', 0))
+                stats["Reads (After)"].append(after.get('total_reads', 0))
+                stats["Bases (Before)"].append(before.get('total_bases', 0))
+                stats["Bases (After)"].append(after.get('total_bases', 0))
+                stats["% Q20 (Before)"].append(round(before.get('q20_rate', 0) * 100, 2))
+                stats["% Q20 (After)"].append(round(after.get('q20_rate', 0) * 100, 2))
+                stats["% Q30 (Before)"].append(round(before.get('q30_rate', 0) * 100, 2))
+                stats["% Q30 (After)"].append(round(after.get('q30_rate', 0) * 100, 2))
+                stats["% GC (Before)"].append(round(before.get('gc_content', 0) * 100, 2))
+                stats["% GC (After)"].append(round(after.get('gc_content', 0) * 100, 2))
 
-        self.stats =  pl.DataFrame(stats)
-        self.qual_curves = pl.DataFrame(mean_qual_curves["before"])
-        self.qual_curves_after = pl.DataFrame(mean_qual_curves["after"])
-        self.qual_curves_r2 = pl.DataFrame(mean_qual_curves_r2["before"])
-        self.qual_curves_r2_after = pl.DataFrame(mean_qual_curves_r2["after"])
-        self.gc_curves = pl.DataFrame(gc_curves["before"])
-        self.gc_curves_after = pl.DataFrame(gc_curves["after"])
-        self.gc_curves_r2 = pl.DataFrame(gc_curves_r2["before"])
-        self.gc_curves_r2_after = pl.DataFrame(gc_curves_r2["after"])
+        self.stats =     pl.DataFrame(stats)
+        self.qual_curves =          self._curves_to_df(mean_qual_curves["before"])
+        self.qual_curves_after =    self._curves_to_df(mean_qual_curves["after"])
+        self.qual_curves_r2 =       self._curves_to_df(mean_qual_curves_r2["before"])
+        self.qual_curves_r2_after = self._curves_to_df(mean_qual_curves_r2["after"])
+        self.gc_curves =            self._curves_to_df(gc_curves["before"])
+        self.gc_curves_after =      self._curves_to_df(gc_curves["after"])
+        self.gc_curves_r2 =         self._curves_to_df(gc_curves_r2["before"])
+        self.gc_curves_r2_after =   self._curves_to_df(gc_curves_r2["after"])
+    
+    def _curves_to_df(self, curves: dict[str, list]) -> pl.DataFrame:
+        '''Wide frame, one column per sample; shorter curves are null-padded to the longest.'''
+        n = max((len(v) for v in curves.values()), default=0)
+        return pl.DataFrame(
+            {k: pl.Series(k, list(v) + [None] * (n - len(v)), dtype=pl.Float64) for k, v in curves.items()}
+        )
 
 
 ## Preproc GIH parsers -------------

@@ -260,8 +260,6 @@ def _makepanel(df: pl.DataFrame, metric, title=None):
 
 
 def depthplot(df: pl.DataFrame, title):
-    alt.data_transformers.disable_max_rows()
-
     coverage = "Read Depth" in df.columns
     molcov = "Molecule Depth" in df.columns
 
@@ -288,8 +286,6 @@ def depthplot(df: pl.DataFrame, title):
             _param,
             title=f"{title} ({_param})",
         )
-
-    alt.data_transformers.enable("default")
 
     return res.interactive(bind_y=False)
 

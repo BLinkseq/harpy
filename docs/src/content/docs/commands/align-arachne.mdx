@@ -45,12 +45,12 @@ largely borrows the same form as the `align` commands and is configured using th
 | argument                   | default | description                                                                                                                                 |
 | :------------------------- | :-----: | :------------------------------------------------------------------------------------------------------------------------------------------ |
 | `REFERENCE`                |         | Reference assembly for read mapping <Badge variant="tip" text="required"/>                                                                  |
-| `INPUTS`                   |         | Files or directories containing [input FASTQ files](/getting-started/common-options#input-arguments) <Badge variant="tip" text="required"/> |
+| `INPUTS`                   |         | Files or directories containing [input FASTQ files](../common-options#input-arguments) <Badge variant="tip" text="required"/> |
 | `--10x`                    |  false  | Input FASTQ are 10X data with 16bp inline barcodes                                                                                          |
 | `--centromeres` `-c`       |         | BED-format file of known centromeres                                                                                                        |
 | `--depth-window` `-w`      | `50000` | Interval size (in bp) for depth stats                                                                                                       |
 | `--keep-unmapped` `-u`     |  false  | Output unmapped sequences too                                                                                                               |
-| `--molecule-distance` `-d` |   `0`   | Base-pair distance threshold to separate molecules given as base pairs, disabled with `0`                                                   |
+| `--molecule-distance` `-d` | `50000` | Base-pair distance threshold to separate molecules given as base pairs, disabled with `0`                                                   |
 | `--min-quality` `-q`       |  `30`   | Minimum `MQ` (SAM mapping quality) to pass filtering                                                                                        |
 | `--rfa`                    |  false  | Use the Lariat RFA algorithm instead of the EM from EMA                                                                                     |
 

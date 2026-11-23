@@ -121,7 +121,7 @@ rule depth_stats:
     conda:
         "envs/qc.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "mosdepth {params} -t 1 reports/data/coverage/{wildcards.sample} {input.bam} 2> {log}"
 

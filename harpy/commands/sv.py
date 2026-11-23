@@ -39,9 +39,10 @@ def sv():
     | naibr     |      ✔     |     ✔        |     ✔     |     🗙     |
 
     Provide the subcommand `leviathan` or `naibr` to get more information on using
-    those variant callers. Once structural variants are identified, use `genotype` to
-    genotype them using `svjedi-tag`.
+    those variant callers.
     """
+#     Once structural variants are identified, use `genotype` to
+#    genotype them using `svjedi-tag`.
 
 @click.command(no_args_is_help = True, context_settings={"allow_interspersed_args" : False}, epilog= "Documentation: https://blinkseq.github.io/harpy/commands/sv/leviathan/")
 @click.option('-x', '--extra-params', panel = "Parameters", type = LeviathanParams(), help = 'Additional leviathan parameters, in quotes')

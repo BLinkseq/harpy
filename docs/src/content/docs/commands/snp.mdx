@@ -82,7 +82,7 @@ variant calling in parallel over these invervals and they can be specified in th
 **input**: an integer to make fixed-size genomic intervals
 
 ```bash title="Example"
-harpy snp -r 25000 genome.fasta data/mapped
+harpy snp mpileup -r 25000 genome.fasta data/mapped
 ```
 </Card>
 
@@ -100,7 +100,7 @@ chromosome_1    100001  121761    <- reached the end of the contig
 **input**: a single region in the format `contig:start-end`
 
 ```bash title="Example"
-harpy snp -r chrom1:2000-15000 genome.fasta data/mapped
+harpy snp mpileup -r chrom1:2000-15000 genome.fasta data/mapped
 ```
 </Card>
 
@@ -116,7 +116,7 @@ to call variants on. This interval must be in the format `contig:start-end` wher
 **input**: a tab (or space) delimited file of contigs and positions
 
 ```bash title="Example"
-harpy snp -r data/positions.txt genome.fasta data/mapped
+harpy snp freebayes -r data/positions.txt genome.fasta data/mapped
 ```
 </Card>
 

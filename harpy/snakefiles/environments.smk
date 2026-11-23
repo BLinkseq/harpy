@@ -12,7 +12,7 @@ rule all:
 rule conda_env:
     output: "{conda}.env"
     conda: "envs/{conda}.yaml"
-    container: "ghcr.io/blinkseq/harpy:{conda}_" + __version__
+    container: "docker://ghcr.io/blinkseq/harpy:{conda}_" + __version__
     shell: "touch {output}"
 
 

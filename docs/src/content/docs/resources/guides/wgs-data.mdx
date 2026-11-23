@@ -17,7 +17,7 @@ with `--unlinked` / `-U`. You can safely ignore the linked-read information in s
 ## Quality Assessment
 Setting `--unlinked` in `qc` just ignores calculating/reporting linked-read metrics, the actual QC process doesn't incorporate linked-read data.
 ```bash qc example
-harpy qc --unlinked --trim-adapters auto --min-length 50 data/WGS/sample_*.gz 
+harpy qc --unlinked --trim-adapters auto --length 50, 150 data/WGS/sample_*.gz 
 ```
 
 ## Sequence Alignment
@@ -49,16 +49,16 @@ the linked-read things in `harpy impute`.
 ```txt title="stitch.parameters"
 name    model   usebx   bxlimit   k       s       nGen
 model1    diploid   FALSE    50000    10      5       50
-model2    diploid   FASE    50000   15      10      100
+model2    diploid   FALSE    50000   15      10      100
 ```
 Naturally, ignoring barcodes will also ignore whatever values are set for `bxlimit`. Otherwise, invoke the imputation workflow as you would normally:
 ```bash title="impute example"
-harpy impute -t 10 stitch.parameters data/variants.bcf data/*.bam
+harpy impute -@ 10 stitch.parameters data/variants.bcf data/*.bam
 ```
 
 ## Phase Genotypes
 Like most of the other workflows, use `--unlinked` with `phase snp` to perform phasing without incorporating linked-read barcode
 information. When using this option, the value for `-d`/`--molecule-distance` will be ignored:
 ```bash title="phase example"
-harpy phase -t 10 --unlinked variants.bcf data/*.bam 
+harpy phase snp -@ 10 --unlinked variants.bcf data/*.bam 
 ```

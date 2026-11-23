@@ -114,7 +114,7 @@ rule assess_quality:
     conda:
         "envs/qc.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "falco --quiet --threads 1 -skip-report -skip-summary -data-filename {output} {input} > {log} 2>&1"
 
@@ -132,7 +132,7 @@ rule quality_report:
     conda:
         "envs/qc.yaml"
     container:
-        f"ghcr.io/blinkseq/harpy:qc_{VERSION}"
+        f"docker://ghcr.io/blinkseq/harpy:qc_{VERSION}"
     shell:
         "multiqc --config workflow/multiqc.yaml {params} > {output} 2> {log}"
 
@@ -147,7 +147,4 @@ rule barcode_report:
     params:
         "-p indir " + os.path.abspath("reports/data/")
     shell:
-        """
-        export IPYTHONDIR=/tmp/ipython-pre-gih
-        harpy-utils run-notebook -k ipython-harpy {params} {input.ipynb} > {output} 2> {log}
-        """
+        "harpy-utils run-notebook -k ipython-harpy {params} {input.ipynb} > {output} 2> {log}"

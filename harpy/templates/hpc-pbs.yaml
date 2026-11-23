@@ -1,18 +1,30 @@
-__use_yte__: true
 executor: cluster-generic
-cluster-generic-submit-cmd: |
-  logdir="$PWD/logs"; mkdir -p "$logdir"; SMJOBSCRIPT="${@: -1}"
-  res="ncpus={resources.threads},mem={resources.mem_gb}GB,walltime={resources.walltime},storage={resources.storage},jobfs={resources.jobfs}"
-  echo "[$(date)] qsub -N smk_{rule} -P {resources.project} -q {resources.queue} -l $res -l wd -j oe -o "${logdir}/{rule}.{jobid}.log" "$SMJOBSCRIPT" 2>> "$PWD/submit_debug.log"
-  qsub -N "smk_{rule}" -P {resources.project} -q "{resources.queue}" -l "$res" -l wd -j oe -o "${logdir}/{rule}.{jobid}.log" "$SMJOBSCRIPT" 2>> "$PWD/submit_debug.log"
-cluster-generic-status-cmd: |
-  out=$(qstat -x -f "$1" 2>/dev/null)
-  state=$(echo "$out" | awk '/job_state/ {print $3}')
-  code=$(echo "$out" | awk '/Exit_status/ {print $3}')
-  case "$state" in
-    F) [ "$code" = "0" ] && echo success || echo failed ;;
-    *) echo running ;;
+cluster-generic-submit-cmd: |-
+  bash -c '
+  rule=$1 jobid=$2 threads=$3 mem=$4 wall=$5 storage=$6 jobfs=$7 project=$8 queue=$9
+  for js; do :; done
+  logdir=$PWD/logs; mkdir -p "$logdir"
+  res="ncpus=$threads,mem=$mem""GB,walltime=$wall,storage=$storage,jobfs=$jobfs"
+  echo "[$(date)] qsub $rule $jobid $res" >> "$PWD/submit_debug.log"
+  exec qsub -N "smk_$rule" -P "$project" -q "$queue" -l "$res" -l wd -j oe \
+    -o "$logdir/$rule.$jobid.log" "$js" 2>> "$PWD/submit_debug.log"
+  ' _ {rule} {jobid} {threads} {resources.mem_gb} {resources.walltime} "{resources.storage}" {resources.jobfs} "{resources.project}" {resources.queue}
+cluster-generic-status-cmd: |-
+  bash -c '
+  id=$1
+  for i in 1 2 3; do
+    out=$(qstat -x -f "$id" 2>/dev/null) && break
+    out=; sleep 5
+  done
+  [ -z "$out" ] && echo failed && exit 0
+  state=$(echo "$out" | sed -n "s/^ *job_state = //p" | head -n1)
+  code=$(echo "$out" | sed -n "s/^ *Exit_status = //p" | head -n1)
+  case $state in
+    F) [ "$code" = 0 ] && echo success || echo failed ;;
+    Q|H|W|T|R|E|B|S|U|M) echo running ;;
+    *) echo failed ;;
   esac
+  ' _
 cluster-generic-cancel-cmd: qdel
 jobs: 50
 latency-wait: 60

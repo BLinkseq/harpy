@@ -3,7 +3,7 @@ title: Snakemake Things
 description: Helpful things to understand about Snakemake
 ---
 import Accordion from '@/components/Accordion.astro';
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Steps } from '@astrojs/starlight/components';
 
 ## Workflow logs
 Barring a few exceptions, most of Harpy's options are Snakemake workflows.
@@ -32,7 +32,7 @@ You can also add snakemake parameters to the `workflow/profile.yaml` file genera
 harpy commands. This would keep a guaranteed record of the changes you made and make it possible
 to easily run something again with those custom parameters. In most cases, you can omit the leading `--`
 from any command line argument and it will work. For toggle flags, write them as `<option>: true`. This yaml
-demonstrates the equivalent of `harpy qc --snakemake "--shadow-prefix /scratch"`:
+demonstrates the equivalent of `harpy qc --snakemake "--dry-run --debug --shadow-prefix /scratch"`:
 
 ```yaml title="profile.yaml" focus={12-14}
 cores: 4
@@ -52,7 +52,15 @@ debug: true
 ```
 
 Manually modifying `workflow/profile.yaml` file will require using `harpy ... --setup` followed
-by `harpy resume`.
+by `harpy resume`. The workflow then becomes
+
+<Steps>
+1. Run harpy with `--setup`
+
+2. Make necessary changes to `profile.yaml`
+
+3. Run `harpy resume`
+</Steps>
 
 </Aside>
 
@@ -65,7 +73,7 @@ Sometimes you want to generate a specific intermediate file (or files) rather th
 For example, you want the barcode report Harpy makes from the output of `align arachne`. To do this, just list the file/files
 (relative to your working directory) without any flags. Example for the linked-read report:
 ```bash
-harpy align bwa -@ 6 --snakemake "Align/arachne/reports/linkedreads.summary.ipynb" genome.fasta QC/
+harpy align arachne -@ 6 --snakemake "Align/arachne/reports/linkedreads.summary.ipynb" genome.fasta QC/
 ```
 This of course necessitates knowing the names of the files ahead of time. See the individual workflows for a breakdown of expected outputs. 
 </Accordion>

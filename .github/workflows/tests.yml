@@ -62,7 +62,7 @@ jobs:
         with:
           cache: false
       - run: pixi run build
-      - run: tar -cf pixi-env.tar .pixi harpy resources
+      - run: tar -cf pixi-env.tar .pixi harpy resources pixi.lock
       - uses: actions/upload-artifact@v4
         with:
           name: pixi-env
