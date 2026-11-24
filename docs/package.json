@@ -1,7 +1,7 @@
 {
-  "name": "arachne",
+  "name": "harpy",
   "type": "module",
-  "version": "0.4",
+  "version": "5.0",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -10,8 +10,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.42.6",
-    "astro": "^7.2.10",
+    "@astrojs/starlight": "^0.43.1",
+    "astro": "^7.4.13",
     "astro-mermaid": "^2.1.0",
     "mermaid": "^11.17.2",
     "sharp": "^0.35.3",
