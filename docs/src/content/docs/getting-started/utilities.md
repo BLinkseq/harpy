@@ -10,15 +10,6 @@ might be useful too. Each of these utilities are accessible with the `harpy-util
 You can call up the docstring for any one of these utilities by calling the program without any arguments.
 You can view all the utilities by calling the docstring of `harpy-utils` itself.
 
-### bx-to-end
-```bash
-bx-to-end input.[fq|bam] > output.[fq.gz|bam]
-```
-Parses the records of a FASTQ or BAM file and moves the `BX:Z` tag, if present, to
-the end of the record, which makes the data play nice with LRez/LEVIATHAN. During 
-alignment, Harpy will automatically move the `BX:Z` tag to the end of the alignment
-record, so that will **not** require manual intervention.
-
 ### check-bam
 ```bash
 check-bam platform input.bam > output.txt

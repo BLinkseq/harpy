@@ -195,7 +195,7 @@ rule compress_phaseblock:
         "phase_blocks/{sample}.phased.vcf.gz.tbi",
         vcf = "phase_blocks/{sample}.phased.vcf.gz"
     shell:
-        "bcftools view -Oz6 -o {output} --write-index {input}"
+        "bcftools view -Oz6 -o {output.vcf} --write-index {input}"
 
 rule summarize_blocks:
     input:
