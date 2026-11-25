@@ -7,7 +7,6 @@ from harpy.common.lazy_group import LazyGroup, LazySpec
 # and hidden flag are repeated here so `--help` and shell completion can list them without importing
 # anything. test/cli/check_lazy_cli.py checks that this stays in sync with the commands.
 COMMANDS = {
-    "bx-to-end":         LazySpec("harpy.utils.bx_to_end:bx_to_end", "Move BX:Z tag to the end of records"),
     "check-bam":         LazySpec("harpy.utils.check_bam:check_bam", "File format validation for SAM/BAM file"),
     "check-fastq":       LazySpec("harpy.utils.check_fastq:check_fastq", "File format validation for FASTQ file"),
     "haplotag-acbd":     LazySpec("harpy.utils.haplotag_acbd:haplotag_acbd", "Generates the BC_{ABCD}.txt files necessary to demultiplex Gen I haplotagging barcodes"),
@@ -18,7 +17,7 @@ COMMANDS = {
     "optical-dist-sam":  LazySpec("harpy.utils.optical_dist:optical_dist_sam", "Read the first record of a BAM file and print the optical duplication distance parameter (100 or 2500) based on the instrument code of the sequence name. INTERNAL USE ONLY.", hidden = True),
     "parse-phaseblocks": LazySpec("harpy.utils.parse_phaseblocks:parse_phaseblocks", "Summarize a HapCut2 phase block file"),
     "plot-depth":        LazySpec("harpy.utils.plot_depth:plot_depth", "Plot histograms of alignment and/or molecule depths"),
-    "run-notebook":  LazySpec("harpy.utils.run_notebook:run_notebook", "INTERNAL use only. Execute a notebook with papermill (IPC kernel transport) and process it. Writes to stdout. Everything prior to the input notebook accepts `papermill` style inputs of `-p <parameterName> <parameterValue>`, as many as you want. Everything after the notebook are the text replacements for notebook PLACEHOLDERs, in the order which PLACEHOLDER appears."),
+    "run-notebook":      LazySpec("harpy.utils.run_notebook:run_notebook", "INTERNAL use only. Execute a notebook with papermill (IPC kernel transport) and process it. Writes to stdout. Everything prior to the input notebook accepts `papermill` style inputs of `-p <parameterName> <parameterValue>`, as many as you want. Everything after the notebook are the text replacements for notebook PLACEHOLDERs, in the order which PLACEHOLDER appears."),
     "rename-bam":        LazySpec("harpy.utils.rename_bam:rename_bam", "Rename a SAM/BAM file and modify the @RG tag"),
 }
 
