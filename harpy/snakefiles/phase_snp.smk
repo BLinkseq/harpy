@@ -300,7 +300,7 @@ else:
     rule merge_contigs:
         input:
             bcf = expand("statistical_phasing/mergeOutput/{contig}.phased.bcf", contig = contigs),
-            csi = expand("statistical_phasing/mergeOutput/{contig}.shapeit4.bcf.csi", contig = contigs)
+            csi = expand("statistical_phasing/mergeOutput/{contig}.phased.bcf.csi", contig = contigs)
         output:
             "variants.phased.bcf.csi",
             filelist = temp("statistical_phasing/mergeOutput/concat.list"),
@@ -308,14 +308,15 @@ else:
         log:
             "logs/merge.shapeit4.log"
         params:
-            workflow.cores - 1
+            workflow.cores - 1,
+            "--naive -q 10 -l -Ob --write-index"
         threads:
             workflow.cores
         run:
             with open(output.filelist, "w") as f_out:
                 for i in input.bcf:
                     f_out.write(i + "\n")
-            shell("bcftools merge --threads {params} --force-single -l {output.filelist} -Ob -o {output.bcf} --write-index 2> {log}")
+            shell("bcftools concat --threads {params} -f {output.filelist} -o {output.bcf} 2> {log}")
 
 
 rule statistical_phase:
