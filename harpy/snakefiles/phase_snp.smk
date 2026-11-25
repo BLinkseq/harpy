@@ -22,12 +22,12 @@ base_qual         = PARAMETERS.get("min-base-quality", 13)
 molecule_distance = PARAMETERS.get("distance-threshold", 50000)
 extra             = PARAMETERS.get("extra", "")
 variantfile       = INPUTS["vcf"]
-linkagemap        = INPUTS.get("linkage-map", [])
+linkagemap        = INPUTS.get("linkage-map", None)
 grp               = INPUTS.get("groupings") or {}
 if grp:
     groupings = grp.get("processed", [])
     if not (isinstance(groupings, str) and os.path.isfile(groupings)):
-        groupings = groupings.get("source", [])
+        groupings = grp.get("source", [])
     contigs: list[str] = get_vcf_contigs(variantfile)
 else:
     groupings = []
@@ -195,34 +195,23 @@ rule compress_phaseblock:
         "phase_blocks/{sample}.phased.vcf.gz.tbi",
         vcf = "phase_blocks/{sample}.phased.vcf.gz"
     shell:
-        "bcftools view -Oz6 -o {output} --write-index {input}"
+        "bcftools view -Oz6 -o {output.vcf} --write-index=tbi {input}"
 
 rule summarize_blocks:
     input:
-        "split_by_pop/{population}.bcf.csi",
-        bcf = "split_by_pop/{population}.bcf"
+        collect("phase_blocks/{sample}.blocks", sample = samplenames)
     output:
-        "statistical_phasing/{population}.{contig}.shapeit4.bcf.csi",
-        bcf = "statistical_phasing/{population}.{contig}.shapeit4.bcf"
+        "reports/blocks.summary.gz"
     log:
-        "statistical_phasing/logs/{population}.{contig}.shapeit4.log"
-    threads:
-        8
-    params:
-        lambda wc: f"--region {wc.contig}",
-        "--sequencing",
-        "--use-PS 0.0001",
-        f"--map {groupings}" if groupings else ""
-    conda:
-        "envs/phase.yaml"
-    container:
-        f"ghcr.io/blinkseq/harpy:phase_{VERSION}"
+        "logs/summary.log"
     shell:
         """
         {{
-            shapeit4 --input {input.bcf} {params} --thread {threads} --log {log} --output {output.bcf}
-            bcftools index {output.bcf}
-        }} 2>> {log}
+            echo -e "sample\\tcontig\\tn_snp\\tpos_start\\tblock_length"
+            for i in {input}; do
+                harpy-utils parse-phaseblocks $i
+            done
+        }} 2> {log} | gzip > {output}
         """
 
 rule annotate_phase:
@@ -311,7 +300,7 @@ else:
     rule merge_contigs:
         input:
             bcf = expand("statistical_phasing/mergeOutput/{contig}.phased.bcf", contig = contigs),
-            csi = expand("statistical_phasing/mergeOutput/{contig}.shapeit4.bcf.csi", contig = contigs)
+            csi = expand("statistical_phasing/mergeOutput/{contig}.phased.bcf.csi", contig = contigs)
         output:
             "variants.phased.bcf.csi",
             filelist = temp("statistical_phasing/mergeOutput/concat.list"),
@@ -319,21 +308,22 @@ else:
         log:
             "logs/merge.shapeit4.log"
         params:
-            workflow.cores - 1
+            workflow.cores - 1,
+            "--naive -q 10 -l -Ob --write-index"
         threads:
             workflow.cores
         run:
             with open(output.filelist, "w") as f_out:
                 for i in input.bcf:
                     f_out.write(i + "\n")
-            shell("bcftools merge --threads {params} --force-single -l {output.filelist} -Ob -o {output.bcf} --write-index 2> {log}")
+            shell("bcftools concat --threads {params} -f {output.filelist} -o {output.bcf} 2> {log}")
 
 
 rule statistical_phase:
     input:
         "split_by_pop/{population}.bcf.csi",
-        linkagemap = linkagemap,
-        bcf = "split_by_pop/{population}.bcf"
+        bcf = "split_by_pop/{population}.bcf",
+        linkagemap = linkagemap or []
     output:
         "statistical_phasing/{population}/{contig}.shapeit4.bcf.csi",
         bcf = "statistical_phasing/{population}/{contig}.shapeit4.bcf"

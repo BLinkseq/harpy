@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "harpy"
-version = "4.2.0"
+version = "5.0"
 authors = [{name = "Pavel Dimens"}]
 description = "Automated workflows to preprocess sequences, trim reads, map sequences, call variants, impute genotypes, and phase haplotypes of Haplotagging data. Batteries included."
 requires-python = ">=3.11"
@@ -12,7 +12,7 @@ readme = {file = "README.md", content-type = "text/markdown"}
 license = "GPL-3.0-or-later"
 dependencies = [
     'altair>=6.0.0',
-    'click>8.0',
+    'click>8.2',
     'ipykernel',
     'jupyter-book',
     'notebook',
@@ -21,8 +21,8 @@ dependencies = [
     'pillow',
     'polars>=1.39.2',
     'pysam>=0.23',
-    'rich-click>=1.8',
-    'snakemake>=9.0',
+    'rich-click>=1.9.3',
+    'snakemake>=9.19.0,<10',
     'vl-convert-python',
 ]
 
